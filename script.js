@@ -5,6 +5,9 @@ let GAME_SPEED = 150; // 游戏速度（毫秒）
 const MIN_SPEED = 300; // 最慢速度（毫秒）
 const MAX_SPEED = 50; // 最快速度（毫秒）
 
+// API配置
+const API_URL = 'http://localhost:3000/api';
+
 // 语言配置
 const LANGUAGES = {
     zh: {
@@ -117,7 +120,7 @@ let isGameOver = false;
 
 // 用户名和排行榜相关
 let username = localStorage.getItem('snakeUsername') || '';
-let leaderboard = JSON.parse(localStorage.getItem('snakeLeaderboard')) || [];
+let leaderboard = [];
 const MAX_LEADERBOARD_ENTRIES = 10;
 
 // 初始化页面
@@ -127,8 +130,21 @@ function initPage() {
         usernameInput.value = username;
     }
     
-    // 渲染排行榜
-    renderLeaderboard();
+    // 从API获取排行榜数据
+    fetchLeaderboard();
+}
+
+// 从API获取排行榜数据
+function fetchLeaderboard() {
+    fetch(`${API_URL}/leaderboard`)
+        .then(response => response.json())
+        .then(data => {
+            leaderboard = data;
+            renderLeaderboard();
+        })
+        .catch(error => {
+            console.error('获取排行榜失败:', error);
+        });
 }
 
 // 初始化游戏
@@ -619,26 +635,25 @@ function updateLeaderboard() {
     // 创建新的记录
     const newRecord = {
         username: username,
-        score: score,
-        date: new Date().toISOString()
+        score: score
     };
     
-    // 添加到排行榜
-    leaderboard.push(newRecord);
-    
-    // 按分数排序（从高到低）
-    leaderboard.sort((a, b) => b.score - a.score);
-    
-    // 只保留前MAX_LEADERBOARD_ENTRIES条记录
-    if (leaderboard.length > MAX_LEADERBOARD_ENTRIES) {
-        leaderboard = leaderboard.slice(0, MAX_LEADERBOARD_ENTRIES);
-    }
-    
-    // 保存到本地存储
-    localStorage.setItem('snakeLeaderboard', JSON.stringify(leaderboard));
-    
-    // 更新排行榜显示
-    renderLeaderboard();
+    // 发送到API
+    fetch(`${API_URL}/leaderboard`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newRecord)
+    })
+    .then(response => response.json())
+    .then(data => {
+        leaderboard = data;
+        renderLeaderboard();
+    })
+    .catch(error => {
+        console.error('更新排行榜失败:', error);
+    });
 }
 
 // 渲染排行榜
