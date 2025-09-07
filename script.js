@@ -20,7 +20,15 @@ const LANGUAGES = {
         foodGuide: "吃到食物可以增加得分和蛇的长度",
         collisionGuide: "撞到墙壁或自己的身体游戏结束",
         speedGuide: "使用速度滑块调整游戏速度（1最慢，10最快）",
-        gameOver: "游戏结束"
+        gameOver: "游戏结束",
+        username: "用户名: ",
+        saveUsername: "保存",
+        usernamePlaceholder: "请输入用户名",
+        leaderboard: "排行榜",
+        noRecords: "暂无记录",
+        yourScore: "你的得分",
+        rank: "排名",
+        player: "玩家"
     },
     en: {
         title: "Snake Game",
@@ -35,7 +43,15 @@ const LANGUAGES = {
         foodGuide: "Eat food to increase score and snake length",
         collisionGuide: "Game ends if you hit the wall or your own body",
         speedGuide: "Use the speed slider to adjust game speed (1 slowest, 10 fastest)",
-        gameOver: "Game Over"
+        gameOver: "Game Over",
+        username: "Username: ",
+        saveUsername: "Save",
+        usernamePlaceholder: "Enter username",
+        leaderboard: "Leaderboard",
+        noRecords: "No records",
+        yourScore: "Your Score",
+        rank: "Rank",
+        player: "Player"
     }
 };
 
@@ -62,6 +78,20 @@ const speedValue = document.getElementById('speed-value');
 const langZhButton = document.getElementById('lang-zh');
 const langEnButton = document.getElementById('lang-en');
 
+// 获取触摸控制按钮
+const touchUpButton = document.getElementById('touch-up');
+const touchDownButton = document.getElementById('touch-down');
+const touchLeftButton = document.getElementById('touch-left');
+const touchRightButton = document.getElementById('touch-right');
+
+// 获取用户名和排行榜相关元素
+const usernameInput = document.getElementById('username-input');
+const saveUsernameButton = document.getElementById('save-username-btn');
+const usernameLabel = document.getElementById('username-label');
+const leaderboardTitle = document.getElementById('leaderboard-title');
+const leaderboardList = document.getElementById('leaderboard-list');
+const noRecordsElement = document.getElementById('no-records');
+
 // 获取需要更新文本的元素
 const gameTitle = document.getElementById('game-title');
 const scoreLabel = document.getElementById('score-label');
@@ -84,6 +114,22 @@ let score = 0;
 let gameInterval = null;
 let isPaused = false;
 let isGameOver = false;
+
+// 用户名和排行榜相关
+let username = localStorage.getItem('snakeUsername') || '';
+let leaderboard = JSON.parse(localStorage.getItem('snakeLeaderboard')) || [];
+const MAX_LEADERBOARD_ENTRIES = 10;
+
+// 初始化页面
+function initPage() {
+    // 设置用户名输入框
+    if (username) {
+        usernameInput.value = username;
+    }
+    
+    // 渲染排行榜
+    renderLeaderboard();
+}
 
 // 初始化游戏
 function initGame() {
@@ -266,6 +312,9 @@ function gameOver() {
     gameInterval = null;
     isGameOver = true;
     
+    // 更新排行榜
+    updateLeaderboard();
+    
     // 更新按钮状态
     startButton.disabled = false;
     pauseButton.disabled = true;
@@ -280,6 +329,12 @@ function gameOver() {
         <p>${LANGUAGES[currentLang].start}</p>
     `;
     document.querySelector('.game-container').appendChild(gameOverElement);
+    
+    // 点击游戏结束提示可以重新开始游戏
+    gameOverElement.addEventListener('click', () => {
+        document.querySelector('.game-container').removeChild(gameOverElement);
+        restartGame();
+    });
 }
 
 // 绘制游戏
@@ -501,21 +556,147 @@ function updateUIText() {
     instructionCollision.textContent = texts.collisionGuide;
     instructionSpeed.textContent = texts.speedGuide;
     
+    // 更新用户名和排行榜文本
+    usernameLabel.textContent = texts.username;
+    saveUsernameButton.textContent = texts.saveUsername;
+    usernameInput.placeholder = texts.usernamePlaceholder;
+    leaderboardTitle.textContent = texts.leaderboard;
+    noRecordsElement.textContent = texts.noRecords;
+    
     // 更新游戏结束提示（如果存在）
     const gameOverElement = document.querySelector('.game-over');
     if (gameOverElement) {
         gameOverElement.textContent = texts.gameOver;
     }
+    
+    // 重新渲染排行榜以更新语言
+    renderLeaderboard();
 }
 
-// 添加事件监听器
+// 处理触摸控制事件
+function handleTouchControl(touchDirection) {
+    // 只有在游戏运行时才处理方向
+    if (gameInterval && !isPaused && !isGameOver) {
+        switch (touchDirection) {
+            case 'up':
+                if (direction !== DIRECTIONS.DOWN) {
+                    nextDirection = DIRECTIONS.UP;
+                }
+                break;
+            case 'down':
+                if (direction !== DIRECTIONS.UP) {
+                    nextDirection = DIRECTIONS.DOWN;
+                }
+                break;
+            case 'left':
+                if (direction !== DIRECTIONS.RIGHT) {
+                    nextDirection = DIRECTIONS.LEFT;
+                }
+                break;
+            case 'right':
+                if (direction !== DIRECTIONS.LEFT) {
+                    nextDirection = DIRECTIONS.RIGHT;
+                }
+                break;
+        }
+    }
+}
+
+// 保存用户名
+function saveUsername() {
+    const newUsername = usernameInput.value.trim();
+    if (newUsername) {
+        username = newUsername;
+        localStorage.setItem('snakeUsername', username);
+        usernameInput.value = username;
+    }
+}
+
+// 更新排行榜
+function updateLeaderboard() {
+    if (!username || score === 0) return;
+    
+    // 创建新的记录
+    const newRecord = {
+        username: username,
+        score: score,
+        date: new Date().toISOString()
+    };
+    
+    // 添加到排行榜
+    leaderboard.push(newRecord);
+    
+    // 按分数排序（从高到低）
+    leaderboard.sort((a, b) => b.score - a.score);
+    
+    // 只保留前MAX_LEADERBOARD_ENTRIES条记录
+    if (leaderboard.length > MAX_LEADERBOARD_ENTRIES) {
+        leaderboard = leaderboard.slice(0, MAX_LEADERBOARD_ENTRIES);
+    }
+    
+    // 保存到本地存储
+    localStorage.setItem('snakeLeaderboard', JSON.stringify(leaderboard));
+    
+    // 更新排行榜显示
+    renderLeaderboard();
+}
+
+// 渲染排行榜
+function renderLeaderboard() {
+    // 清空排行榜
+    while (leaderboardList.firstChild) {
+        leaderboardList.removeChild(leaderboardList.firstChild);
+    }
+    
+    // 如果没有记录，显示"暂无记录"
+    if (leaderboard.length === 0) {
+        noRecordsElement.style.display = 'block';
+        return;
+    }
+    
+    // 隐藏"暂无记录"
+    noRecordsElement.style.display = 'none';
+    
+    // 添加排行榜项
+    leaderboard.forEach((record, index) => {
+        const item = document.createElement('div');
+        item.className = 'leaderboard-item';
+        
+        const rank = document.createElement('div');
+        rank.className = 'leaderboard-rank';
+        rank.textContent = `${index + 1}`;
+        
+        const user = document.createElement('div');
+        user.className = 'leaderboard-username';
+        user.textContent = record.username;
+        
+        const scoreElement = document.createElement('div');
+        scoreElement.className = 'leaderboard-score';
+        scoreElement.textContent = record.score;
+        
+        item.appendChild(rank);
+        item.appendChild(user);
+        item.appendChild(scoreElement);
+        
+        leaderboardList.appendChild(item);
+    });
+}
+
+// 事件监听
 document.addEventListener('keydown', handleKeydown);
+speedSlider.addEventListener('input', updateGameSpeed);
 startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
-restartButton.addEventListener('click', initGame);
-speedSlider.addEventListener('input', updateGameSpeed);
+restartButton.addEventListener('click', restartGame);
 langZhButton.addEventListener('click', () => switchLanguage('zh'));
 langEnButton.addEventListener('click', () => switchLanguage('en'));
+saveUsernameButton.addEventListener('click', saveUsername);
+
+// 触摸控制事件监听
+touchUpButton.addEventListener('click', () => handleTouchControl('up'));
+touchDownButton.addEventListener('click', () => handleTouchControl('down'));
+touchLeftButton.addEventListener('click', () => handleTouchControl('left'));
+touchRightButton.addEventListener('click', () => handleTouchControl('right'));
 
 // 初始化游戏
 initGame();
@@ -523,3 +704,6 @@ initGame();
 // 初始化UI文本
 updateUIText();
 updateGameSpeed(); // 初始化游戏速度
+
+// 初始化页面
+initPage();

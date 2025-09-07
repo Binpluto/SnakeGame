@@ -73,6 +73,42 @@ body {
     color: #333;
 }
 
+/* 用户名输入区域 */
+.username-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+#username-label {
+    font-size: 14px;
+    color: #333;
+}
+
+#username-input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+    width: 120px;
+}
+
+#save-username-btn {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#save-username-btn:hover {
+    background-color: #3e8e41;
+}
+
 #game-canvas {
     background-color: #e8f5e9;
     border: 2px solid #4caf50;
@@ -94,6 +130,47 @@ body {
     justify-content: center;
     gap: 10px;
     margin-bottom: 20px;
+}
+
+/* 触摸控制区域 */
+.touch-controls {
+    display: none; /* 默认隐藏，在移动设备上显示 */
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.touch-control-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 8px 0;
+    width: 100%;
+}
+
+.touch-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(76, 175, 80, 0.8);
+    border-radius: 50%;
+    padding: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    -webkit-tap-highlight-color: transparent; /* 移除移动端点击高亮 */
+    user-select: none; /* 防止文本被选中 */
+    touch-action: manipulation; /* 优化触摸操作 */
+}
+
+.touch-btn:active {
+    background-color: #388e3c;
+    transform: scale(0.95);
 }
 
 .slider {
@@ -168,6 +245,66 @@ button:disabled {
     margin-bottom: 5px;
 }
 
+/* 默认隐藏触摸控制说明，只在移动设备上显示 */
+#instruction-touch {
+    display: none;
+}
+
+/* 排行榜样式 */
+.leaderboard {
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+#leaderboard-title {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#leaderboard-list {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.leaderboard-item:last-child {
+    border-bottom: none;
+}
+
+.leaderboard-rank {
+    font-weight: bold;
+    color: #4caf50;
+    width: 30px;
+}
+
+.leaderboard-username {
+    flex-grow: 1;
+    text-align: left;
+    padding: 0 10px;
+}
+
+.leaderboard-score {
+    font-weight: bold;
+    text-align: right;
+}
+
+.no-records {
+    text-align: center;
+    color: #999;
+    padding: 10px 0;
+}
+
 /* 游戏结束提示 */
 .game-over {
     position: absolute;
@@ -184,6 +321,15 @@ button:disabled {
 
 /* 响应式设计 */
 @media (max-width: 500px) {
+    body {
+        padding: 10px;
+    }
+    
+    .game-container {
+        padding: 15px;
+        max-width: 100%;
+    }
+    
     .game-header {
         flex-direction: column;
         gap: 10px;
@@ -201,9 +347,32 @@ button:disabled {
     #game-canvas {
         width: 100%;
         height: auto;
+        max-width: 300px;
+        max-height: 300px;
     }
     
     .controls {
         flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    button {
+        margin: 5px;
+    }
+    
+    .speed-control {
+        width: 100%;
+        max-width: 300px;
+        margin: 10px auto;
+    }
+    
+    /* 在移动设备上显示触摸控制 */
+    .touch-controls {
+        display: flex;
+    }
+    
+    /* 添加触摸相关的说明 */
+    #instruction-touch {
+        display: block;
     }
 }

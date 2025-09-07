@@ -20,6 +20,11 @@
                 <span id="score-label">得分: </span>
                 <span id="score">0</span>
             </div>
+            <div class="username-container">
+                <label id="username-label" for="username-input">用户名: </label>
+                <input type="text" id="username-input" maxlength="10" placeholder="请输入用户名">
+                <button id="save-username-btn">保存</button>
+            </div>
         </div>
         <canvas id="game-canvas" width="400" height="400"></canvas>
         <div class="controls">
@@ -32,10 +37,31 @@
             <input type="range" id="speed-slider" min="1" max="10" value="5" class="slider">
             <span id="speed-value">5</span>
         </div>
+        <div class="touch-controls">
+            <div class="touch-control-row">
+                <button id="touch-up" class="touch-btn">↑</button>
+            </div>
+            <div class="touch-control-row">
+                <button id="touch-left" class="touch-btn">←</button>
+                <button id="touch-right" class="touch-btn">→</button>
+            </div>
+            <div class="touch-control-row">
+                <button id="touch-down" class="touch-btn">↓</button>
+            </div>
+        </div>
+        <div class="leaderboard">
+            <h2 id="leaderboard-title">排行榜</h2>
+            <div id="leaderboard-list">
+                <!-- 排行榜数据将通过JavaScript动态生成 -->
+                <div class="no-records" id="no-records">暂无记录</div>
+            </div>
+        </div>
         <div class="instructions">
             <h2 id="instructions-title">游戏说明</h2>
             <p id="instruction-controls">使用键盘方向键（↑ ↓ ← →）控制蛇的移动方向</p>
-            <p id="instruction-food">吃到食物可以增加得分和蛇的长度</p     <p id="instruction-collision">撞到墙壁或自己的身体游戏结束</p>
+            <p id="instruction-touch">在移动设备上可使用屏幕下方的方向按钮</p>
+            <p id="instruction-food">吃到食物可以增加得分和蛇的长度</p>
+            <p id="instruction-collision">撞到墙壁或自己的身体游戏结束</p>
             <p id="instruction-speed">使用速度滑块调整游戏速度（1最慢，10最快）</p>
         </div>
     </div>
