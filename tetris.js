@@ -34,6 +34,7 @@ const LANGUAGES = {
         leftRightGuide: "← → : 左右移动",
         downGuide: "↓ : 加速下落",
         upGuide: "↑ : 旋转",
+        touchGuide: "在移动设备上可使用屏幕下方的触控按钮",
         backToMenu: "返回游戏选择"
     },
     en: {
@@ -59,6 +60,7 @@ const LANGUAGES = {
         leftRightGuide: "← → : Move Left/Right",
         downGuide: "↓ : Move Down",
         upGuide: "↑ : Rotate",
+        touchGuide: "Use touch controls below on mobile devices",
         backToMenu: "Back to Menu"
     }
 };
@@ -585,6 +587,10 @@ function updateUIText() {
     if (instructionDown) instructionDown.textContent = texts.downGuide;
     if (instructionUp) instructionUp.textContent = texts.upGuide;
     
+    // 更新触屏说明文本
+    const instructionTouch = document.getElementById('instruction-touch');
+    if (instructionTouch) instructionTouch.textContent = texts.touchGuide;
+    
     // 更新用户名和排行榜文本
     usernameLabel.textContent = texts.username;
     saveUsernameButton.textContent = texts.saveUsername;
@@ -750,6 +756,50 @@ restartButton.addEventListener('click', restartGame);
 backButton.addEventListener('click', () => {
     window.location.href = 'game-selector.html';
 });
+
+// 触屏控制事件监听
+const touchLeftButton = document.getElementById('touch-left');
+const touchRightButton = document.getElementById('touch-right');
+const touchDownButton = document.getElementById('touch-down');
+const touchRotateButton = document.getElementById('touch-rotate');
+
+if (touchLeftButton) {
+    touchLeftButton.addEventListener('click', () => {
+        if (isGameOver || !gameInterval) return;
+        if (isValidMove(-1, 0)) {
+            currentX--;
+            draw();
+        }
+    });
+}
+
+if (touchRightButton) {
+    touchRightButton.addEventListener('click', () => {
+        if (isGameOver || !gameInterval) return;
+        if (isValidMove(1, 0)) {
+            currentX++;
+            draw();
+        }
+    });
+}
+
+if (touchDownButton) {
+    touchDownButton.addEventListener('click', () => {
+        if (isGameOver || !gameInterval) return;
+        if (isValidMove(0, 1)) {
+            currentY++;
+            draw();
+        }
+    });
+}
+
+if (touchRotateButton) {
+    touchRotateButton.addEventListener('click', () => {
+        if (isGameOver || !gameInterval) return;
+        rotateShape();
+        draw();
+    });
+}
 
 // 语言切换事件监听
 langZhButton.addEventListener('click', () => switchLanguage('zh'));
