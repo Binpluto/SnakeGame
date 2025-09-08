@@ -7,7 +7,7 @@ const MIN_SPEED = 1000; // 最慢速度（毫秒）
 const MAX_SPEED = 100; // 最快速度（毫秒）
 
 // API配置
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'http://localhost:3000';
 
 // 语言配置
 const LANGUAGES = {
@@ -613,7 +613,7 @@ function saveUsername() {
 // 获取排行榜数据
 async function fetchLeaderboard() {
     try {
-        const response = await fetch(`${API_URL.replace(/\/api$/, '')}/api/tetris-leaderboard`);
+        const response = await fetch(`${API_URL}/api/tetris-leaderboard`);
         if (response.ok) {
             leaderboard = await response.json();
             renderLeaderboard();
@@ -626,7 +626,7 @@ async function fetchLeaderboard() {
 // 更新排行榜
 async function updateLeaderboard(score) {
     try {
-        const response = await fetch(`${API_URL.replace(/\/api$/, '')}/api/tetris-leaderboard`, {
+        const response = await fetch(`${API_URL}/api/tetris-leaderboard`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

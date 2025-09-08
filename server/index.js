@@ -14,6 +14,9 @@ const TETRIS_LEADERBOARD_FILE = path.join(__dirname, 'tetris-leaderboard.json');
 app.use(cors());
 app.use(express.json());
 
+// 提供静态文件服务
+app.use(express.static(path.join(__dirname, '..')));
+
 // 初始化排行榜文件（如果不存在）
 if (!fs.existsSync(SNAKE_LEADERBOARD_FILE)) {
     fs.writeFileSync(SNAKE_LEADERBOARD_FILE, JSON.stringify([]), 'utf8');
