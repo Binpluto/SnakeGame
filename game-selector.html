@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏选择</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-selector-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .game-options {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .game-option {
+            width: 300px;
+            height: 350px;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background-color: #f9f9f9;
+        }
+        
+        .game-option:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .game-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .game-description {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .language-switch {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-selector-container">
+        <h1 id="selector-title">选择游戏</h1>
+        
+        <div class="language-switch">
+            <button id="lang-zh" class="lang-btn active">中文</button>
+            <button id="lang-en" class="lang-btn">English</button>
+        </div>
+        
+        <div class="game-options">
+            <div class="game-option" id="snake-option">
+                <div class="game-icon">🐍</div>
+                <h2 class="game-title" id="snake-title">贪吃蛇</h2>
+                <p class="game-description" id="snake-description">控制蛇吃食物，不断成长，小心不要撞到墙壁或自己的身体！</p>
+                <button class="play-btn" id="play-snake">开始游戏</button>
+            </div>
+            
+            <div class="game-option" id="tetris-option">
+                <div class="game-icon">🧩</div>
+                <h2 class="game-title" id="tetris-title">俄罗斯方块</h2>
+                <p class="game-description" id="tetris-description">旋转和移动不同形状的方块，尝试填满一行并获得分数！</p>
+                <button class="play-btn" id="play-tetris">开始游戏</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 语言配置
+        const LANGUAGES = {
+            zh: {
+                selectorTitle: "选择游戏",
+                snakeTitle: "贪吃蛇",
+                snakeDescription: "控制蛇吃食物，不断成长，小心不要撞到墙壁或自己的身体！",
+                tetrisTitle: "俄罗斯方块",
+                tetrisDescription: "旋转和移动不同形状的方块，尝试填满一行并获得分数！",
+                playButton: "开始游戏"
+            },
+            en: {
+                selectorTitle: "Choose a Game",
+                snakeTitle: "Snake",
+                snakeDescription: "Control the snake to eat food and grow longer, but be careful not to hit the walls or your own body!",
+                tetrisTitle: "Tetris",
+                tetrisDescription: "Rotate and move different shaped blocks to fill rows and score points!",
+                playButton: "Play Now"
+            }
+        };
+        
+        // 获取元素
+        const langZhButton = document.getElementById('lang-zh');
+        const langEnButton = document.getElementById('lang-en');
+        const selectorTitle = document.getElementById('selector-title');
+        const snakeTitle = document.getElementById('snake-title');
+        const snakeDescription = document.getElementById('snake-description');
+        const tetrisTitle = document.getElementById('tetris-title');
+        const tetrisDescription = document.getElementById('tetris-description');
+        const playSnakeButton = document.getElementById('play-snake');
+        const playTetrisButton = document.getElementById('play-tetris');
+        
+        // 当前语言
+        let currentLang = localStorage.getItem('snakeLanguage') || 'zh';
+        
+        // 更新UI文本
+        function updateUIText() {
+            const texts = LANGUAGES[currentLang];
+            
+            document.title = texts.selectorTitle;
+            selectorTitle.textContent = texts.selectorTitle;
+            snakeTitle.textContent = texts.snakeTitle;
+            snakeDescription.textContent = texts.snakeDescription;
+            tetrisTitle.textContent = texts.tetrisTitle;
+            tetrisDescription.textContent = texts.tetrisDescription;
+            playSnakeButton.textContent = texts.playButton;
+            playTetrisButton.textContent = texts.playButton;
+            
+            // 更新HTML lang属性
+            document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+        }
+        
+        // 切换语言
+        function switchLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('snakeLanguage', lang);
+            
+            // 更新按钮状态
+            langZhButton.classList.toggle('active', lang === 'zh');
+            langEnButton.classList.toggle('active', lang === 'en');
+            
+            // 更新UI文本
+            updateUIText();
+        }
+        
+        // 事件监听
+        langZhButton.addEventListener('click', () => switchLanguage('zh'));
+        langEnButton.addEventListener('click', () => switchLanguage('en'));
+        playSnakeButton.addEventListener('click', () => window.location.href = 'index.html');
+        playTetrisButton.addEventListener('click', () => window.location.href = 'tetris.html');
+        
+        // 初始化
+        switchLanguage(currentLang);
+    </script>
+</body>
+</html>

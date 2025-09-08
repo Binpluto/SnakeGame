@@ -31,7 +31,8 @@ const LANGUAGES = {
         noRecords: "暂无记录",
         yourScore: "你的得分",
         rank: "排名",
-        player: "玩家"
+        player: "玩家",
+        backToMenu: "返回游戏选择"
     },
     en: {
         title: "Snake Game",
@@ -54,7 +55,8 @@ const LANGUAGES = {
         noRecords: "No records",
         yourScore: "Your Score",
         rank: "Rank",
-        player: "Player"
+        player: "Player",
+        backToMenu: "Back to Game Selection"
     }
 };
 
@@ -80,6 +82,7 @@ const speedSlider = document.getElementById('speed-slider');
 const speedValue = document.getElementById('speed-value');
 const langZhButton = document.getElementById('lang-zh');
 const langEnButton = document.getElementById('lang-en');
+const backButton = document.getElementById('back-btn');
 
 // 获取触摸控制按钮
 const touchUpButton = document.getElementById('touch-up');
@@ -107,6 +110,7 @@ const instructionControls = document.getElementById('instruction-controls');
 const instructionFood = document.getElementById('instruction-food');
 const instructionCollision = document.getElementById('instruction-collision');
 const instructionSpeed = document.getElementById('instruction-speed');
+const backText = document.getElementById('back-btn');
 
 // 游戏状态
 let snake = [];
@@ -558,6 +562,7 @@ function updateUIText() {
     // 更新按钮文本
     startText.textContent = texts.start;
     restartText.textContent = texts.restart;
+    backText.textContent = texts.backToMenu;
     
     // 根据游戏状态更新暂停按钮文本
     pauseText.textContent = isPaused ? texts.resume : texts.pause;
@@ -706,6 +711,7 @@ restartButton.addEventListener('click', restartGame);
 langZhButton.addEventListener('click', () => switchLanguage('zh'));
 langEnButton.addEventListener('click', () => switchLanguage('en'));
 saveUsernameButton.addEventListener('click', saveUsername);
+backButton.addEventListener('click', () => window.location.href = 'game-selector.html');
 
 // 触摸控制事件监听
 touchUpButton.addEventListener('click', () => handleTouchControl('up'));
