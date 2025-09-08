@@ -17,6 +17,11 @@ app.use(express.json());
 // 提供静态文件服务
 app.use(express.static(path.join(__dirname, '..')));
 
+// 设置根路径重定向到游戏选择界面
+app.get('/', (req, res) => {
+    res.redirect('/game-selector.html');
+});
+
 // 初始化排行榜文件（如果不存在）
 if (!fs.existsSync(SNAKE_LEADERBOARD_FILE)) {
     fs.writeFileSync(SNAKE_LEADERBOARD_FILE, JSON.stringify([]), 'utf8');
