@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>祖玛游戏</title>
+    <link rel="stylesheet" href="zuma.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1 id="game-title">祖玛游戏</h1>
+            <div class="language-selector">
+                <button id="lang-zh" class="lang-btn active">中文</button>
+                <button id="lang-en" class="lang-btn">English</button>
+            </div>
+        </div>
+        
+        <div class="game-info">
+            <div class="score-container">
+                <span id="score-label">得分: </span>
+                <span id="score">0</span>
+                <span id="level-label">等级: </span>
+                <span id="level">1</span>
+                <span id="lives-label">生命: </span>
+                <span id="lives">3</span>
+            </div>
+            <div class="username-container">
+                <label id="username-label" for="username-input">用户名: </label>
+                <input type="text" id="username-input" maxlength="10" placeholder="请输入用户名">
+                <button id="save-username-btn">保存</button>
+            </div>
+        </div>
+        
+        <div class="zuma-game-area">
+            <canvas id="zuma-canvas" width="800" height="600"></canvas>
+        </div>
+        
+        <div class="game-controls">
+            <button id="start-btn"><span id="start-text">开始游戏</span></button>
+            <button id="pause-btn"><span id="pause-text">暂停</span></button>
+            <button id="restart-btn"><span id="restart-text">重新开始</span></button>
+        </div>
+        
+        <div class="instructions">
+            <h3 id="instructions-title">游戏说明</h3>
+            <p id="instruction-controls">控制方式:</p>
+            <p id="instruction-mouse">鼠标移动: 瞄准方向</p>
+            <p id="instruction-click">鼠标点击: 发射彩球</p>
+            <p id="instruction-space">空格键: 切换彩球颜色</p>
+            <p id="instruction-touch">在移动设备上可使用触屏操作</p>
+        </div>
+        
+        <div class="touch-controls">
+            <div class="touch-control-row">
+                <button id="touch-shoot" class="touch-btn">发射</button>
+                <button id="touch-switch" class="touch-btn">切换</button>
+            </div>
+        </div>
+        
+        <div class="leaderboard">
+            <h2 id="leaderboard-title">排行榜</h2>
+            <div id="leaderboard-list">
+                <div class="no-records" id="no-records">暂无记录</div>
+            </div>
+        </div>
+        
+        <div class="back-to-menu">
+            <button id="back-btn"><span id="back-text">返回游戏选择</span></button>
+        </div>
+    </div>
+    
+    <script src="zuma.js"></script>
+</body>
+</html>

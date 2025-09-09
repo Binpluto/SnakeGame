@@ -18,10 +18,11 @@
             justify-content: center;
             gap: 30px;
             margin-top: 40px;
+            flex-wrap: wrap;
         }
         
         .game-option {
-            width: 300px;
+            width: 280px;
             height: 350px;
             border: 2px solid #4caf50;
             border-radius: 10px;
@@ -29,6 +30,7 @@
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
             background-color: #f9f9f9;
+            margin-bottom: 20px;
         }
         
         .game-option:hover {
@@ -80,6 +82,13 @@
                 <p class="game-description" id="tetris-description">旋转和移动不同形状的方块，尝试填满一行并获得分数！</p>
                 <button class="play-btn" id="play-tetris">开始游戏</button>
             </div>
+            
+            <div class="game-option" id="zuma-option">
+                <div class="game-icon">🔮</div>
+                <h2 class="game-title" id="zuma-title">祖玛</h2>
+                <p class="game-description" id="zuma-description">发射彩球消除相同颜色的球链，阻止球链到达终点！</p>
+                <button class="play-btn" id="play-zuma">开始游戏</button>
+            </div>
         </div>
     </div>
     
@@ -92,6 +101,8 @@
                 snakeDescription: "控制蛇吃食物，不断成长，小心不要撞到墙壁或自己的身体！",
                 tetrisTitle: "俄罗斯方块",
                 tetrisDescription: "旋转和移动不同形状的方块，尝试填满一行并获得分数！",
+                zumaTitle: "祖玛",
+                zumaDescription: "发射彩球消除相同颜色的球链，阻止球链到达终点！",
                 playButton: "开始游戏"
             },
             en: {
@@ -100,6 +111,8 @@
                 snakeDescription: "Control the snake to eat food and grow longer, but be careful not to hit the walls or your own body!",
                 tetrisTitle: "Tetris",
                 tetrisDescription: "Rotate and move different shaped blocks to fill rows and score points!",
+                zumaTitle: "Zuma",
+                zumaDescription: "Shoot colored balls to eliminate matching chains and prevent them from reaching the end!",
                 playButton: "Play Now"
             }
         };
@@ -112,8 +125,11 @@
         const snakeDescription = document.getElementById('snake-description');
         const tetrisTitle = document.getElementById('tetris-title');
         const tetrisDescription = document.getElementById('tetris-description');
+        const zumaTitle = document.getElementById('zuma-title');
+        const zumaDescription = document.getElementById('zuma-description');
         const playSnakeButton = document.getElementById('play-snake');
         const playTetrisButton = document.getElementById('play-tetris');
+        const playZumaButton = document.getElementById('play-zuma');
         
         // 当前语言
         let currentLang = localStorage.getItem('snakeLanguage') || 'zh';
@@ -128,8 +144,11 @@
             snakeDescription.textContent = texts.snakeDescription;
             tetrisTitle.textContent = texts.tetrisTitle;
             tetrisDescription.textContent = texts.tetrisDescription;
+            zumaTitle.textContent = texts.zumaTitle;
+            zumaDescription.textContent = texts.zumaDescription;
             playSnakeButton.textContent = texts.playButton;
             playTetrisButton.textContent = texts.playButton;
+            playZumaButton.textContent = texts.playButton;
             
             // 更新HTML lang属性
             document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
@@ -153,6 +172,7 @@
         langEnButton.addEventListener('click', () => switchLanguage('en'));
         playSnakeButton.addEventListener('click', () => window.location.href = 'index.html');
         playTetrisButton.addEventListener('click', () => window.location.href = 'tetris.html');
+        playZumaButton.addEventListener('click', () => window.location.href = 'zuma.html');
         
         // 初始化
         switchLanguage(currentLang);
