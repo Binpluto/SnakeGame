@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>羊了个羊</title>
+    <link rel="stylesheet" href="sheep.css">
+</head>
+<body>
+    <div class="sheep-container">
+        <div class="sheep-header">
+            <h1 id="game-title">羊了个羊</h1>
+            
+            <!-- 语言选择 -->
+            <div class="language-selector">
+                <button id="lang-zh" class="lang-btn active">中文</button>
+                <button id="lang-en" class="lang-btn">English</button>
+            </div>
+        </div>
+
+        <div class="sheep-game-area">
+            <!-- 游戏画布区域 -->
+            <div class="game-canvas-container">
+                <canvas id="sheep-canvas" width="800" height="600"></canvas>
+                
+                <!-- 游戏状态显示 -->
+                <div class="game-status">
+                    <div class="status-item">
+                        <span id="score-label">得分: </span>
+                        <span id="score">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span id="level-label">关卡: </span>
+                        <span id="level">1</span>
+                    </div>
+                    <div class="status-item">
+                        <span id="moves-label">剩余步数: </span>
+                        <span id="moves">30</span>
+                    </div>
+                </div>
+
+                <!-- 底部卡槽 -->
+                <div class="card-slots">
+                    <div class="slot" id="slot-0"></div>
+                    <div class="slot" id="slot-1"></div>
+                    <div class="slot" id="slot-2"></div>
+                    <div class="slot" id="slot-3"></div>
+                    <div class="slot" id="slot-4"></div>
+                    <div class="slot" id="slot-5"></div>
+                    <div class="slot" id="slot-6"></div>
+                </div>
+            </div>
+
+            <!-- 侧边栏 -->
+            <div class="sheep-sidebar">
+                <!-- 用户名输入 -->
+                <div class="username-section">
+                    <label id="username-label">用户名: </label>
+                    <input type="text" id="username-input" placeholder="请输入用户名" maxlength="20">
+                    <button id="save-username" class="save-btn">保存</button>
+                </div>
+
+                <!-- 排行榜 -->
+                <div class="leaderboard">
+                    <h3 id="leaderboard-title">排行榜</h3>
+                    <div id="leaderboard-list">
+                        <div id="no-records" class="no-records">暂无记录</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏控制按钮 -->
+        <div class="sheep-controls">
+            <button id="start-btn" class="control-btn">开始游戏</button>
+            <button id="pause-btn" class="control-btn">暂停</button>
+            <button id="restart-btn" class="control-btn">重新开始</button>
+            <button id="hint-btn" class="control-btn">提示</button>
+            <button id="shuffle-btn" class="control-btn">重排</button>
+            <button id="back-btn" class="control-btn">返回游戏选择</button>
+        </div>
+
+        <!-- 游戏说明 -->
+        <div class="instructions">
+            <h3 id="instructions-title">游戏说明</h3>
+            <h4 id="controls-guide">游戏规则:</h4>
+            <p id="rule-1">点击上层的图案卡片，将其移动到底部卡槽中</p>
+            <p id="rule-2">当卡槽中有3个相同的图案时，它们会自动消除</p>
+            <p id="rule-3">清除所有卡片即可过关，卡槽满了则游戏失败</p>
+            <p id="rule-4">合理规划消除顺序，避免卡槽被无用卡片占满</p>
+            <p id="touch-guide">在移动设备上可直接点击卡片进行操作</p>
+        </div>
+
+        <!-- 触摸控制按钮（移动端） -->
+        <div class="touch-controls">
+            <div class="touch-control-row">
+                <button id="touch-hint" class="touch-btn">💡</button>
+                <button id="touch-shuffle" class="touch-btn">🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="sheep.js"></script>
+</body>
+</html>

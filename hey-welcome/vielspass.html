@@ -89,6 +89,13 @@
                 <p class="game-description" id="zuma-description">发射彩球消除相同颜色的球链，阻止球链到达终点！</p>
                 <button class="play-btn" id="play-zuma">开始游戏</button>
             </div>
+            
+            <div class="game-option" id="sheep-option">
+                <div class="game-icon">🐑</div>
+                <h2 class="game-title" id="sheep-title">羊了个羊</h2>
+                <p class="game-description" id="sheep-description">点击相同的卡片进行消除，挑战你的观察力和策略思维！</p>
+                <button class="play-btn" id="play-sheep">开始游戏</button>
+            </div>
         </div>
     </div>
     
@@ -103,6 +110,8 @@
                 tetrisDescription: "旋转和移动不同形状的方块，尝试填满一行并获得分数！",
                 zumaTitle: "祖玛",
                 zumaDescription: "发射彩球消除相同颜色的球链，阻止球链到达终点！",
+                sheepTitle: "羊了个羊",
+                sheepDescription: "点击相同的卡片进行消除，挑战你的观察力和策略思维！",
                 playButton: "开始游戏"
             },
             en: {
@@ -113,6 +122,8 @@
                 tetrisDescription: "Rotate and move different shaped blocks to fill rows and score points!",
                 zumaTitle: "Zuma",
                 zumaDescription: "Shoot colored balls to eliminate matching chains and prevent them from reaching the end!",
+                sheepTitle: "Sheep a Sheep",
+                sheepDescription: "Click on matching cards to eliminate them, challenge your observation and strategic thinking!",
                 playButton: "Play Now"
             }
         };
@@ -127,9 +138,12 @@
         const tetrisDescription = document.getElementById('tetris-description');
         const zumaTitle = document.getElementById('zuma-title');
         const zumaDescription = document.getElementById('zuma-description');
+        const sheepTitle = document.getElementById('sheep-title');
+        const sheepDescription = document.getElementById('sheep-description');
         const playSnakeButton = document.getElementById('play-snake');
         const playTetrisButton = document.getElementById('play-tetris');
         const playZumaButton = document.getElementById('play-zuma');
+        const playSheepButton = document.getElementById('play-sheep');
         
         // 当前语言
         let currentLang = localStorage.getItem('snakeLanguage') || 'zh';
@@ -146,9 +160,12 @@
             tetrisDescription.textContent = texts.tetrisDescription;
             zumaTitle.textContent = texts.zumaTitle;
             zumaDescription.textContent = texts.zumaDescription;
+            sheepTitle.textContent = texts.sheepTitle;
+            sheepDescription.textContent = texts.sheepDescription;
             playSnakeButton.textContent = texts.playButton;
             playTetrisButton.textContent = texts.playButton;
             playZumaButton.textContent = texts.playButton;
+            playSheepButton.textContent = texts.playButton;
             
             // 更新HTML lang属性
             document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
@@ -173,6 +190,7 @@
         playSnakeButton.addEventListener('click', () => window.location.href = '../index.html');
         playTetrisButton.addEventListener('click', () => window.location.href = '../tetris.html');
         playZumaButton.addEventListener('click', () => window.location.href = '../zuma.html');
+        playSheepButton.addEventListener('click', () => window.location.href = '../sheep.html');
         
         // 初始化
         switchLanguage(currentLang);

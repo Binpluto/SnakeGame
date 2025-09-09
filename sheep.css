@@ -1,0 +1,537 @@
+/* 羊了个羊游戏样式 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.sheep-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 1200px;
+    width: 100%;
+    backdrop-filter: blur(10px);
+}
+
+.sheep-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sheep-header h1 {
+    font-size: 2.5em;
+    color: #e91e63;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.language-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.lang-btn {
+    padding: 8px 16px;
+    border: 2px solid #e91e63;
+    background: transparent;
+    color: #e91e63;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.lang-btn.active,
+.lang-btn:hover {
+    background: #e91e63;
+    color: white;
+}
+
+.sheep-game-area {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.game-canvas-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#sheep-canvas {
+    border: 3px solid #e91e63;
+    border-radius: 15px;
+    background: #f0f8ff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.game-status {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 600px;
+    margin: 15px 0;
+    padding: 15px;
+    background: rgba(233, 30, 99, 0.1);
+    border-radius: 10px;
+    border: 2px solid rgba(233, 30, 99, 0.2);
+}
+
+.status-item {
+    text-align: center;
+    font-weight: bold;
+    color: #e91e63;
+    font-size: 1.1em;
+}
+
+.card-slots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(233, 30, 99, 0.05);
+    border-radius: 10px;
+    border: 2px solid rgba(233, 30, 99, 0.1);
+}
+
+.slot {
+    width: 80px;
+    height: 100px;
+    border: 2px solid #e91e63;
+    border-radius: 10px;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sheep-sidebar {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.username-section {
+    background: rgba(233, 30, 99, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid rgba(233, 30, 99, 0.2);
+}
+
+.username-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #e91e63;
+}
+
+.username-section input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e91e63;
+    border-radius: 5px;
+    font-size: 1em;
+    margin-bottom: 10px;
+}
+
+.save-btn {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(45deg, #e91e63, #ad1457);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+    background: linear-gradient(45deg, #ad1457, #880e4f);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.leaderboard {
+    background: rgba(233, 30, 99, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid rgba(233, 30, 99, 0.2);
+    flex: 1;
+}
+
+.leaderboard h3 {
+    color: #e91e63;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.3em;
+}
+
+.leaderboard-entry {
+    display: grid;
+    grid-template-columns: 40px 1fr 80px;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(233, 30, 99, 0.1);
+    font-size: 0.9em;
+}
+
+.leaderboard-entry:last-child {
+    border-bottom: none;
+}
+
+.rank {
+    font-weight: bold;
+    color: #e91e63;
+    text-align: center;
+}
+
+.player {
+    color: #2c3e50;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.score {
+    font-weight: bold;
+    color: #ff5722;
+    text-align: right;
+}
+
+.no-records {
+    text-align: center;
+    color: #95a5a6;
+    font-style: italic;
+    padding: 20px 0;
+}
+
+.sheep-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.control-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    min-width: 120px;
+}
+
+.control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+#start-btn {
+    background: linear-gradient(45deg, #4caf50, #388e3c);
+    color: white;
+}
+
+#start-btn:hover {
+    background: linear-gradient(45deg, #388e3c, #2e7d32);
+}
+
+#pause-btn {
+    background: linear-gradient(45deg, #ff9800, #f57c00);
+    color: white;
+}
+
+#pause-btn:hover {
+    background: linear-gradient(45deg, #f57c00, #ef6c00);
+}
+
+#restart-btn {
+    background: linear-gradient(45deg, #f44336, #d32f2f);
+    color: white;
+}
+
+#restart-btn:hover {
+    background: linear-gradient(45deg, #d32f2f, #c62828);
+}
+
+#hint-btn {
+    background: linear-gradient(45deg, #2196f3, #1976d2);
+    color: white;
+}
+
+#hint-btn:hover {
+    background: linear-gradient(45deg, #1976d2, #1565c0);
+}
+
+#shuffle-btn {
+    background: linear-gradient(45deg, #9c27b0, #7b1fa2);
+    color: white;
+}
+
+#shuffle-btn:hover {
+    background: linear-gradient(45deg, #7b1fa2, #6a1b9a);
+}
+
+#back-btn {
+    background: linear-gradient(45deg, #607d8b, #455a64);
+    color: white;
+}
+
+#back-btn:hover {
+    background: linear-gradient(45deg, #455a64, #37474f);
+}
+
+.instructions {
+    background: rgba(255, 193, 7, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 193, 7, 0.2);
+    margin-bottom: 20px;
+}
+
+.instructions h3 {
+    color: #ff9800;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.instructions h4 {
+    color: #f57c00;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.instructions p {
+    margin-bottom: 8px;
+    color: #2c3e50;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.touch-controls {
+    display: none;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(233, 30, 99, 0.1);
+    border-radius: 10px;
+    border: 2px solid rgba(233, 30, 99, 0.2);
+}
+
+.touch-control-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 12px 0;
+    width: 100%;
+}
+
+.touch-btn {
+    width: 75px;
+    height: 75px;
+    font-size: 28px;
+    background: linear-gradient(45deg, #e91e63, #ad1457);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.touch-btn:hover {
+    background: linear-gradient(45deg, #ad1457, #880e4f);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.touch-btn:active {
+    background: linear-gradient(45deg, #880e4f, #560027);
+    transform: scale(0.95);
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .sheep-game-area {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .sheep-sidebar {
+        width: 100%;
+        max-width: 600px;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .username-section,
+    .leaderboard {
+        flex: 1;
+        min-width: 280px;
+    }
+    
+    #sheep-canvas {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .sheep-container {
+        padding: 20px;
+    }
+    
+    .sheep-header h1 {
+        font-size: 2em;
+    }
+    
+    .sheep-controls {
+        gap: 10px;
+    }
+    
+    .control-btn {
+        padding: 10px 16px;
+        font-size: 0.9em;
+        min-width: 100px;
+    }
+    
+    .game-status {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .status-item {
+        font-size: 1em;
+    }
+    
+    .card-slots {
+        gap: 2px;
+    }
+    
+    .slot {
+        width: 60px;
+        height: 80px;
+        font-size: 30px;
+    }
+    
+    #sheep-canvas {
+        width: 100%;
+        max-width: 400px;
+        height: 300px;
+    }
+    
+    .touch-controls {
+        display: flex;
+    }
+    
+    .sheep-sidebar {
+        flex-direction: column;
+    }
+    
+    .username-section,
+    .leaderboard {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .sheep-header h1 {
+        font-size: 1.8em;
+    }
+    
+    .control-btn {
+        padding: 8px 12px;
+        font-size: 0.8em;
+        min-width: 80px;
+    }
+    
+    .card-slots {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .slot {
+        width: 50px;
+        height: 70px;
+        font-size: 24px;
+    }
+    
+    .touch-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+    
+    .touch-control-row {
+        gap: 15px;
+    }
+}
+
+/* 动画效果 */
+@keyframes cardHighlight {
+    0% { box-shadow: 0 0 0 rgba(233, 30, 99, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(233, 30, 99, 0.8); }
+    100% { box-shadow: 0 0 0 rgba(233, 30, 99, 0.5); }
+}
+
+.card-highlight {
+    animation: cardHighlight 1s infinite;
+}
+
+/* 禁用状态 */
+.control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.control-btn:disabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
