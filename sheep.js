@@ -1,11 +1,13 @@
 // 羊了个羊游戏
 
 // 游戏常量
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 600;
+const CANVAS_WIDTH = 600;
+const CANVAS_HEIGHT = 400;
 const CARD_WIDTH = 60;
 const CARD_HEIGHT = 80;
 const SLOT_COUNT = 7;
+const MAX_LAYERS = 3;
+const BLIND_STACK_SIZE = 8; // 盲牌堆叠数量
 const API_URL = 'http://localhost:3000';
 
 // 卡片类型（使用emoji表示不同的图案）
@@ -25,10 +27,13 @@ const LANGUAGES = {
         pause: "暂停",
         resume: "继续",
         restart: "重新开始",
+        selectLevel: "选择关卡",
         hint: "提示",
         shuffle: "重排",
         gameOver: "游戏结束",
         levelComplete: "关卡完成",
+        nextLevel: "下一关",
+        allLevelsComplete: "恭喜通关所有关卡！",
         username: "用户名: ",
         saveUsername: "保存",
         usernamePlaceholder: "请输入用户名",
@@ -42,8 +47,11 @@ const LANGUAGES = {
         rule2: "当卡槽中有3个相同的图案时，它们会自动消除",
         rule3: "清除所有卡片即可过关，卡槽满了则游戏失败",
         rule4: "合理规划消除顺序，避免卡槽被无用卡片占满",
+        rule5: "左右两边是盲牌堆叠，只能看到顶部卡片",
         touchGuide: "在移动设备上可直接点击卡片进行操作",
-        backToMenu: "返回游戏选择"
+        backToMenu: "返回游戏选择",
+        levelSelectorTitle: "选择关卡",
+        close: "关闭"
     },
     en: {
         title: "Sheep Game",
@@ -54,10 +62,13 @@ const LANGUAGES = {
         pause: "Pause",
         resume: "Resume",
         restart: "Restart",
+        selectLevel: "Select Level",
         hint: "Hint",
         shuffle: "Shuffle",
         gameOver: "Game Over",
         levelComplete: "Level Complete",
+        nextLevel: "Next Level",
+        allLevelsComplete: "Congratulations! All levels completed!",
         username: "Username: ",
         saveUsername: "Save",
         usernamePlaceholder: "Enter username",
@@ -71,21 +82,41 @@ const LANGUAGES = {
         rule2: "When 3 identical cards are in slots, they will be eliminated",
         rule3: "Clear all cards to pass the level, game over if slots are full",
         rule4: "Plan your moves wisely to avoid filling slots with unusable cards",
+        rule5: "Left and right are blind card stacks, only top card is visible",
         touchGuide: "Tap cards directly on mobile devices",
-        backToMenu: "Back to Menu"
+        backToMenu: "Back to Menu",
+        levelSelectorTitle: "Select Level",
+        close: "Close"
     }
+};
+
+// 关卡配置
+const LEVEL_CONFIG = {
+    1: { cardCount: 24, types: 6, layers: 2, blindCards: 6 },
+    2: { cardCount: 30, types: 8, layers: 2, blindCards: 8 },
+    3: { cardCount: 36, types: 9, layers: 3, blindCards: 10 },
+    4: { cardCount: 42, types: 10, layers: 3, blindCards: 12 },
+    5: { cardCount: 48, types: 12, layers: 3, blindCards: 14 },
+    6: { cardCount: 54, types: 14, layers: 3, blindCards: 16 },
+    7: { cardCount: 60, types: 16, layers: 3, blindCards: 18 },
+    8: { cardCount: 66, types: 18, layers: 3, blindCards: 20 },
+    9: { cardCount: 72, types: 20, layers: 3, blindCards: 22 },
+    10: { cardCount: 78, types: 22, layers: 3, blindCards: 24 }
 };
 
 // 游戏状态
 let gameState = {
-    isRunning: false,
+    isPlaying: false,
     isPaused: false,
-    isGameOver: false,
     score: 0,
     level: 1,
-    moves: 30,
-    hintsUsed: 0,
-    shufflesUsed: 0
+    maxLevel: 10,
+    cards: [],
+    slots: [],
+    leftBlindStack: [],
+    rightBlindStack: [],
+    selectedCard: null,
+    hintCard: null
 };
 
 // 游戏数据
@@ -98,13 +129,14 @@ let animationId = null;
 // DOM元素
 let canvas, ctx;
 let scoreElement, levelElement, movesElement;
-let startButton, pauseButton, restartButton, hintButton, shuffleButton, backButton;
+let startButton, pauseButton, restartButton, hintButton, shuffleButton, backButton, selectLevelButton;
 let gameTitle, scoreLabel, levelLabel, movesLabel;
 let usernameInput, saveUsernameButton, usernameLabel;
 let leaderboardTitle, leaderboardList, noRecordsElement;
 let langZhButton, langEnButton;
-let instructionsTitle, controlsGuide, rule1, rule2, rule3, rule4, touchGuide;
+let instructionsTitle, controlsGuide, rule1, rule2, rule3, rule4, rule5, touchGuide;
 let startText, pauseText, restartText, hintText, shuffleText, backText;
+let levelSelector, levelSelectorTitle, levelSelectorClose;
 
 // 用户数据
 let username = localStorage.getItem('sheepUsername') || '';
@@ -127,6 +159,7 @@ function initGame() {
     hintButton = document.getElementById('hint-btn');
     shuffleButton = document.getElementById('shuffle-btn');
     backButton = document.getElementById('back-btn');
+    selectLevelButton = document.getElementById('select-level-btn');
     
     gameTitle = document.getElementById('game-title');
     scoreLabel = document.getElementById('score-label');
@@ -150,7 +183,12 @@ function initGame() {
     rule2 = document.getElementById('rule-2');
     rule3 = document.getElementById('rule-3');
     rule4 = document.getElementById('rule-4');
+    rule5 = document.getElementById('rule-5');
     touchGuide = document.getElementById('touch-guide');
+    
+    levelSelector = document.getElementById('level-selector');
+    levelSelectorTitle = document.getElementById('level-selector-title');
+    levelSelectorClose = document.getElementById('level-selector-close');
     
     // 设置用户名
     if (username) {
@@ -172,23 +210,46 @@ function initGame() {
 
 // 生成卡片
 function generateCards() {
+    const config = LEVEL_CONFIG[gameState.level];
     cards = [];
-    const totalCards = 144; // 总卡片数
-    const cardsPerType = Math.floor(totalCards / CARD_TYPES.length);
+    const cardTypes = CARD_TYPES.slice(0, config.types);
+    
+    // 主游戏区域卡片
+    const mainCards = config.cardCount;
+    const cardsPerType = Math.floor(mainCards / cardTypes.length);
     
     // 确保每种类型的卡片数量是3的倍数
-    for (let i = 0; i < CARD_TYPES.length; i++) {
-        const count = Math.floor(cardsPerType / 3) * 3;
+    for (let i = 0; i < cardTypes.length; i++) {
+        const count = Math.max(3, Math.floor(cardsPerType / 3) * 3);
+        
         for (let j = 0; j < count; j++) {
             cards.push({
-                type: CARD_TYPES[i],
+                type: cardTypes[i],
+                id: `main_${cardTypes[i]}_${j}`,
                 x: 0,
                 y: 0,
                 layer: 0,
                 visible: true,
-                clickable: false
+                clickable: false,
+                isBlind: false
             });
         }
+    }
+    
+    // 生成盲牌
+    const blindCards = config.blindCards;
+    for (let i = 0; i < blindCards; i++) {
+        const randomType = cardTypes[Math.floor(Math.random() * cardTypes.length)];
+        cards.push({
+            type: randomType,
+            id: `blind_${randomType}_${i}`,
+            x: 0,
+            y: 0,
+            layer: 0,
+            visible: false,
+            clickable: false,
+            isBlind: true
+        });
     }
     
     // 打乱卡片顺序
@@ -200,32 +261,82 @@ function generateCards() {
 
 // 布局卡片
 function layoutCards() {
-    const layers = 8;
-    const cardsPerLayer = Math.ceil(cards.length / layers);
+    const config = LEVEL_CONFIG[gameState.level];
+    const mainCards = cards.filter(card => !card.isBlind);
+    const blindCards = cards.filter(card => card.isBlind);
+    
+    // 布局主游戏区域卡片
+    layoutMainCards(mainCards, config);
+    
+    // 布局盲牌堆叠
+    layoutBlindStacks(blindCards);
+    
+    updateClickableCards();
+}
+
+// 布局主游戏区域卡片
+function layoutMainCards(mainCards, config) {
+    const rows = Math.ceil(Math.sqrt(mainCards.length / config.layers));
+    const cols = Math.ceil(mainCards.length / (rows * config.layers));
+    const startX = 100;
+    const startY = 50;
+    const offsetX = CARD_WIDTH * 0.7;
+    const offsetY = CARD_HEIGHT * 0.7;
     
     let cardIndex = 0;
     
-    for (let layer = 0; layer < layers; layer++) {
-        const layerCards = Math.min(cardsPerLayer, cards.length - cardIndex);
-        const cols = Math.ceil(Math.sqrt(layerCards));
-        const rows = Math.ceil(layerCards / cols);
+    // 分层布局
+    for (let layer = 0; layer < config.layers; layer++) {
+        const layerOffsetX = layer * 8;
+        const layerOffsetY = layer * 8;
         
-        const startX = (CANVAS_WIDTH - cols * (CARD_WIDTH + 5)) / 2;
-        const startY = (CANVAS_HEIGHT - rows * (CARD_HEIGHT + 5)) / 2;
-        
-        for (let i = 0; i < layerCards && cardIndex < cards.length; i++) {
-            const row = Math.floor(i / cols);
-            const col = i % cols;
-            
-            cards[cardIndex].x = startX + col * (CARD_WIDTH + 5) + layer * 2;
-            cards[cardIndex].y = startY + row * (CARD_HEIGHT + 5) + layer * 2;
-            cards[cardIndex].layer = layer;
-            
-            cardIndex++;
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                if (cardIndex >= mainCards.length) break;
+                
+                const card = mainCards[cardIndex];
+                card.x = startX + col * offsetX + layerOffsetX;
+                card.y = startY + row * offsetY + layerOffsetY;
+                card.layer = layer;
+                
+                cardIndex++;
+            }
+            if (cardIndex >= mainCards.length) break;
         }
+        if (cardIndex >= mainCards.length) break;
     }
+}
+
+// 布局盲牌堆叠
+function layoutBlindStacks(blindCards) {
+    gameState.leftBlindStack = [];
+    gameState.rightBlindStack = [];
     
-    updateClickableCards();
+    const leftStackX = 20;
+    const rightStackX = CANVAS_WIDTH - CARD_WIDTH - 20;
+    const stackY = 100;
+    
+    // 分配盲牌到左右堆叠
+    for (let i = 0; i < blindCards.length; i++) {
+        const card = blindCards[i];
+        const isLeft = i % 2 === 0;
+        
+        if (isLeft) {
+            card.x = leftStackX;
+            card.y = stackY + gameState.leftBlindStack.length * 2;
+            card.stackIndex = gameState.leftBlindStack.length;
+            gameState.leftBlindStack.push(card);
+        } else {
+            card.x = rightStackX;
+            card.y = stackY + gameState.rightBlindStack.length * 2;
+            card.stackIndex = gameState.rightBlindStack.length;
+            gameState.rightBlindStack.push(card);
+        }
+        
+        card.layer = 0;
+        card.visible = card.stackIndex === 0; // 只有顶部卡片可见
+        card.clickable = card.stackIndex === 0; // 只有顶部卡片可点击
+    }
 }
 
 // 更新可点击的卡片
@@ -288,7 +399,46 @@ function handleCardClick(x, y) {
     }
     
     if (clickedCard) {
+        // 处理盲牌堆叠点击
+        if (clickedCard.isBlind) {
+            handleBlindCardClick(clickedCard);
+        }
+        
         moveCardToSlot(clickedCard);
+    }
+}
+
+// 处理盲牌点击
+function handleBlindCardClick(clickedCard) {
+    let stack, stackName;
+    
+    // 确定是左堆还是右堆
+    if (gameState.leftBlindStack.includes(clickedCard)) {
+        stack = gameState.leftBlindStack;
+        stackName = 'left';
+    } else {
+        stack = gameState.rightBlindStack;
+        stackName = 'right';
+    }
+    
+    // 移除顶部卡片
+    if (stack.length > 0 && stack[0] === clickedCard) {
+        stack.shift();
+        
+        // 更新剩余卡片的位置和可见性
+        for (let i = 0; i < stack.length; i++) {
+            const card = stack[i];
+            card.stackIndex = i;
+            card.visible = i === 0;
+            card.clickable = i === 0;
+            
+            // 更新位置
+            if (stackName === 'left') {
+                card.y = 100 + i * 2;
+            } else {
+                card.y = 100 + i * 2;
+            }
+        }
     }
 }
 
@@ -406,15 +556,21 @@ function checkGameEnd() {
 
 // 关卡完成
 function levelComplete() {
-    gameState.level++;
-    gameState.moves = Math.max(20, 30 - gameState.level * 2);
     gameState.score += gameState.moves * 10; // 剩余步数奖励
     
-    alert(LANGUAGES[currentLang].levelComplete);
-    
-    // 生成新关卡
-    generateCards();
-    slots = new Array(SLOT_COUNT).fill(null);
+    if (gameState.level >= 10) {
+        alert(LANGUAGES[currentLang].allLevelsComplete);
+        gameState.isRunning = false;
+        gameState.isGameOver = true;
+    } else {
+        alert(LANGUAGES[currentLang].levelComplete);
+        gameState.level++;
+        gameState.moves = Math.max(20, 30 - gameState.level * 2);
+        
+        // 生成新关卡
+        generateCards();
+        slots = new Array(SLOT_COUNT).fill(null);
+    }
     
     updateUI();
 }
@@ -493,7 +649,11 @@ function resetGame() {
         level: 1,
         moves: 30,
         hintsUsed: 0,
-        shufflesUsed: 0
+        shufflesUsed: 0,
+        leftBlindStack: [],
+        rightBlindStack: [],
+        selectedCard: null,
+        hintCard: null
     };
     
     slots = new Array(SLOT_COUNT).fill(null);
@@ -503,20 +663,87 @@ function resetGame() {
     updateUI();
 }
 
+// 开始新关卡
+function startLevel(level) {
+    gameState.level = Math.min(level, gameState.maxLevel || 10);
+    gameState.moves = Math.max(20, 30 - gameState.level * 2);
+    generateCards();
+    slots = new Array(SLOT_COUNT).fill(null);
+    gameState.isRunning = true;
+    gameState.isPaused = false;
+    gameState.isGameOver = false;
+    updateUI();
+    draw();
+}
+
+// 下一关
+function nextLevel() {
+    if (gameState.level < (gameState.maxLevel || 10)) {
+        gameState.level++;
+        startLevel(gameState.level);
+    } else {
+        // 游戏通关
+        alert(currentLang === 'zh' ? '恭喜通关！' : 'Congratulations! You completed all levels!');
+    }
+}
+
 // 绘制游戏
 function draw() {
     // 清空画布
     ctx.fillStyle = '#f0f8ff';
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     
+    // 绘制盲牌堆叠背景
+    drawBlindStackBg();
+    
     // 绘制卡片
     drawCards();
+    
+    // 绘制盲牌堆叠信息
+    drawBlindStackInfo();
     
     // 绘制卡槽
     drawSlots();
     
     if (gameState.isRunning && !gameState.isGameOver) {
         animationId = requestAnimationFrame(draw);
+    }
+}
+
+// 绘制盲牌堆叠背景
+function drawBlindStackBg() {
+    const leftStackX = 20;
+    const rightStackX = CANVAS_WIDTH - CARD_WIDTH - 20;
+    const stackY = 100;
+    
+    // 左侧盲牌堆叠背景
+    ctx.fillStyle = 'rgba(233, 30, 99, 0.1)';
+    ctx.fillRect(leftStackX - 5, stackY - 5, CARD_WIDTH + 10, CARD_HEIGHT + 20);
+    ctx.strokeStyle = '#e91e63';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(leftStackX - 5, stackY - 5, CARD_WIDTH + 10, CARD_HEIGHT + 20);
+    
+    // 右侧盲牌堆叠背景
+    ctx.fillRect(rightStackX - 5, stackY - 5, CARD_WIDTH + 10, CARD_HEIGHT + 20);
+    ctx.strokeRect(rightStackX - 5, stackY - 5, CARD_WIDTH + 10, CARD_HEIGHT + 20);
+}
+
+// 绘制盲牌堆叠信息
+function drawBlindStackInfo() {
+    ctx.fillStyle = '#e91e63';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    
+    // 左侧堆叠数量
+    const leftCount = gameState.leftBlindStack.length;
+    if (leftCount > 0) {
+        ctx.fillText(leftCount.toString(), 20 + CARD_WIDTH / 2, 95);
+    }
+    
+    // 右侧堆叠数量
+    const rightCount = gameState.rightBlindStack.length;
+    if (rightCount > 0) {
+        ctx.fillText(rightCount.toString(), CANVAS_WIDTH - CARD_WIDTH - 20 + CARD_WIDTH / 2, 95);
     }
 }
 
@@ -662,6 +889,7 @@ function updateUIText() {
     hintButton.textContent = lang.hint;
     shuffleButton.textContent = lang.shuffle;
     backButton.textContent = lang.backToMenu;
+    if (selectLevelButton) selectLevelButton.textContent = lang.selectLevel;
     
     usernameLabel.textContent = lang.username;
     saveUsernameButton.textContent = lang.saveUsername;
@@ -676,7 +904,11 @@ function updateUIText() {
     rule2.textContent = lang.rule2;
     rule3.textContent = lang.rule3;
     rule4.textContent = lang.rule4;
+    if (rule5) rule5.textContent = lang.rule5;
     touchGuide.textContent = lang.touchGuide;
+    
+    if (levelSelectorTitle) levelSelectorTitle.textContent = lang.levelSelectorTitle;
+    if (levelSelectorClose) levelSelectorClose.textContent = lang.close;
 }
 
 // 切换语言
@@ -769,6 +1001,25 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'hey-welcome/vielspass.html';
     });
     
+    if (selectLevelButton) {
+        selectLevelButton.addEventListener('click', showLevelSelector);
+    }
+    
+    if (levelSelectorClose) {
+        levelSelectorClose.addEventListener('click', hideLevelSelector);
+    }
+    
+    // 关卡选择按钮事件
+    for (let i = 1; i <= 10; i++) {
+        const levelBtn = document.getElementById(`level-${i}`);
+        if (levelBtn) {
+            levelBtn.addEventListener('click', () => {
+                selectLevel(i);
+                hideLevelSelector();
+            });
+        }
+    }
+    
     // 用户名保存
     saveUsernameButton.addEventListener('click', saveUsername);
     usernameInput.addEventListener('keypress', (e) => {
@@ -801,3 +1052,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// 显示关卡选择界面
+function showLevelSelector() {
+    if (levelSelector) {
+        levelSelector.style.display = 'flex';
+    }
+}
+
+// 隐藏关卡选择界面
+function hideLevelSelector() {
+    if (levelSelector) {
+        levelSelector.style.display = 'none';
+    }
+}
+
+// 选择关卡
+function selectLevel(level) {
+    gameState.level = level;
+    gameState.moves = Math.max(20, 30 - gameState.level * 2);
+    gameState.score = 0;
+    resetGame();
+    startGame();
+}

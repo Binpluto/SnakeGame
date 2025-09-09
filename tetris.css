@@ -157,8 +157,8 @@
     
     .touch-control-row {
         display: flex;
-        gap: 25px; /* 增加间距从15px到25px */
-        margin-bottom: 12px; /* 增加间距从8px到12px */
+        gap: 25px;
+        margin-bottom: 12px;
     }
     
     .touch-control-row:last-child {
@@ -166,9 +166,9 @@
     }
     
     .touch-btn {
-        width: 70px; /* 增加宽度从55px到70px */
-        height: 70px; /* 增加高度从55px到70px */
-        font-size: 26px; /* 增加字体大小从22px到26px */
+        width: 70px;
+        height: 70px;
+        font-size: 26px;
         background-color: rgba(76, 175, 80, 0.8);
         color: white;
         border: 2px solid rgba(76, 175, 80, 1);
@@ -189,5 +189,218 @@
     
     .leaderboard {
         margin-top: 10px;
+    }
+}
+
+/* 小屏幕优化 (480px及以下) */
+@media (max-width: 480px) {
+    .tetris-game-area {
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    
+    #tetris-canvas {
+        width: 200px;
+        height: 400px;
+    }
+    
+    .tetris-sidebar {
+        margin-bottom: 8px;
+    }
+    
+    .next-piece {
+        width: 70px;
+        padding: 4px;
+    }
+    
+    #next-piece-canvas {
+        width: 50px;
+        height: 50px;
+    }
+    
+    #next-piece-label {
+        font-size: 11px;
+    }
+    
+    .game-controls {
+        gap: 8px;
+        margin: 10px 0;
+    }
+    
+    .game-controls button {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .instructions {
+        font-size: 12px;
+        margin: 4px 0;
+    }
+    
+    .touch-controls {
+        margin: 4px 0 10px 0;
+        padding: 8px;
+    }
+    
+    .touch-control-row {
+        gap: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .touch-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 22px;
+    }
+    
+    #back-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+/* 超小屏幕优化 (320px及以下) */
+@media (max-width: 320px) {
+    .tetris-game-area {
+        gap: 5px;
+        margin-bottom: 5px;
+    }
+    
+    #tetris-canvas {
+        width: 180px;
+        height: 360px;
+    }
+    
+    .tetris-sidebar {
+        margin-bottom: 5px;
+    }
+    
+    .next-piece {
+        width: 60px;
+        padding: 3px;
+    }
+    
+    #next-piece-canvas {
+        width: 40px;
+        height: 40px;
+    }
+    
+    #next-piece-label {
+        font-size: 10px;
+    }
+    
+    .game-controls {
+        gap: 5px;
+        margin: 8px 0;
+    }
+    
+    .game-controls button {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+    
+    .instructions {
+        font-size: 11px;
+        margin: 3px 0;
+    }
+    
+    .touch-controls {
+        margin: 3px 0 8px 0;
+        padding: 6px;
+    }
+    
+    .touch-control-row {
+        gap: 15px;
+        margin-bottom: 8px;
+    }
+    
+    .touch-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+    }
+    
+    #back-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+/* 横屏模式优化 */
+@media (max-height: 500px) and (orientation: landscape) {
+    .tetris-game-area {
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 5px;
+    }
+    
+    #tetris-canvas {
+        width: 150px;
+        height: 300px;
+    }
+    
+    .tetris-sidebar {
+        order: 0;
+        margin-bottom: 0;
+        margin-left: 10px;
+    }
+    
+    .next-piece {
+        width: 60px;
+        padding: 3px;
+        margin-bottom: 8px;
+    }
+    
+    #next-piece-canvas {
+        width: 40px;
+        height: 40px;
+    }
+    
+    #next-piece-label {
+        font-size: 10px;
+    }
+    
+    .game-controls {
+        gap: 8px;
+        margin: 5px 0;
+    }
+    
+    .game-controls button {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+    
+    .instructions {
+        font-size: 10px;
+        margin: 2px 0;
+    }
+    
+    .touch-controls {
+        margin: 2px 0 5px 0;
+        padding: 5px;
+    }
+    
+    .touch-control-row {
+        gap: 12px;
+        margin-bottom: 6px;
+    }
+    
+    .touch-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    #back-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+    
+    .leaderboard {
+        margin-top: 5px;
+        max-height: 120px;
+        overflow-y: auto;
     }
 }

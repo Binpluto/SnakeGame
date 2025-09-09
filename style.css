@@ -320,19 +320,20 @@ button:disabled {
 }
 
 /* 响应式设计 */
-@media (max-width: 500px) {
+@media (max-width: 768px) {
     body {
-        padding: 10px;
+        padding: 15px;
     }
     
     .game-container {
-        padding: 15px;
+        padding: 20px;
         max-width: 100%;
     }
     
     .game-header {
         flex-direction: column;
-        gap: 10px;
+        gap: 15px;
+        text-align: center;
     }
     
     .title-container {
@@ -340,30 +341,52 @@ button:disabled {
         align-items: center;
     }
     
+    .game-header h1 {
+        font-size: 22px;
+    }
+    
     .language-switch {
-        margin-top: 5px;
+        margin-top: 8px;
+        justify-content: center;
+    }
+    
+    .username-container {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    #username-input {
+        width: 140px;
     }
     
     #game-canvas {
         width: 100%;
         height: auto;
-        max-width: 300px;
-        max-height: 300px;
+        max-width: 350px;
+        max-height: 350px;
     }
     
     .controls {
         flex-wrap: wrap;
         justify-content: center;
+        gap: 10px;
     }
     
     button {
-        margin: 5px;
+        margin: 3px;
+        padding: 10px 15px;
+        font-size: 14px;
     }
     
     .speed-control {
         width: 100%;
-        max-width: 300px;
-        margin: 10px auto;
+        max-width: 350px;
+        margin: 15px auto;
+    }
+    
+    .leaderboard {
+        max-height: 200px;
     }
     
     /* 在移动设备上显示触摸控制 */
@@ -374,5 +397,246 @@ button:disabled {
     /* 添加触摸相关的说明 */
     #instruction-touch {
         display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .game-container {
+        padding: 15px;
+        border-radius: 8px;
+    }
+    
+    .game-header {
+        gap: 12px;
+    }
+    
+    .game-header h1 {
+        font-size: 20px;
+    }
+    
+    .lang-btn {
+        padding: 4px 10px;
+        font-size: 11px;
+    }
+    
+    .score-container {
+        font-size: 16px;
+    }
+    
+    .username-container {
+        gap: 6px;
+    }
+    
+    #username-label {
+        font-size: 13px;
+    }
+    
+    #username-input {
+        width: 120px;
+        padding: 4px;
+        font-size: 13px;
+    }
+    
+    #save-username-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+    
+    #game-canvas {
+        max-width: 300px;
+        max-height: 300px;
+    }
+    
+    button {
+        padding: 8px 12px;
+        font-size: 13px;
+        margin: 2px;
+    }
+    
+    .speed-control {
+        max-width: 300px;
+        margin: 12px auto;
+    }
+    
+    .speed-control label {
+        font-size: 13px;
+    }
+    
+    .leaderboard {
+        max-height: 180px;
+    }
+    
+    .leaderboard h3 {
+        font-size: 16px;
+    }
+    
+    .leaderboard-entry {
+        font-size: 13px;
+        padding: 6px;
+    }
+}
+
+/* 超小屏幕优化 (320px及以下) */
+@media (max-width: 320px) {
+    body {
+        padding: 8px;
+    }
+    
+    .game-container {
+        padding: 12px;
+        border-radius: 6px;
+    }
+    
+    .game-header {
+        gap: 10px;
+    }
+    
+    .game-header h1 {
+        font-size: 18px;
+    }
+    
+    .lang-btn {
+        padding: 3px 8px;
+        font-size: 10px;
+    }
+    
+    .score-container {
+        font-size: 14px;
+    }
+    
+    .username-container {
+        gap: 4px;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    #username-label {
+        font-size: 12px;
+    }
+    
+    #username-input {
+        width: 100px;
+        padding: 3px;
+        font-size: 12px;
+    }
+    
+    #save-username-btn {
+        padding: 3px 6px;
+        font-size: 11px;
+    }
+    
+    #game-canvas {
+        max-width: 280px;
+        max-height: 280px;
+    }
+    
+    button {
+        padding: 6px 10px;
+        font-size: 12px;
+        margin: 2px;
+    }
+    
+    .speed-control {
+        max-width: 280px;
+        margin: 10px auto;
+    }
+    
+    .speed-control label {
+        font-size: 12px;
+    }
+    
+    .leaderboard {
+        max-height: 150px;
+    }
+    
+    .leaderboard h3 {
+        font-size: 14px;
+    }
+    
+    .leaderboard-entry {
+        font-size: 12px;
+        padding: 4px;
+    }
+}
+
+/* 横屏模式优化 */
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        padding: 5px;
+        align-items: flex-start;
+    }
+    
+    .game-container {
+        padding: 10px;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+    
+    .game-header {
+        flex-direction: row;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .game-header h1 {
+        font-size: 18px;
+        margin-bottom: 0;
+    }
+    
+    .title-container {
+        align-items: flex-start;
+    }
+    
+    .language-switch {
+        margin-top: 0;
+    }
+    
+    .username-container {
+        margin-top: 5px;
+        gap: 5px;
+    }
+    
+    #game-canvas {
+        max-width: 250px;
+        max-height: 250px;
+    }
+    
+    .controls {
+        gap: 8px;
+        margin: 8px 0;
+    }
+    
+    button {
+        padding: 5px 10px;
+        font-size: 12px;
+        margin: 1px;
+    }
+    
+    .speed-control {
+        max-width: 250px;
+        margin: 8px auto;
+    }
+    
+    .speed-control label {
+        font-size: 12px;
+    }
+    
+    .leaderboard {
+        max-height: 100px;
+        margin-top: 8px;
+    }
+    
+    .leaderboard h3 {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
+    .leaderboard-entry {
+        font-size: 11px;
+        padding: 3px;
     }
 }

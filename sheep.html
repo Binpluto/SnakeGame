@@ -31,12 +31,21 @@
                     </div>
                     <div class="status-item">
                         <span id="level-label">关卡: </span>
-                        <span id="level">1</span>
+                        <span id="level">1/10</span>
                     </div>
                     <div class="status-item">
                         <span id="moves-label">剩余步数: </span>
                         <span id="moves">30</span>
                     </div>
+                </div>
+                
+                <!-- 关卡选择界面 -->
+                <div id="level-selector" class="level-selector" style="display: none;">
+                    <h3 id="level-selector-title">选择关卡</h3>
+                    <div class="level-grid">
+                        <!-- 关卡按钮将通过JavaScript动态生成 -->
+                    </div>
+                    <button id="close-level-selector" class="control-btn">关闭</button>
                 </div>
 
                 <!-- 底部卡槽 -->
@@ -75,6 +84,7 @@
             <button id="start-btn" class="control-btn">开始游戏</button>
             <button id="pause-btn" class="control-btn">暂停</button>
             <button id="restart-btn" class="control-btn">重新开始</button>
+            <button id="level-select-btn" class="control-btn">选择关卡</button>
             <button id="hint-btn" class="control-btn">提示</button>
             <button id="shuffle-btn" class="control-btn">重排</button>
             <button id="back-btn" class="control-btn">返回游戏选择</button>

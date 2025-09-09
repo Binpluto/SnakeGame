@@ -27,6 +27,44 @@ const POWER_BALL_COLORS = {
 // 功能球生成概率 (每100个球中的数量)
 const POWER_BALL_CHANCE = 0.15; // 15%概率
 
+// 轨迹类型定义
+const TRACK_TYPES = {
+    SPIRAL: 'spiral',           // 螺旋轨迹
+    ZIGZAG: 'zigzag',          // 之字形轨迹
+    WAVE: 'wave',              // 波浪轨迹
+    SQUARE: 'square',          // 方形轨迹
+    HEART: 'heart'             // 心形轨迹
+};
+
+// 轨迹配置
+const TRACK_CONFIGS = {
+    [TRACK_TYPES.SPIRAL]: {
+        name: { zh: '螺旋轨迹', en: 'Spiral Track' },
+        description: { zh: '经典螺旋形路径', en: 'Classic spiral path' },
+        difficulty: 1
+    },
+    [TRACK_TYPES.ZIGZAG]: {
+        name: { zh: '之字轨迹', en: 'Zigzag Track' },
+        description: { zh: '锯齿状曲折路径', en: 'Zigzag winding path' },
+        difficulty: 2
+    },
+    [TRACK_TYPES.WAVE]: {
+        name: { zh: '波浪轨迹', en: 'Wave Track' },
+        description: { zh: '起伏的波浪路径', en: 'Undulating wave path' },
+        difficulty: 2
+    },
+    [TRACK_TYPES.SQUARE]: {
+        name: { zh: '方形轨迹', en: 'Square Track' },
+        description: { zh: '方形螺旋路径', en: 'Square spiral path' },
+        difficulty: 3
+    },
+    [TRACK_TYPES.HEART]: {
+        name: { zh: '心形轨迹', en: 'Heart Track' },
+        description: { zh: '浪漫的心形路径', en: 'Romantic heart-shaped path' },
+        difficulty: 4
+    }
+};
+
 // 语言配置
 const LANGUAGES = {
     zh: {
@@ -38,6 +76,7 @@ const LANGUAGES = {
         pause: "暂停",
         resume: "继续",
         restart: "重新开始",
+        selectTrack: "选择轨迹",
         gameOver: "游戏结束",
         levelComplete: "关卡完成",
         username: "用户名: ",
@@ -53,7 +92,11 @@ const LANGUAGES = {
         clickGuide: "鼠标点击: 发射彩球",
         spaceGuide: "空格键: 切换彩球颜色",
         touchGuide: "在移动设备上可使用触屏操作",
-        backToMenu: "返回游戏选择"
+        backToMenu: "返回游戏选择",
+        trackSelectorTitle: "选择轨迹",
+        currentTrack: "当前轨迹: ",
+        difficulty: "难度: ",
+        close: "关闭"
     },
     en: {
         title: "Zuma Game",
@@ -64,6 +107,7 @@ const LANGUAGES = {
         pause: "Pause",
         resume: "Resume",
         restart: "Restart",
+        selectTrack: "Select Track",
         gameOver: "Game Over",
         levelComplete: "Level Complete",
         username: "Username: ",
@@ -79,7 +123,11 @@ const LANGUAGES = {
         clickGuide: "Mouse Click: Shoot Ball",
         spaceGuide: "Space Key: Switch Ball Color",
         touchGuide: "Use touch controls on mobile devices",
-        backToMenu: "Back to Menu"
+        backToMenu: "Back to Menu",
+        trackSelectorTitle: "Select Track",
+        currentTrack: "Current Track: ",
+        difficulty: "Difficulty: ",
+        close: "Close"
     }
 };
 
@@ -91,6 +139,7 @@ let gameState = {
     score: 0,
     level: 1,
     lives: 3,
+    currentTrack: TRACK_TYPES.SPIRAL,  // 当前轨迹类型
     // 功能球效果状态
     slowEffect: 0,        // 减速效果剩余时间
     speedBoost: 0,        // 射击速度提升剩余时间
@@ -116,13 +165,18 @@ let animationId = null;
 // DOM 元素
 let canvas, ctx;
 let scoreElement, levelElement, livesElement;
-let startButton, pauseButton, restartButton, backButton;
+let startButton, pauseButton, restartButton, backButton, selectTrackButton;
 let gameTitle, scoreLabel, levelLabel, livesLabel;
 let usernameInput, saveUsernameButton, usernameLabel;
 let leaderboardTitle, leaderboardList, noRecordsElement;
 let langZhButton, langEnButton;
 let instructionsTitle, instructionControls, instructionMouse, instructionClick, instructionSpace, instructionTouch;
-let startText, pauseText, restartText, backText;
+let startText, pauseText, restartText, backText, selectTrackText;
+let trackSelector, trackSelectorTitle, trackSelectorClose, currentTrackLabel, currentTrackName;
+let trackOptions = {};
+let trackNames = {};
+let trackDescs = {};
+let difficultyLabels = [];
 
 // 用户数据
 let username = localStorage.getItem('zumaUsername') || '';
@@ -171,6 +225,41 @@ function initGame() {
     pauseText = document.getElementById('pause-text');
     restartText = document.getElementById('restart-text');
     backText = document.getElementById('back-text');
+    selectTrackButton = document.getElementById('select-track-btn');
+    selectTrackText = document.getElementById('select-track-text');
+    
+    // 轨迹选择界面元素
+    trackSelector = document.getElementById('track-selector');
+    trackSelectorTitle = document.getElementById('track-selector-title');
+    trackSelectorClose = document.getElementById('track-selector-close');
+    currentTrackLabel = document.getElementById('current-track-label');
+    currentTrackName = document.getElementById('current-track-name');
+    
+    // 轨迹选项元素
+    Object.keys(TRACK_TYPES).forEach(key => {
+        const trackType = TRACK_TYPES[key];
+        trackOptions[trackType] = document.getElementById(`track-${trackType}`);
+        trackNames[trackType] = document.getElementById(`track-name-${trackType}`);
+        trackDescs[trackType] = document.getElementById(`track-desc-${trackType}`);
+    });
+    
+    // 难度星级元素
+    for (let i = 1; i <= 5; i++) {
+        Object.keys(TRACK_TYPES).forEach(key => {
+            const trackType = TRACK_TYPES[key];
+            const starElement = document.getElementById(`star-${trackType}-${i}`);
+            if (starElement) {
+                if (!difficultyLabels[trackType]) difficultyLabels[trackType] = [];
+                difficultyLabels[trackType].push(starElement);
+            }
+        });
+    }
+    
+    // 加载保存的轨迹设置
+    const savedTrack = localStorage.getItem('zumaCurrentTrack');
+    if (savedTrack && TRACK_TYPES[savedTrack.toUpperCase()]) {
+        gameState.currentTrack = savedTrack;
+    }
     
     // 初始化游戏路径
     generatePath();
@@ -200,15 +289,144 @@ function generatePath() {
     path = [];
     const centerX = CANVAS_WIDTH / 2;
     const centerY = CANVAS_HEIGHT / 2;
-    const radius = 200;
     
-    // 生成螺旋路径
+    switch (gameState.currentTrack) {
+        case TRACK_TYPES.SPIRAL:
+            generateSpiralPath(centerX, centerY);
+            break;
+        case TRACK_TYPES.ZIGZAG:
+            generateZigzagPath(centerX, centerY);
+            break;
+        case TRACK_TYPES.WAVE:
+            generateWavePath(centerX, centerY);
+            break;
+        case TRACK_TYPES.SQUARE:
+            generateSquarePath(centerX, centerY);
+            break;
+        case TRACK_TYPES.HEART:
+            generateHeartPath(centerX, centerY);
+            break;
+        default:
+            generateSpiralPath(centerX, centerY);
+    }
+}
+
+// 螺旋轨迹
+function generateSpiralPath(centerX, centerY) {
+    const radius = 200;
     for (let i = 0; i < 360 * 3; i += 2) {
         const angle = (i * Math.PI) / 180;
         const currentRadius = radius - (i / 10);
         const x = centerX + Math.cos(angle) * currentRadius;
         const y = centerY + Math.sin(angle) * currentRadius;
         path.push({ x, y });
+    }
+}
+
+// 之字形轨迹
+function generateZigzagPath(centerX, centerY) {
+    const width = 300;
+    const height = 400;
+    const zigzagHeight = 40;
+    const segments = 8;
+    
+    for (let i = 0; i < segments; i++) {
+        const y = centerY + height/2 - (i * height / segments);
+        const segmentWidth = width - (i * 30);
+        const points = 20;
+        
+        for (let j = 0; j <= points; j++) {
+            const progress = j / points;
+            let x;
+            
+            if (i % 2 === 0) {
+                x = centerX - segmentWidth/2 + progress * segmentWidth;
+            } else {
+                x = centerX + segmentWidth/2 - progress * segmentWidth;
+            }
+            
+            const zigzagOffset = Math.sin(progress * Math.PI * 4) * zigzagHeight * (1 - i * 0.1);
+            path.push({ x: x + zigzagOffset, y });
+        }
+    }
+}
+
+// 波浪轨迹
+function generateWavePath(centerX, centerY) {
+    const radius = 180;
+    const waveAmplitude = 60;
+    const waveFrequency = 3;
+    
+    for (let i = 0; i < 360 * 2.5; i += 1.5) {
+        const angle = (i * Math.PI) / 180;
+        const currentRadius = radius - (i / 12);
+        const waveOffset = Math.sin(angle * waveFrequency) * waveAmplitude * (currentRadius / radius);
+        const x = centerX + Math.cos(angle) * (currentRadius + waveOffset);
+        const y = centerY + Math.sin(angle) * (currentRadius + waveOffset);
+        path.push({ x, y });
+    }
+}
+
+// 方形轨迹
+function generateSquarePath(centerX, centerY) {
+    const initialSize = 280;
+    const layers = 6;
+    
+    for (let layer = 0; layer < layers; layer++) {
+        const size = initialSize - layer * 40;
+        const halfSize = size / 2;
+        const pointsPerSide = Math.floor(size / 8);
+        
+        // 上边
+        for (let i = 0; i <= pointsPerSide; i++) {
+            const x = centerX - halfSize + (i / pointsPerSide) * size;
+            const y = centerY - halfSize;
+            path.push({ x, y });
+        }
+        
+        // 右边
+        for (let i = 1; i <= pointsPerSide; i++) {
+            const x = centerX + halfSize;
+            const y = centerY - halfSize + (i / pointsPerSide) * size;
+            path.push({ x, y });
+        }
+        
+        // 下边
+        for (let i = 1; i <= pointsPerSide; i++) {
+            const x = centerX + halfSize - (i / pointsPerSide) * size;
+            const y = centerY + halfSize;
+            path.push({ x, y });
+        }
+        
+        // 左边
+        for (let i = 1; i < pointsPerSide; i++) {
+            const x = centerX - halfSize;
+            const y = centerY + halfSize - (i / pointsPerSide) * size;
+            path.push({ x, y });
+        }
+    }
+}
+
+// 心形轨迹
+function generateHeartPath(centerX, centerY) {
+    const scale = 8;
+    const layers = 4;
+    
+    for (let layer = 0; layer < layers; layer++) {
+        const currentScale = scale * (1 - layer * 0.2);
+        const points = 100 - layer * 10;
+        
+        for (let i = 0; i <= points; i++) {
+            const t = (i / points) * 2 * Math.PI;
+            // 心形参数方程
+            const x = currentScale * (16 * Math.pow(Math.sin(t), 3));
+            const y = currentScale * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+            
+            path.push({ 
+                x: centerX + x, 
+                y: centerY - y + 50 // 向下偏移一点
+            });
+        }
     }
 }
 
@@ -995,6 +1213,7 @@ function updateUIText() {
     pauseText.textContent = gameState.isPaused ? texts.resume : texts.pause;
     restartText.textContent = texts.restart;
     backText.textContent = texts.backToMenu;
+    selectTrackText.textContent = texts.selectTrack;
     
     usernameLabel.textContent = texts.username;
     saveUsernameButton.textContent = texts.saveUsername;
@@ -1008,6 +1227,20 @@ function updateUIText() {
     if (instructionClick) instructionClick.textContent = texts.clickGuide;
     if (instructionSpace) instructionSpace.textContent = texts.spaceGuide;
     if (instructionTouch) instructionTouch.textContent = texts.touchGuide;
+    
+    // 轨迹选择界面文本
+    if (trackSelectorTitle) {
+        trackSelectorTitle.textContent = texts.trackSelectorTitle;
+    }
+    if (currentTrackLabel) {
+        currentTrackLabel.textContent = texts.currentTrack;
+    }
+    if (trackSelectorClose) {
+        trackSelectorClose.textContent = texts.close;
+    }
+    
+    // 更新轨迹选择器UI
+    updateTrackSelectorUI();
     
     renderLeaderboard();
 }
@@ -1085,6 +1318,80 @@ function renderLeaderboard() {
     leaderboardList.innerHTML = html;
 }
 
+// 轨迹选择功能
+function showTrackSelector() {
+    trackSelector.style.display = 'flex';
+    updateTrackSelectorUI();
+}
+
+function hideTrackSelector() {
+    trackSelector.style.display = 'none';
+}
+
+function selectTrack(trackType) {
+    gameState.currentTrack = trackType;
+    localStorage.setItem('zumaCurrentTrack', trackType);
+    
+    // 重新生成路径
+    generatePath();
+    
+    // 如果游戏正在运行，重新开始游戏
+    if (gameState.isRunning) {
+        restartGame();
+    } else {
+        draw();
+    }
+    
+    // 更新UI
+    updateTrackSelectorUI();
+    hideTrackSelector();
+}
+
+function updateTrackSelectorUI() {
+    const texts = LANGUAGES[currentLang];
+    const currentConfig = TRACK_CONFIGS[gameState.currentTrack];
+    
+    // 更新当前轨迹显示
+    if (currentTrackName) {
+        currentTrackName.textContent = currentConfig.name[currentLang];
+    }
+    
+    // 更新轨迹选项UI
+    Object.keys(TRACK_TYPES).forEach(key => {
+        const trackType = TRACK_TYPES[key];
+        const config = TRACK_CONFIGS[trackType];
+        const option = trackOptions[trackType];
+        
+        if (option) {
+            // 更新选中状态
+            if (trackType === gameState.currentTrack) {
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+        }
+        
+        // 更新轨迹名称和描述
+        if (trackNames[trackType]) {
+            trackNames[trackType].textContent = config.name[currentLang];
+        }
+        if (trackDescs[trackType]) {
+            trackDescs[trackType].textContent = config.description[currentLang];
+        }
+        
+        // 更新难度星级
+        if (difficultyLabels[trackType]) {
+            difficultyLabels[trackType].forEach((star, index) => {
+                if (index < config.difficulty) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+    });
+}
+
 // 事件监听器
 document.addEventListener('DOMContentLoaded', () => {
     initGame();
@@ -1139,6 +1446,25 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 用户名保存
     saveUsernameButton.addEventListener('click', saveUsername);
+    
+    // 轨迹选择事件
+    selectTrackButton.addEventListener('click', showTrackSelector);
+    trackSelectorClose.addEventListener('click', hideTrackSelector);
+    
+    // 轨迹选项点击事件
+    Object.keys(TRACK_TYPES).forEach(key => {
+        const trackType = TRACK_TYPES[key];
+        if (trackOptions[trackType]) {
+            trackOptions[trackType].addEventListener('click', () => selectTrack(trackType));
+        }
+    });
+    
+    // 点击轨迹选择器外部关闭
+    trackSelector.addEventListener('click', (e) => {
+        if (e.target === trackSelector) {
+            hideTrackSelector();
+        }
+    });
     
     // 初始化页面
     switchLanguage(currentLang);
