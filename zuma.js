@@ -837,16 +837,56 @@ function drawCrosshair() {
     const endX = shooter.x + Math.cos(shooter.angle) * 100;
     const endY = shooter.y + Math.sin(shooter.angle) * 100;
     
-    ctx.strokeStyle = '#e74c3c';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 5]);
+    // 绘制银色复古箭头
+    ctx.strokeStyle = '#c0c0c0'; // 银色
+    ctx.fillStyle = '#c0c0c0';
+    ctx.lineWidth = 3;
     
+    // 绘制箭头主线
     ctx.beginPath();
     ctx.moveTo(shooter.x, shooter.y);
     ctx.lineTo(endX, endY);
     ctx.stroke();
     
-    ctx.setLineDash([]);
+    // 绘制箭头头部
+    const arrowLength = 15;
+    const arrowAngle = Math.PI / 6; // 30度
+    
+    // 左侧箭头线
+    const leftX = endX - arrowLength * Math.cos(shooter.angle - arrowAngle);
+    const leftY = endY - arrowLength * Math.sin(shooter.angle - arrowAngle);
+    
+    // 右侧箭头线
+    const rightX = endX - arrowLength * Math.cos(shooter.angle + arrowAngle);
+    const rightY = endY - arrowLength * Math.sin(shooter.angle + arrowAngle);
+    
+    // 绘制箭头三角形
+    ctx.beginPath();
+    ctx.moveTo(endX, endY);
+    ctx.lineTo(leftX, leftY);
+    ctx.lineTo(rightX, rightY);
+    ctx.closePath();
+    ctx.fill();
+    
+    // 添加复古装饰线条
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#a0a0a0'; // 稍深的银色
+    
+    // 在箭头线上添加装饰性的短线
+    for (let i = 1; i <= 3; i++) {
+        const ratio = i / 4;
+        const decorX = shooter.x + (endX - shooter.x) * ratio;
+        const decorY = shooter.y + (endY - shooter.y) * ratio;
+        
+        // 垂直于箭头方向的短线
+        const perpAngle = shooter.angle + Math.PI / 2;
+        const decorLength = 5;
+        
+        ctx.beginPath();
+        ctx.moveTo(decorX - decorLength * Math.cos(perpAngle), decorY - decorLength * Math.sin(perpAngle));
+        ctx.lineTo(decorX + decorLength * Math.cos(perpAngle), decorY + decorLength * Math.sin(perpAngle));
+        ctx.stroke();
+    }
 }
 
 // 游戏循环
