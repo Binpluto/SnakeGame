@@ -820,20 +820,50 @@ function gameOver() {
     const shouldSave = confirm(gameOverMessage + '\n\n' + LANGUAGES[currentLang].saveScorePrompt);
     
     if (shouldSave) {
-        // 如果没有用户名，提示输入
+        // 聚焦到用户名输入框
+        usernameInput.focus();
+        usernameInput.select();
+        
+        // 如果没有用户名，清空输入框提示用户输入
         if (!username) {
-            const inputUsername = prompt(LANGUAGES[currentLang].usernamePlaceholder);
-            if (inputUsername && inputUsername.trim()) {
-                username = inputUsername.trim();
-                localStorage.setItem('zumaUsername', username);
-                usernameInput.value = username;
-            }
+            usernameInput.value = '';
+            usernameInput.placeholder = LANGUAGES[currentLang].usernamePlaceholder;
         }
         
-        // 保存得分到排行榜
-        if (username && gameState.score > 0) {
-            updateLeaderboard(gameState.score);
-        }
+        // 修改保存按钮文本和功能
+        const saveButton = saveUsernameButton;
+        const originalText = saveButton.textContent;
+        saveButton.textContent = LANGUAGES[currentLang].saveScore;
+        
+        // 临时修改保存按钮的点击事件
+        const handleSaveScore = () => {
+            const inputUsername = usernameInput.value.trim();
+            if (inputUsername) {
+                username = inputUsername;
+                localStorage.setItem('zumaUsername', username);
+                if (gameState.score > 0) {
+                    updateLeaderboard(gameState.score);
+                }
+                
+                // 恢复按钮原始状态
+                saveButton.textContent = originalText;
+                saveButton.removeEventListener('click', handleSaveScore);
+                
+                alert(LANGUAGES[currentLang].saveScore + '成功！');
+            } else {
+                alert('请输入用户名！');
+                usernameInput.focus();
+            }
+        };
+        
+        saveButton.addEventListener('click', handleSaveScore);
+    } else {
+        // 用户选择不保存，关闭页面
+        window.close();
+        // 如果无法关闭窗口（某些浏览器限制），则跳转到游戏选择页面
+        setTimeout(() => {
+            window.location.href = 'hey-welcome/vielspass.html';
+        }, 100);
     }
     
     updateUI();

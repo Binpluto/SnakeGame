@@ -16,7 +16,18 @@
                 <button id="lang-zh" class="lang-btn active">中文</button>
                 <button id="lang-en" class="lang-btn">English</button>
             </div>
-        </div>
+
+                <!-- 底部卡槽 -->
+                <div class="card-slots">
+                    <div class="slot" id="slot-0"></div>
+                    <div class="slot" id="slot-1"></div>
+                    <div class="slot" id="slot-2"></div>
+                    <div class="slot" id="slot-3"></div>
+                    <div class="slot" id="slot-4"></div>
+                    <div class="slot" id="slot-5"></div>
+                    <div class="slot" id="slot-6"></div>
+                </div>
+            </div>
 
         <div class="sheep-game-area">
             <!-- 游戏画布区域 -->
@@ -45,33 +56,21 @@
                     <button id="close-level-selector" class="control-btn">关闭</button>
                 </div>
 
-                <!-- 底部卡槽 -->
-                <div class="card-slots">
-                    <div class="slot" id="slot-0"></div>
-                    <div class="slot" id="slot-1"></div>
-                    <div class="slot" id="slot-2"></div>
-                    <div class="slot" id="slot-3"></div>
-                    <div class="slot" id="slot-4"></div>
-                    <div class="slot" id="slot-5"></div>
-                    <div class="slot" id="slot-6"></div>
-                </div>
+
             </div>
+        </div>
 
-            <!-- 侧边栏 -->
-            <div class="sheep-sidebar">
-                <!-- 用户名输入 -->
-                <div class="username-section">
-                    <label id="username-label">用户名: </label>
-                    <input type="text" id="username-input" placeholder="请输入用户名" maxlength="20">
-                    <button id="save-username" class="save-btn">保存</button>
-                </div>
-
-                <!-- 排行榜 -->
-                <div class="leaderboard">
-                    <h3 id="leaderboard-title">排行榜</h3>
-                    <div id="leaderboard-list">
-                        <div id="no-records" class="no-records">暂无记录</div>
-                    </div>
+        <!-- 隐藏的用户名输入和排行榜（保留功能但不显示） -->
+        <div style="display: none;">
+            <div class="username-section">
+                <label id="username-label">用户名: </label>
+                <input type="text" id="username-input" placeholder="请输入用户名" maxlength="20">
+                <button id="save-username" class="save-btn">保存</button>
+            </div>
+            <div class="leaderboard">
+                <h3 id="leaderboard-title">排行榜</h3>
+                <div id="leaderboard-list">
+                    <div id="no-records" class="no-records">暂无记录</div>
                 </div>
             </div>
         </div>

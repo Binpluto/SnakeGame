@@ -42,11 +42,11 @@ const LANGUAGES = {
         player: "玩家",
         instructions: "游戏说明",
         controlsGuide: "游戏规则:",
-        rule1: "点击上层的图案卡片，将其移动到底部卡槽中",
-        rule2: "当卡槽中有3个相同的图案时，它们会自动消除",
-        rule3: "清除所有卡片即可过关，卡槽满了则游戏失败",
-        rule4: "只要7个空格没有填满就能一直玩，没有步数限制",
-        rule5: "左右两边是盲牌堆叠，只能看到顶部卡片",
+        rule1: "点击可见的卡片直接消除它们",
+        rule2: "只有最上层的卡片可以被点击",
+        rule3: "清除所有卡片即可过关",
+        rule4: "没有步数限制，尽情享受游戏",
+        rule5: "合理选择点击顺序，解锁更多卡片",
         touchGuide: "在移动设备上可直接点击卡片进行操作",
         backToMenu: "返回游戏选择",
         levelSelectorTitle: "选择关卡",
@@ -79,11 +79,11 @@ const LANGUAGES = {
         player: "Player",
         instructions: "Instructions",
         controlsGuide: "Game Rules:",
-        rule1: "Click on the top cards to move them to the bottom slots",
-        rule2: "When 3 identical cards are in slots, they will be eliminated",
-        rule3: "Clear all cards to pass the level, game over if slots are full",
-        rule4: "You can play as long as the 7 slots are not full, no move limit",
-        rule5: "Left and right are blind card stacks, only top card is visible",
+        rule1: "Click on visible cards to eliminate them directly",
+        rule2: "Only top layer cards can be clicked",
+        rule3: "Clear all cards to pass the level",
+        rule4: "No move limit, enjoy the game freely",
+        rule5: "Choose clicking order wisely to unlock more cards",
         touchGuide: "Tap cards directly on mobile devices",
         backToMenu: "Back to Menu",
         levelSelectorTitle: "Select Level",
@@ -96,16 +96,16 @@ const LANGUAGES = {
 
 // 关卡配置
 const LEVEL_CONFIG = {
-    1: { cardCount: 24, types: 6, layers: 2, blindCards: 6 },
-    2: { cardCount: 30, types: 8, layers: 2, blindCards: 8 },
-    3: { cardCount: 36, types: 9, layers: 3, blindCards: 10 },
-    4: { cardCount: 42, types: 10, layers: 3, blindCards: 12 },
-    5: { cardCount: 48, types: 12, layers: 3, blindCards: 14 },
-    6: { cardCount: 54, types: 14, layers: 3, blindCards: 16 },
-    7: { cardCount: 60, types: 16, layers: 3, blindCards: 18 },
-    8: { cardCount: 66, types: 18, layers: 3, blindCards: 20 },
-    9: { cardCount: 72, types: 20, layers: 3, blindCards: 22 },
-    10: { cardCount: 78, types: 22, layers: 3, blindCards: 24 }
+    1: { cardCount: 30, types: 6, layers: 2, blindCards: 0 },
+    2: { cardCount: 36, types: 8, layers: 2, blindCards: 0 },
+    3: { cardCount: 45, types: 9, layers: 3, blindCards: 0 },
+    4: { cardCount: 54, types: 10, layers: 3, blindCards: 0 },
+    5: { cardCount: 60, types: 12, layers: 3, blindCards: 0 },
+    6: { cardCount: 72, types: 14, layers: 3, blindCards: 0 },
+    7: { cardCount: 78, types: 16, layers: 3, blindCards: 0 },
+    8: { cardCount: 84, types: 18, layers: 3, blindCards: 0 },
+    9: { cardCount: 90, types: 20, layers: 3, blindCards: 0 },
+    10: { cardCount: 96, types: 22, layers: 3, blindCards: 0 }
 };
 
 // 游戏状态
@@ -117,8 +117,6 @@ let gameState = {
     maxLevel: 10,
     cards: [],
     slots: [],
-    leftBlindStack: [],
-    rightBlindStack: [],
     selectedCard: null,
     hintCard: null
 };
@@ -217,24 +215,21 @@ function generateCards() {
     const cardTypes = CARD_TYPES.slice(0, config.types);
     
     // 计算每种类型需要的卡片数量，确保是3的倍数
-    const totalCards = config.cardCount + config.blindCards;
-    const baseCardsPerType = Math.floor(totalCards / cardTypes.length / 3) * 3;
-    const cardsPerType = Math.max(3, baseCardsPerType);
+    const cardsPerType = Math.floor(config.cardCount / cardTypes.length / 3) * 3;
     
-    // 生成主游戏区域和盲牌
+    // 生成主游戏区域卡片
     for (let i = 0; i < cardTypes.length; i++) {
         // 为每种类型生成固定数量的卡片（3的倍数）
         for (let j = 0; j < cardsPerType; j++) {
-            const isBlind = j >= config.cardCount / cardTypes.length;
             cards.push({
                 type: cardTypes[i],
-                id: `${isBlind ? 'blind' : 'main'}_${cardTypes[i]}_${j}`,
+                id: `main_${cardTypes[i]}_${j}`,
                 x: 0,
                 y: 0,
                 layer: 0,
-                visible: !isBlind,
+                visible: true,
                 clickable: false,
-                isBlind: isBlind
+                isBlind: false
             });
         }
     }
@@ -249,14 +244,9 @@ function generateCards() {
 // 布局卡片
 function layoutCards() {
     const config = LEVEL_CONFIG[gameState.level];
-    const mainCards = cards.filter(card => !card.isBlind);
-    const blindCards = cards.filter(card => card.isBlind);
     
-    // 布局主游戏区域卡片
-    layoutMainCards(mainCards, config);
-    
-    // 布局盲牌堆叠
-    layoutBlindStacks(blindCards);
+    // 布局主游戏区域卡片（居中显示）
+    layoutMainCards(cards, config);
     
     updateClickableCards();
 }
@@ -265,10 +255,14 @@ function layoutCards() {
 function layoutMainCards(mainCards, config) {
     const rows = Math.ceil(Math.sqrt(mainCards.length / config.layers));
     const cols = Math.ceil(mainCards.length / (rows * config.layers));
-    const startX = 150;
-    const startY = 80;
     const offsetX = CARD_WIDTH * 0.8;
     const offsetY = CARD_HEIGHT * 0.7;
+    
+    // 计算居中位置
+    const totalWidth = cols * offsetX;
+    const totalHeight = rows * offsetY;
+    const startX = (CANVAS_WIDTH - totalWidth) / 2;
+    const startY = (CANVAS_HEIGHT - totalHeight - 150) / 2 + 50; // 为底部卡槽留出空间
     
     let cardIndex = 0;
     
@@ -295,36 +289,7 @@ function layoutMainCards(mainCards, config) {
 }
 
 // 布局盲牌堆叠
-function layoutBlindStacks(blindCards) {
-    gameState.leftBlindStack = [];
-    gameState.rightBlindStack = [];
-    
-    const leftStackX = 20;
-    const rightStackX = CANVAS_WIDTH - CARD_WIDTH - 20;
-    const stackY = 100;
-    
-    // 分配盲牌到左右堆叠
-    for (let i = 0; i < blindCards.length; i++) {
-        const card = blindCards[i];
-        const isLeft = i % 2 === 0;
-        
-        if (isLeft) {
-            card.x = leftStackX;
-            card.y = stackY + gameState.leftBlindStack.length * 2;
-            card.stackIndex = gameState.leftBlindStack.length;
-            gameState.leftBlindStack.push(card);
-        } else {
-            card.x = rightStackX;
-            card.y = stackY + gameState.rightBlindStack.length * 2;
-            card.stackIndex = gameState.rightBlindStack.length;
-            gameState.rightBlindStack.push(card);
-        }
-        
-        card.layer = 0;
-        card.visible = card.stackIndex === 0; // 只有顶部卡片可见
-        card.clickable = card.stackIndex === 0; // 只有顶部卡片可点击
-    }
-}
+
 
 // 更新可点击的卡片
 function updateClickableCards() {
@@ -386,52 +351,14 @@ function handleCardClick(x, y) {
     }
     
     if (clickedCard) {
-        // 处理盲牌堆叠点击
-        if (clickedCard.isBlind) {
-            handleBlindCardClick(clickedCard);
-        }
-        
+        // 移动卡片到卡槽
         moveCardToSlot(clickedCard);
     }
 }
 
-// 处理盲牌点击
-function handleBlindCardClick(clickedCard) {
-    let stack, stackName;
-    
-    // 确定是左堆还是右堆
-    if (gameState.leftBlindStack.includes(clickedCard)) {
-        stack = gameState.leftBlindStack;
-        stackName = 'left';
-    } else {
-        stack = gameState.rightBlindStack;
-        stackName = 'right';
-    }
-    
-    // 移除顶部卡片
-    if (stack.length > 0 && stack[0] === clickedCard) {
-        stack.shift();
-        
-        // 更新剩余卡片的位置和可见性
-        for (let i = 0; i < stack.length; i++) {
-            const card = stack[i];
-            card.stackIndex = i;
-            card.visible = i === 0;
-            card.clickable = i === 0;
-            
-            // 更新位置
-            if (stackName === 'left') {
-                card.y = 100 + i * 2;
-            } else {
-                card.y = 100 + i * 2;
-            }
-        }
-    }
-}
-
-// 将卡片移动到卡槽
+// 移动卡片到卡槽
 function moveCardToSlot(card) {
-    // 找到空的卡槽
+    // 找到第一个空的卡槽
     let emptySlotIndex = -1;
     for (let i = 0; i < SLOT_COUNT; i++) {
         if (!slots[i]) {
@@ -446,14 +373,11 @@ function moveCardToSlot(card) {
         return;
     }
     
-    // 移动卡片到卡槽
+    // 将卡片放入卡槽
     slots[emptySlotIndex] = card.type;
     card.visible = false;
     
-    // 减少步数
-    // 移除步数限制
-    
-    // 检查是否有三个相同的卡片
+    // 检查是否有三个相同的卡片可以消除
     checkForMatches();
     
     // 更新可点击的卡片
@@ -466,7 +390,7 @@ function moveCardToSlot(card) {
     updateUI();
 }
 
-// 检查匹配
+// 检查卡槽中的匹配
 function checkForMatches() {
     const typeCount = {};
     const typePositions = {};
@@ -474,36 +398,39 @@ function checkForMatches() {
     // 统计每种类型的数量和位置
     for (let i = 0; i < SLOT_COUNT; i++) {
         if (slots[i]) {
-            if (!typeCount[slots[i]]) {
-                typeCount[slots[i]] = 0;
-                typePositions[slots[i]] = [];
+            const type = slots[i];
+            if (!typeCount[type]) {
+                typeCount[type] = 0;
+                typePositions[type] = [];
             }
-            typeCount[slots[i]]++;
-            typePositions[slots[i]].push(i);
+            typeCount[type]++;
+            typePositions[type].push(i);
         }
     }
     
-    // 检查是否有三个相同的
-    for (let type in typeCount) {
+    // 检查是否有三个相同的类型
+    for (const type in typeCount) {
         if (typeCount[type] >= 3) {
             // 消除三个相同的卡片
             const positions = typePositions[type].slice(0, 3);
-            positions.forEach(pos => {
+            for (const pos of positions) {
                 slots[pos] = null;
-            });
-            
-            // 整理卡槽，将剩余卡片向前移动
-            compactSlots();
+            }
             
             // 增加分数
-            gameState.score += 100;
+            gameState.score += 30;
             
-            break; // 一次只处理一种匹配
+            // 整理卡槽
+            compactSlots();
+            
+            // 递归检查是否还有匹配
+            checkForMatches();
+            return;
         }
     }
 }
 
-// 整理卡槽
+// 整理卡槽，将卡片向左移动
 function compactSlots() {
     const newSlots = [];
     for (let i = 0; i < SLOT_COUNT; i++) {
@@ -512,11 +439,34 @@ function compactSlots() {
         }
     }
     
-    slots = new Array(SLOT_COUNT).fill(null);
-    for (let i = 0; i < newSlots.length; i++) {
-        slots[i] = newSlots[i];
+    // 重新填充卡槽
+    for (let i = 0; i < SLOT_COUNT; i++) {
+        slots[i] = i < newSlots.length ? newSlots[i] : null;
     }
 }
+
+// 检查卡槽中是否有可消除的卡片
+function canEliminate() {
+    const typeCount = {};
+    
+    for (let i = 0; i < SLOT_COUNT; i++) {
+        if (slots[i]) {
+            const type = slots[i];
+            typeCount[type] = (typeCount[type] || 0) + 1;
+            if (typeCount[type] >= 3) {
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
+
+
+
+
+
 
 // 检查游戏结束
 function checkGameEnd() {
@@ -527,47 +477,11 @@ function checkGameEnd() {
         return;
     }
     
-    // 检查卡槽是否已满
-    const filledSlots = slots.filter(slot => slot !== null);
-    if (filledSlots.length >= SLOT_COUNT) {
-        // 检查是否还能消除
-        if (canEliminate()) {
-            // 如果能消除，先消除再检查
-            checkForMatches();
-            // 重新检查卡槽状态
-            const newFilledSlots = slots.filter(slot => slot !== null);
-            if (newFilledSlots.length >= SLOT_COUNT) {
-                gameOver();
-            }
-        } else {
-            gameOver();
-        }
-        return;
+    // 检查卡槽是否已满且无法消除
+    const filledSlots = slots.filter(slot => slot !== null).length;
+    if (filledSlots === SLOT_COUNT && !canEliminate()) {
+        gameOver();
     }
-}
-
-// 检查是否还能消除
-function canEliminate() {
-    const typeCount = {};
-    
-    // 统计每种类型的数量
-    for (let i = 0; i < SLOT_COUNT; i++) {
-        if (slots[i]) {
-            if (!typeCount[slots[i]]) {
-                typeCount[slots[i]] = 0;
-            }
-            typeCount[slots[i]]++;
-        }
-    }
-    
-    // 检查是否有三个或以上相同的
-    for (let type in typeCount) {
-        if (typeCount[type] >= 3) {
-            return true;
-        }
-    }
-    
-    return false;
 }
 
 // 关卡完成
@@ -585,7 +499,6 @@ function levelComplete() {
         
         // 生成新关卡
         generateCards();
-        slots = new Array(SLOT_COUNT).fill(null);
     }
     
     updateUI();
@@ -603,20 +516,48 @@ function gameOver() {
     const shouldSave = confirm(gameOverMessage + '\n\n' + LANGUAGES[currentLang].saveScorePrompt);
     
     if (shouldSave) {
-        // 如果没有用户名，提示输入
+        // 聚焦到用户名输入框
+        usernameInput.focus();
+        usernameInput.select();
+        
+        // 如果没有用户名，清空输入框提示用户输入
         if (!username) {
-            const inputUsername = prompt(LANGUAGES[currentLang].usernamePlaceholder);
-            if (inputUsername && inputUsername.trim()) {
-                username = inputUsername.trim();
-                localStorage.setItem('sheepUsername', username);
-                usernameInput.value = username;
-            }
+            usernameInput.value = '';
+            usernameInput.placeholder = LANGUAGES[currentLang].usernamePlaceholder;
         }
         
-        // 保存得分到排行榜
-        if (username) {
-            updateLeaderboard(gameState.score);
-        }
+        // 修改保存按钮文本和功能
+        const saveButton = document.getElementById('save-username');
+        const originalText = saveButton.textContent;
+        saveButton.textContent = LANGUAGES[currentLang].saveScore;
+        
+        // 临时修改保存按钮的点击事件
+        const handleSaveScore = () => {
+            const inputUsername = usernameInput.value.trim();
+            if (inputUsername) {
+                username = inputUsername;
+                localStorage.setItem('sheepUsername', username);
+                updateLeaderboard(gameState.score);
+                
+                // 恢复按钮原始状态
+                saveButton.textContent = originalText;
+                saveButton.removeEventListener('click', handleSaveScore);
+                
+                alert(LANGUAGES[currentLang].saveScore + '成功！');
+            } else {
+                alert('请输入用户名！');
+                usernameInput.focus();
+            }
+        };
+        
+        saveButton.addEventListener('click', handleSaveScore);
+    } else {
+        // 用户选择不保存，关闭页面
+        window.close();
+        // 如果无法关闭窗口（某些浏览器限制），则跳转到游戏选择页面
+        setTimeout(() => {
+            window.location.href = 'hey-welcome/vielspass.html';
+        }, 100);
     }
     
     updateUI();
@@ -688,7 +629,6 @@ function resetGame() {
         hintCard: null
     };
     
-    slots = new Array(SLOT_COUNT).fill(null);
     selectedCard = null;
     
     generateCards();
@@ -699,7 +639,6 @@ function resetGame() {
 function startLevel(level) {
     gameState.level = Math.min(level, gameState.maxLevel || 10);
     generateCards();
-    slots = new Array(SLOT_COUNT).fill(null);
     gameState.isRunning = true;
     gameState.isPaused = false;
     gameState.isGameOver = false;
@@ -724,14 +663,8 @@ function draw() {
     ctx.fillStyle = '#f0f8ff';
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     
-    // 绘制盲牌堆叠背景
-    drawBlindStackBg();
-    
     // 绘制卡片
     drawCards();
-    
-    // 绘制盲牌堆叠信息
-    drawBlindStackInfo();
     
     // 绘制卡槽
     drawSlots();
@@ -741,42 +674,39 @@ function draw() {
     }
 }
 
-// 绘制盲牌堆叠背景
-function drawBlindStackBg() {
-    const leftStackX = 20;
-    const rightStackX = CANVAS_WIDTH - CARD_WIDTH - 20;
-    const stackY = 100;
+// 绘制卡槽
+function drawSlots() {
+    const slotWidth = 80;
+    const slotHeight = 100;
+    const slotStartX = (CANVAS_WIDTH - (SLOT_COUNT * slotWidth + (SLOT_COUNT - 1) * 5)) / 2;
+    const slotY = CANVAS_HEIGHT - slotHeight - 20;
     
-    // 左侧盲牌堆叠背景
-    ctx.fillStyle = 'rgba(233, 30, 99, 0.1)';
-    ctx.fillRect(leftStackX - 5, stackY - 5, CARD_WIDTH + 10, CARD_HEIGHT + 20);
-    ctx.strokeStyle = '#e91e63';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(leftStackX - 5, stackY - 5, CARD_WIDTH + 10, CARD_HEIGHT + 20);
-    
-    // 右侧盲牌堆叠背景
-    ctx.fillRect(rightStackX - 5, stackY - 5, CARD_WIDTH + 10, CARD_HEIGHT + 20);
-    ctx.strokeRect(rightStackX - 5, stackY - 5, CARD_WIDTH + 10, CARD_HEIGHT + 20);
+    for (let i = 0; i < SLOT_COUNT; i++) {
+        const x = slotStartX + i * (slotWidth + 5);
+        
+        // 绘制卡槽背景
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x, slotY, slotWidth, slotHeight);
+        
+        // 绘制卡槽边框
+        ctx.strokeStyle = '#e91e63';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, slotY, slotWidth, slotHeight);
+        
+        // 绘制卡槽中的卡片
+        if (slots[i]) {
+            ctx.fillStyle = '#333';
+            ctx.font = '40px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(slots[i], x + slotWidth / 2, slotY + slotHeight / 2);
+        }
+    }
 }
 
-// 绘制盲牌堆叠信息
-function drawBlindStackInfo() {
-    ctx.fillStyle = '#e91e63';
-    ctx.font = 'bold 14px Arial';
-    ctx.textAlign = 'center';
-    
-    // 左侧堆叠数量
-    const leftCount = gameState.leftBlindStack.length;
-    if (leftCount > 0) {
-        ctx.fillText(leftCount.toString(), 20 + CARD_WIDTH / 2, 95);
-    }
-    
-    // 右侧堆叠数量
-    const rightCount = gameState.rightBlindStack.length;
-    if (rightCount > 0) {
-        ctx.fillText(rightCount.toString(), CANVAS_WIDTH - CARD_WIDTH - 20 + CARD_WIDTH / 2, 95);
-    }
-}
+
+
+
 
 // 绘制卡片
 function drawCards() {
@@ -813,35 +743,7 @@ function drawCards() {
 }
 
 // 绘制卡槽
-function drawSlots() {
-    const slotWidth = 80;
-    const slotHeight = 100;
-    const startX = (CANVAS_WIDTH - SLOT_COUNT * slotWidth) / 2;
-    const startY = CANVAS_HEIGHT - slotHeight - 10;
-    
-    for (let i = 0; i < SLOT_COUNT; i++) {
-        const x = startX + i * slotWidth;
-        const y = startY;
-        
-        // 绘制卡槽背景
-        ctx.fillStyle = slots[i] ? '#ffffff' : '#f5f5f5';
-        ctx.fillRect(x, y, slotWidth - 5, slotHeight);
-        
-        // 绘制卡槽边框
-        ctx.strokeStyle = '#333333';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, slotWidth - 5, slotHeight);
-        
-        // 绘制卡槽中的卡片
-        if (slots[i]) {
-            ctx.font = '40px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#000000';
-            ctx.fillText(slots[i], x + (slotWidth - 5) / 2, y + slotHeight / 2);
-        }
-    }
-}
+
 
 // 开始游戏
 function startGame() {

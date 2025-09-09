@@ -32,7 +32,10 @@ const LANGUAGES = {
         yourScore: "你的得分",
         rank: "排名",
         player: "玩家",
-        backToMenu: "返回游戏选择"
+        backToMenu: "返回游戏选择",
+        saveScorePrompt: "是否保存得分记录？",
+        saveScore: "保存得分",
+        dontSave: "不保存"
     },
     en: {
         title: "Snake Game",
@@ -56,7 +59,10 @@ const LANGUAGES = {
         yourScore: "Your Score",
         rank: "Rank",
         player: "Player",
-        backToMenu: "Back to Game Selection"
+        backToMenu: "Back to Game Selection",
+        saveScorePrompt: "Save score record?",
+        saveScore: "Save Score",
+        dontSave: "Don't Save"
     }
 };
 
@@ -332,9 +338,6 @@ function gameOver() {
     gameInterval = null;
     isGameOver = true;
     
-    // 更新排行榜
-    updateLeaderboard();
-    
     // 更新按钮状态
     startButton.disabled = false;
     pauseButton.disabled = true;
@@ -349,6 +352,57 @@ function gameOver() {
         <p>${LANGUAGES[currentLang].start}</p>
     `;
     document.querySelector('.game-container').appendChild(gameOverElement);
+    
+    // 显示游戏结束信息
+    const gameOverMessage = LANGUAGES[currentLang].gameOver + '\n' + LANGUAGES[currentLang].score + score;
+    
+    // 询问是否保存得分记录
+    const shouldSave = confirm(gameOverMessage + '\n\n' + LANGUAGES[currentLang].saveScorePrompt);
+    
+    if (shouldSave) {
+        // 聚焦到用户名输入框
+        usernameInput.focus();
+        usernameInput.select();
+        
+        // 如果没有用户名，清空输入框提示用户输入
+        if (!username) {
+            usernameInput.value = '';
+            usernameInput.placeholder = LANGUAGES[currentLang].usernamePlaceholder;
+        }
+        
+        // 修改保存按钮文本和功能
+        const saveButton = saveUsernameButton;
+        const originalText = saveButton.textContent;
+        saveButton.textContent = LANGUAGES[currentLang].saveScore;
+        
+        // 临时修改保存按钮的点击事件
+        const handleSaveScore = () => {
+            const inputUsername = usernameInput.value.trim();
+            if (inputUsername) {
+                username = inputUsername;
+                localStorage.setItem('snakeUsername', username);
+                updateLeaderboard();
+                
+                // 恢复按钮原始状态
+                saveButton.textContent = originalText;
+                saveButton.removeEventListener('click', handleSaveScore);
+                
+                alert(LANGUAGES[currentLang].saveScore + '成功！');
+            } else {
+                alert('请输入用户名！');
+                usernameInput.focus();
+            }
+        };
+        
+        saveButton.addEventListener('click', handleSaveScore);
+    } else {
+        // 用户选择不保存，关闭页面
+        window.close();
+        // 如果无法关闭窗口（某些浏览器限制），则跳转到游戏选择页面
+        setTimeout(() => {
+            window.location.href = 'hey-welcome/vielspass.html';
+        }, 100);
+    }
     
     // 点击游戏结束提示可以重新开始游戏
     gameOverElement.addEventListener('click', () => {
