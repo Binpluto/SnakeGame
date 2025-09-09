@@ -37,21 +37,15 @@
             <div class="tetris-sidebar">
                 <div class="next-piece">
                     <h3 id="next-piece-label">下一个</h3>
-                    <canvas id="next-piece-canvas" width="120" height="120"></canvas>
-                </div>
-                <div class="controls">
-                    <button id="start-btn"><span id="start-text">开始游戏</span></button>
-                    <button id="pause-btn"><span id="pause-text">暂停</span></button>
-                    <button id="restart-btn"><span id="restart-text">重新开始</span></button>
+                    <canvas id="next-piece-canvas" width="80" height="80"></canvas>
                 </div>
             </div>
         </div>
         
-        <div class="leaderboard">
-            <h2 id="leaderboard-title">排行榜</h2>
-            <div id="leaderboard-list">
-                <div class="no-records" id="no-records">暂无记录</div>
-            </div>
+        <div class="game-controls">
+            <button id="start-btn"><span id="start-text">开始游戏</span></button>
+            <button id="pause-btn"><span id="pause-text">暂停</span></button>
+            <button id="restart-btn"><span id="restart-text">重新开始</span></button>
         </div>
         
         <div class="instructions">
@@ -66,6 +60,13 @@
                 <button id="touch-left" class="touch-btn">←</button>
                 <button id="touch-down" class="touch-btn">↓</button>
                 <button id="touch-right" class="touch-btn">→</button>
+            </div>
+        </div>
+        
+        <div class="leaderboard">
+            <h2 id="leaderboard-title">排行榜</h2>
+            <div id="leaderboard-list">
+                <div class="no-records" id="no-records">暂无记录</div>
             </div>
         </div>
         
