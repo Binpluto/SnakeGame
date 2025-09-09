@@ -97,7 +97,10 @@ const LANGUAGES = {
         currentTrack: "当前模式: ",
         currentMode: "当前模式: ",
         difficulty: "难度: ",
-        close: "关闭"
+        close: "关闭",
+        saveScorePrompt: "是否保存得分记录？",
+        saveScore: "保存得分",
+        dontSave: "不保存"
     },
     en: {
         title: "Zuma Game",
@@ -129,7 +132,10 @@ const LANGUAGES = {
         currentTrack: "Current Mode: ",
         currentMode: "Current Mode: ",
         difficulty: "Difficulty: ",
-        close: "Close"
+        close: "Close",
+        saveScorePrompt: "Save your score record?",
+        saveScore: "Save Score",
+        dontSave: "Don't Save"
     }
 };
 
@@ -321,9 +327,12 @@ function generatePath() {
 // 螺旋轨迹
 function generateSpiralPath(centerX, centerY) {
     const radius = 200;
-    for (let i = 0; i < 360 * 3; i += 2) {
+    // 从外向内生成螺旋路径，与其他轨迹保持一致的密度
+    for (let i = 0; i < 360 * 3; i += 1.5) { // 减小步长，增加路径点密度
         const angle = (i * Math.PI) / 180;
         const currentRadius = radius - (i / 10);
+        if (currentRadius <= 0) break; // 防止半径为负
+        
         const x = centerX + Math.cos(angle) * currentRadius;
         const y = centerY + Math.sin(angle) * currentRadius;
         path.push({ x, y });
@@ -337,10 +346,11 @@ function generateZigzagPath(centerX, centerY) {
     const zigzagHeight = 40;
     const segments = 8;
     
-    for (let i = 0; i < segments; i++) {
+    // 从外向内生成路径，确保起始点在外围
+    for (let i = segments - 1; i >= 0; i--) {
         const y = centerY + height/2 - (i * height / segments);
         const segmentWidth = width - (i * 30);
-        const points = 20;
+        const points = Math.max(Math.floor(segmentWidth / 8), 10); // 根据宽度调整点数
         
         for (let j = 0; j <= points; j++) {
             const progress = j / points;
@@ -364,9 +374,12 @@ function generateWavePath(centerX, centerY) {
     const waveAmplitude = 60;
     const waveFrequency = 3;
     
-    for (let i = 0; i < 360 * 2.5; i += 1.5) {
+    // 从外向内生成螺旋波浪路径
+    for (let i = 0; i < 360 * 2.5; i += 1) { // 减小步长，增加路径点密度
         const angle = (i * Math.PI) / 180;
         const currentRadius = radius - (i / 12);
+        if (currentRadius <= 0) break; // 防止半径为负
+        
         const waveOffset = Math.sin(angle * waveFrequency) * waveAmplitude * (currentRadius / radius);
         const x = centerX + Math.cos(angle) * (currentRadius + waveOffset);
         const y = centerY + Math.sin(angle) * (currentRadius + waveOffset);
@@ -379,33 +392,36 @@ function generateSquarePath(centerX, centerY) {
     const initialSize = 280;
     const layers = 6;
     
+    // 从外向内生成方形螺旋路径
     for (let layer = 0; layer < layers; layer++) {
         const size = initialSize - layer * 40;
-        const halfSize = size / 2;
-        const pointsPerSide = Math.floor(size / 8);
+        if (size <= 0) break; // 防止尺寸为负
         
-        // 上边
+        const halfSize = size / 2;
+        const pointsPerSide = Math.max(Math.floor(size / 8), 4); // 确保至少有4个点
+        
+        // 上边 (从左到右)
         for (let i = 0; i <= pointsPerSide; i++) {
             const x = centerX - halfSize + (i / pointsPerSide) * size;
             const y = centerY - halfSize;
             path.push({ x, y });
         }
         
-        // 右边
+        // 右边 (从上到下)
         for (let i = 1; i <= pointsPerSide; i++) {
             const x = centerX + halfSize;
             const y = centerY - halfSize + (i / pointsPerSide) * size;
             path.push({ x, y });
         }
         
-        // 下边
+        // 下边 (从右到左)
         for (let i = 1; i <= pointsPerSide; i++) {
             const x = centerX + halfSize - (i / pointsPerSide) * size;
             const y = centerY + halfSize;
             path.push({ x, y });
         }
         
-        // 左边
+        // 左边 (从下到上，但不包括起始点)
         for (let i = 1; i < pointsPerSide; i++) {
             const x = centerX - halfSize;
             const y = centerY + halfSize - (i / pointsPerSide) * size;
@@ -419,9 +435,12 @@ function generateHeartPath(centerX, centerY) {
     const scale = 8;
     const layers = 4;
     
+    // 从外向内生成心形螺旋路径
     for (let layer = 0; layer < layers; layer++) {
         const currentScale = scale * (1 - layer * 0.2);
-        const points = 100 - layer * 10;
+        if (currentScale <= 0) break; // 防止缩放为负
+        
+        const points = Math.max(100 - layer * 10, 20); // 确保至少有20个点
         
         for (let i = 0; i <= points; i++) {
             const t = (i / points) * 2 * Math.PI;
@@ -559,9 +578,27 @@ function updatePowerEffects() {
 function updateBallChain() {
     for (let i = 0; i < ballChain.length; i++) {
         const ball = ballChain[i];
-        ball.pathIndex += 0.5 * gameState.chainSpeed;
+        // 根据轨迹类型调整移动速度
+        let moveSpeed = 0.3 * gameState.chainSpeed; // 降低基础速度
         
-        if (ball.pathIndex >= path.length) {
+        // 不同轨迹类型的速度调整
+        switch (gameState.currentTrack) {
+            case TRACK_TYPES.SPIRAL:
+                moveSpeed = 0.4 * gameState.chainSpeed;
+                break;
+            case TRACK_TYPES.ZIGZAG:
+            case TRACK_TYPES.SQUARE:
+                moveSpeed = 0.3 * gameState.chainSpeed;
+                break;
+            case TRACK_TYPES.WAVE:
+            case TRACK_TYPES.HEART:
+                moveSpeed = 0.25 * gameState.chainSpeed;
+                break;
+        }
+        
+        ball.pathIndex += moveSpeed;
+        
+        if (ball.pathIndex >= path.length - 1) {
             // 球到达终点，玩家失去生命
             gameState.lives--;
             ballChain.splice(i, 1);
@@ -572,7 +609,8 @@ function updateBallChain() {
                 return;
             }
         } else {
-            const pathPoint = path[Math.floor(ball.pathIndex)];
+            const pathIndex = Math.floor(ball.pathIndex);
+            const pathPoint = path[pathIndex];
             if (pathPoint) {
                 ball.x = pathPoint.x;
                 ball.y = pathPoint.y;
@@ -775,9 +813,27 @@ function gameOver() {
         animationId = null;
     }
     
-    // 更新排行榜
-    if (username && gameState.score > 0) {
-        updateLeaderboard(gameState.score);
+    // 显示游戏结束信息
+    const gameOverMessage = LANGUAGES[currentLang].gameOver + '\n' + LANGUAGES[currentLang].score + gameState.score;
+    
+    // 询问是否保存得分记录
+    const shouldSave = confirm(gameOverMessage + '\n\n' + LANGUAGES[currentLang].saveScorePrompt);
+    
+    if (shouldSave) {
+        // 如果没有用户名，提示输入
+        if (!username) {
+            const inputUsername = prompt(LANGUAGES[currentLang].usernamePlaceholder);
+            if (inputUsername && inputUsername.trim()) {
+                username = inputUsername.trim();
+                localStorage.setItem('zumaUsername', username);
+                usernameInput.value = username;
+            }
+        }
+        
+        // 保存得分到排行榜
+        if (username && gameState.score > 0) {
+            updateLeaderboard(gameState.score);
+        }
     }
     
     updateUI();

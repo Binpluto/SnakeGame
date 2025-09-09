@@ -35,7 +35,10 @@ const LANGUAGES = {
         downGuide: "↓ : 加速下落",
         upGuide: "↑ : 旋转",
         touchGuide: "在移动设备上可使用屏幕下方的触控按钮",
-        backToMenu: "返回游戏选择"
+        backToMenu: "返回游戏选择",
+        saveScorePrompt: "是否保存得分记录？",
+        saveScore: "保存得分",
+        dontSave: "不保存"
     },
     en: {
         title: "Tetris",
@@ -61,7 +64,10 @@ const LANGUAGES = {
         downGuide: "↓ : Move Down",
         upGuide: "↑ : Rotate",
         touchGuide: "Use touch controls below on mobile devices",
-        backToMenu: "Back to Menu"
+        backToMenu: "Back to Menu",
+        saveScorePrompt: "Save your score record?",
+        saveScore: "Save Score",
+        dontSave: "Don't Save"
     }
 };
 
@@ -540,9 +546,27 @@ function gameOver() {
     gameOverDiv.textContent = LANGUAGES[currentLang].gameOver;
     document.querySelector('.game-container').appendChild(gameOverDiv);
     
-    // 更新排行榜
-    if (username) {
-        updateLeaderboard(score);
+    // 显示游戏结束信息
+    const gameOverMessage = LANGUAGES[currentLang].gameOver + '\n' + LANGUAGES[currentLang].score + score;
+    
+    // 询问是否保存得分记录
+    const shouldSave = confirm(gameOverMessage + '\n\n' + LANGUAGES[currentLang].saveScorePrompt);
+    
+    if (shouldSave) {
+        // 如果没有用户名，提示输入
+        if (!username) {
+            const inputUsername = prompt(LANGUAGES[currentLang].usernamePlaceholder);
+            if (inputUsername && inputUsername.trim()) {
+                username = inputUsername.trim();
+                localStorage.setItem('tetrisUsername', username);
+                usernameInput.value = username;
+            }
+        }
+        
+        // 保存得分到排行榜
+        if (username) {
+            updateLeaderboard(score);
+        }
     }
 }
 

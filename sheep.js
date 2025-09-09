@@ -1,10 +1,10 @@
 // 羊了个羊游戏
 
 // 游戏常量
-const CANVAS_WIDTH = 600;
-const CANVAS_HEIGHT = 400;
-const CARD_WIDTH = 60;
-const CARD_HEIGHT = 80;
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 600;
+const CARD_WIDTH = 80;
+const CARD_HEIGHT = 100;
 const SLOT_COUNT = 7;
 const MAX_LAYERS = 3;
 const BLIND_STACK_SIZE = 8; // 盲牌堆叠数量
@@ -22,7 +22,6 @@ const LANGUAGES = {
         title: "羊了个羊",
         score: "得分: ",
         level: "关卡: ",
-        moves: "剩余步数: ",
         start: "开始游戏",
         pause: "暂停",
         resume: "继续",
@@ -51,13 +50,15 @@ const LANGUAGES = {
         touchGuide: "在移动设备上可直接点击卡片进行操作",
         backToMenu: "返回游戏选择",
         levelSelectorTitle: "选择关卡",
-        close: "关闭"
+        close: "关闭",
+        saveScorePrompt: "是否保存得分记录？",
+        saveScore: "保存得分",
+        dontSave: "不保存"
     },
     en: {
         title: "Sheep Game",
         score: "Score: ",
         level: "Level: ",
-        moves: "Moves: ",
         start: "Start Game",
         pause: "Pause",
         resume: "Resume",
@@ -86,7 +87,10 @@ const LANGUAGES = {
         touchGuide: "Tap cards directly on mobile devices",
         backToMenu: "Back to Menu",
         levelSelectorTitle: "Select Level",
-        close: "Close"
+        close: "Close",
+        saveScorePrompt: "Save your score record?",
+        saveScore: "Save Score",
+        dontSave: "Don't Save"
     }
 };
 
@@ -128,9 +132,9 @@ let animationId = null;
 
 // DOM元素
 let canvas, ctx;
-let scoreElement, levelElement, movesElement;
+let scoreElement, levelElement;
 let startButton, pauseButton, restartButton, hintButton, shuffleButton, backButton, selectLevelButton;
-let gameTitle, scoreLabel, levelLabel, movesLabel;
+let gameTitle, scoreLabel, levelLabel;
 let usernameInput, saveUsernameButton, usernameLabel;
 let leaderboardTitle, leaderboardList, noRecordsElement;
 let langZhButton, langEnButton;
@@ -151,7 +155,6 @@ function initGame() {
     // 获取DOM元素
     scoreElement = document.getElementById('score');
     levelElement = document.getElementById('level');
-    movesElement = document.getElementById('moves');
     
     startButton = document.getElementById('start-btn');
     pauseButton = document.getElementById('pause-btn');
@@ -164,7 +167,6 @@ function initGame() {
     gameTitle = document.getElementById('game-title');
     scoreLabel = document.getElementById('score-label');
     levelLabel = document.getElementById('level-label');
-    movesLabel = document.getElementById('moves-label');
     
     usernameInput = document.getElementById('username-input');
     saveUsernameButton = document.getElementById('save-username');
@@ -214,42 +216,27 @@ function generateCards() {
     cards = [];
     const cardTypes = CARD_TYPES.slice(0, config.types);
     
-    // 主游戏区域卡片
-    const mainCards = config.cardCount;
-    const cardsPerType = Math.floor(mainCards / cardTypes.length);
+    // 计算每种类型需要的卡片数量，确保是3的倍数
+    const totalCards = config.cardCount + config.blindCards;
+    const baseCardsPerType = Math.floor(totalCards / cardTypes.length / 3) * 3;
+    const cardsPerType = Math.max(3, baseCardsPerType);
     
-    // 确保每种类型的卡片数量是3的倍数
+    // 生成主游戏区域和盲牌
     for (let i = 0; i < cardTypes.length; i++) {
-        const count = Math.max(3, Math.floor(cardsPerType / 3) * 3);
-        
-        for (let j = 0; j < count; j++) {
+        // 为每种类型生成固定数量的卡片（3的倍数）
+        for (let j = 0; j < cardsPerType; j++) {
+            const isBlind = j >= config.cardCount / cardTypes.length;
             cards.push({
                 type: cardTypes[i],
-                id: `main_${cardTypes[i]}_${j}`,
+                id: `${isBlind ? 'blind' : 'main'}_${cardTypes[i]}_${j}`,
                 x: 0,
                 y: 0,
                 layer: 0,
-                visible: true,
+                visible: !isBlind,
                 clickable: false,
-                isBlind: false
+                isBlind: isBlind
             });
         }
-    }
-    
-    // 生成盲牌
-    const blindCards = config.blindCards;
-    for (let i = 0; i < blindCards; i++) {
-        const randomType = cardTypes[Math.floor(Math.random() * cardTypes.length)];
-        cards.push({
-            type: randomType,
-            id: `blind_${randomType}_${i}`,
-            x: 0,
-            y: 0,
-            layer: 0,
-            visible: false,
-            clickable: false,
-            isBlind: true
-        });
     }
     
     // 打乱卡片顺序
@@ -278,9 +265,9 @@ function layoutCards() {
 function layoutMainCards(mainCards, config) {
     const rows = Math.ceil(Math.sqrt(mainCards.length / config.layers));
     const cols = Math.ceil(mainCards.length / (rows * config.layers));
-    const startX = 100;
-    const startY = 50;
-    const offsetX = CARD_WIDTH * 0.7;
+    const startX = 150;
+    const startY = 80;
+    const offsetX = CARD_WIDTH * 0.8;
     const offsetY = CARD_HEIGHT * 0.7;
     
     let cardIndex = 0;
@@ -464,7 +451,7 @@ function moveCardToSlot(card) {
     card.visible = false;
     
     // 减少步数
-    gameState.moves--;
+    // 移除步数限制
     
     // 检查是否有三个相同的卡片
     checkForMatches();
@@ -540,23 +527,52 @@ function checkGameEnd() {
         return;
     }
     
-    // 取消步数限制 - 只要7个空格没有填满就能一直玩
-    // if (gameState.moves <= 0) {
-    //     gameOver();
-    //     return;
-    // }
-    
     // 检查卡槽是否已满
     const filledSlots = slots.filter(slot => slot !== null);
     if (filledSlots.length >= SLOT_COUNT) {
-        gameOver();
+        // 检查是否还能消除
+        if (canEliminate()) {
+            // 如果能消除，先消除再检查
+            checkForMatches();
+            // 重新检查卡槽状态
+            const newFilledSlots = slots.filter(slot => slot !== null);
+            if (newFilledSlots.length >= SLOT_COUNT) {
+                gameOver();
+            }
+        } else {
+            gameOver();
+        }
         return;
     }
 }
 
+// 检查是否还能消除
+function canEliminate() {
+    const typeCount = {};
+    
+    // 统计每种类型的数量
+    for (let i = 0; i < SLOT_COUNT; i++) {
+        if (slots[i]) {
+            if (!typeCount[slots[i]]) {
+                typeCount[slots[i]] = 0;
+            }
+            typeCount[slots[i]]++;
+        }
+    }
+    
+    // 检查是否有三个或以上相同的
+    for (let type in typeCount) {
+        if (typeCount[type] >= 3) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 // 关卡完成
 function levelComplete() {
-    gameState.score += gameState.moves * 10; // 剩余步数奖励
+    // 移除剩余步数奖励
     
     if (gameState.level >= 10) {
         alert(LANGUAGES[currentLang].allLevelsComplete);
@@ -565,7 +581,7 @@ function levelComplete() {
     } else {
         alert(LANGUAGES[currentLang].levelComplete);
         gameState.level++;
-        gameState.moves = Math.max(20, 30 - gameState.level * 2);
+        // 移除步数设置
         
         // 生成新关卡
         generateCards();
@@ -580,11 +596,27 @@ function gameOver() {
     gameState.isRunning = false;
     gameState.isGameOver = true;
     
-    alert(LANGUAGES[currentLang].gameOver + ' ' + LANGUAGES[currentLang].score + gameState.score);
+    // 显示游戏结束信息
+    const gameOverMessage = LANGUAGES[currentLang].gameOver + '\n' + LANGUAGES[currentLang].score + gameState.score;
     
-    // 更新排行榜
-    if (username) {
-        updateLeaderboard(gameState.score);
+    // 询问是否保存得分记录
+    const shouldSave = confirm(gameOverMessage + '\n\n' + LANGUAGES[currentLang].saveScorePrompt);
+    
+    if (shouldSave) {
+        // 如果没有用户名，提示输入
+        if (!username) {
+            const inputUsername = prompt(LANGUAGES[currentLang].usernamePlaceholder);
+            if (inputUsername && inputUsername.trim()) {
+                username = inputUsername.trim();
+                localStorage.setItem('sheepUsername', username);
+                usernameInput.value = username;
+            }
+        }
+        
+        // 保存得分到排行榜
+        if (username) {
+            updateLeaderboard(gameState.score);
+        }
     }
     
     updateUI();
@@ -666,7 +698,6 @@ function resetGame() {
 // 开始新关卡
 function startLevel(level) {
     gameState.level = Math.min(level, gameState.maxLevel || 10);
-    gameState.moves = Math.max(20, 30 - gameState.level * 2);
     generateCards();
     slots = new Array(SLOT_COUNT).fill(null);
     gameState.isRunning = true;
@@ -858,7 +889,6 @@ function restartGame() {
 function updateUI() {
     scoreElement.textContent = gameState.score;
     levelElement.textContent = gameState.level;
-    movesElement.textContent = gameState.moves;
     
     // 更新按钮状态
     if (gameState.isRunning && !gameState.isGameOver) {
@@ -881,7 +911,6 @@ function updateUIText() {
     gameTitle.textContent = lang.title;
     scoreLabel.textContent = lang.score;
     levelLabel.textContent = lang.level;
-    movesLabel.textContent = lang.moves;
     
     startButton.textContent = lang.start;
     pauseButton.textContent = lang.pause;
@@ -1070,7 +1099,6 @@ function hideLevelSelector() {
 // 选择关卡
 function selectLevel(level) {
     gameState.level = level;
-    gameState.moves = Math.max(20, 30 - gameState.level * 2);
     gameState.score = 0;
     resetGame();
     startGame();
