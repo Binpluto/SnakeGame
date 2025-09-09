@@ -157,8 +157,8 @@
     
     .touch-control-row {
         display: flex;
-        gap: 15px;
-        margin-bottom: 8px;
+        gap: 25px; /* 增加间距从15px到25px */
+        margin-bottom: 12px; /* 增加间距从8px到12px */
     }
     
     .touch-control-row:last-child {
@@ -166,9 +166,9 @@
     }
     
     .touch-btn {
-        width: 55px;
-        height: 55px;
-        font-size: 22px;
+        width: 70px; /* 增加宽度从55px到70px */
+        height: 70px; /* 增加高度从55px到70px */
+        font-size: 26px; /* 增加字体大小从22px到26px */
         background-color: rgba(76, 175, 80, 0.8);
         color: white;
         border: 2px solid rgba(76, 175, 80, 1);

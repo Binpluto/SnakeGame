@@ -147,15 +147,15 @@ body {
 .touch-control-row {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin: 8px 0;
+    gap: 20px; /* 增加间距从10px到20px */
+    margin: 12px 0; /* 增加上下间距从8px到12px */
     width: 100%;
 }
 
 .touch-btn {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
+    width: 75px; /* 增加宽度从60px到75px */
+    height: 75px; /* 增加高度从60px到75px */
+    font-size: 28px; /* 增加字体大小从24px到28px */
     display: flex;
     justify-content: center;
     align-items: center;
