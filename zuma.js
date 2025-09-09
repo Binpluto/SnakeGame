@@ -257,7 +257,7 @@ function initGame() {
     
     // 加载保存的轨迹设置
     const savedTrack = localStorage.getItem('zumaCurrentTrack');
-    if (savedTrack && TRACK_TYPES[savedTrack.toUpperCase()]) {
+    if (savedTrack && Object.values(TRACK_TYPES).includes(savedTrack)) {
         gameState.currentTrack = savedTrack;
     }
     
@@ -282,6 +282,7 @@ function initGame() {
     // 更新UI
     updateUI();
     updateUIText();
+    updateTrackSelectorUI();
 }
 
 // 生成游戏路径
@@ -1408,7 +1409,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    canvas.addEventListener('click', () => {
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        updateShooterAngle(mouseX, mouseY);
+        shootBall();
+    });
+    
+    // 触屏事件
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const touchX = touch.clientX - rect.left;
+        const touchY = touch.clientY - rect.top;
+        updateShooterAngle(touchX, touchY);
+        
+        if (gameState.isRunning && !gameState.isPaused) {
+            draw();
+        }
+    });
+    
+    canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
         shootBall();
     });
     

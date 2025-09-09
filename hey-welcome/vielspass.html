@@ -11,6 +11,26 @@
             margin: 0 auto;
             padding: 20px;
             text-align: center;
+            position: relative;
+        }
+        
+        .visit-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        
+        .visit-counter #visit-count {
+            color: #ffeb3b;
+            margin-left: 5px;
         }
         
         .game-options {
@@ -57,10 +77,73 @@
         .language-switch {
             margin-top: 20px;
         }
+        
+        /* 移动端响应式设计 */
+        @media (max-width: 768px) {
+            .visit-counter {
+                position: static;
+                display: inline-block;
+                margin-bottom: 15px;
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+            
+            .game-selector-container {
+                padding: 15px;
+            }
+            
+            .game-options {
+                gap: 20px;
+            }
+            
+            .game-option {
+                width: 100%;
+                max-width: 300px;
+                height: auto;
+                min-height: 280px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .visit-counter {
+                font-size: 11px;
+                padding: 5px 10px;
+            }
+            
+            .game-selector-container {
+                padding: 10px;
+            }
+            
+            .game-option {
+                padding: 15px;
+                min-height: 250px;
+            }
+            
+            .game-icon {
+                font-size: 40px;
+                margin-bottom: 15px;
+            }
+            
+            .game-title {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+            
+            .game-description {
+                font-size: 14px;
+                margin-bottom: 15px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="game-selector-container">
+        <!-- 访问量显示 -->
+        <div class="visit-counter">
+            <span id="visit-label">访问量: </span>
+            <span id="visit-count">0</span>
+        </div>
+        
         <h1 id="selector-title">选择游戏</h1>
         
         <div class="language-switch">
@@ -104,6 +187,7 @@
         const LANGUAGES = {
             zh: {
                 selectorTitle: "选择游戏",
+                visitLabel: "访问量: ",
                 snakeTitle: "贪吃蛇",
                 snakeDescription: "控制蛇吃食物，不断成长，小心不要撞到墙壁或自己的身体！",
                 tetrisTitle: "俄罗斯方块",
@@ -116,6 +200,7 @@
             },
             en: {
                 selectorTitle: "Choose a Game",
+                visitLabel: "Visits: ",
                 snakeTitle: "Snake",
                 snakeDescription: "Control the snake to eat food and grow longer, but be careful not to hit the walls or your own body!",
                 tetrisTitle: "Tetris",
@@ -132,6 +217,8 @@
         const langZhButton = document.getElementById('lang-zh');
         const langEnButton = document.getElementById('lang-en');
         const selectorTitle = document.getElementById('selector-title');
+        const visitLabel = document.getElementById('visit-label');
+        const visitCount = document.getElementById('visit-count');
         const snakeTitle = document.getElementById('snake-title');
         const snakeDescription = document.getElementById('snake-description');
         const tetrisTitle = document.getElementById('tetris-title');
@@ -148,12 +235,43 @@
         // 当前语言
         let currentLang = localStorage.getItem('snakeLanguage') || 'zh';
         
+        // 访问量统计
+        function updateVisitCount() {
+            // 获取本地访问量
+            let localVisits = parseInt(localStorage.getItem('gameVisitCount') || '0');
+            localVisits++;
+            localStorage.setItem('gameVisitCount', localVisits.toString());
+            
+            // 显示本地访问量
+            visitCount.textContent = localVisits.toLocaleString();
+            
+            // 尝试从服务器获取总访问量
+            fetch('/api/visit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ type: 'visit' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.totalVisits) {
+                    visitCount.textContent = data.totalVisits.toLocaleString();
+                }
+            })
+            .catch(error => {
+                // 如果服务器请求失败，继续使用本地计数
+                console.log('使用本地访问量统计:', error.message);
+            });
+        }
+        
         // 更新UI文本
         function updateUIText() {
             const texts = LANGUAGES[currentLang];
             
             document.title = texts.selectorTitle;
             selectorTitle.textContent = texts.selectorTitle;
+            visitLabel.textContent = texts.visitLabel;
             snakeTitle.textContent = texts.snakeTitle;
             snakeDescription.textContent = texts.snakeDescription;
             tetrisTitle.textContent = texts.tetrisTitle;
@@ -194,6 +312,7 @@
         
         // 初始化
         switchLanguage(currentLang);
+        updateVisitCount();
     </script>
 </body>
 </html>

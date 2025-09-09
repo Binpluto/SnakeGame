@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 const SNAKE_LEADERBOARD_FILE = path.join(__dirname, 'snake-leaderboard.json');
 const TETRIS_LEADERBOARD_FILE = path.join(__dirname, 'tetris-leaderboard.json');
 const ZUMA_LEADERBOARD_FILE = path.join(__dirname, 'zuma-leaderboard.json');
+const VISIT_COUNT_FILE = path.join(__dirname, 'visit-count.json');
 
 // 中间件
 app.use(cors());
@@ -23,6 +24,48 @@ app.get('/', (req, res) => {
     res.redirect('/hey-welcome/vielspass.html');
 });
 
+// 访问量统计API
+app.post('/api/visit', (req, res) => {
+    try {
+        // 读取当前访问量
+        let visitData = { totalVisits: 0 };
+        if (fs.existsSync(VISIT_COUNT_FILE)) {
+            const data = fs.readFileSync(VISIT_COUNT_FILE, 'utf8');
+            visitData = JSON.parse(data);
+        }
+        
+        // 增加访问量
+        visitData.totalVisits++;
+        
+        // 保存更新后的访问量
+        fs.writeFileSync(VISIT_COUNT_FILE, JSON.stringify(visitData), 'utf8');
+        
+        res.json({
+            success: true,
+            totalVisits: visitData.totalVisits
+        });
+    } catch (error) {
+        console.error('访问量统计失败:', error);
+        res.status(500).json({ error: '访问量统计失败' });
+    }
+});
+
+// 获取访问量API
+app.get('/api/visit', (req, res) => {
+    try {
+        let visitData = { totalVisits: 0 };
+        if (fs.existsSync(VISIT_COUNT_FILE)) {
+            const data = fs.readFileSync(VISIT_COUNT_FILE, 'utf8');
+            visitData = JSON.parse(data);
+        }
+        
+        res.json(visitData);
+    } catch (error) {
+        console.error('获取访问量失败:', error);
+        res.status(500).json({ error: '获取访问量失败' });
+    }
+});
+
 // 初始化排行榜文件（如果不存在）
 if (!fs.existsSync(SNAKE_LEADERBOARD_FILE)) {
     fs.writeFileSync(SNAKE_LEADERBOARD_FILE, JSON.stringify([]), 'utf8');
@@ -34,6 +77,11 @@ if (!fs.existsSync(TETRIS_LEADERBOARD_FILE)) {
 
 if (!fs.existsSync(ZUMA_LEADERBOARD_FILE)) {
     fs.writeFileSync(ZUMA_LEADERBOARD_FILE, JSON.stringify([]), 'utf8');
+}
+
+// 初始化访问量文件
+if (!fs.existsSync(VISIT_COUNT_FILE)) {
+    fs.writeFileSync(VISIT_COUNT_FILE, JSON.stringify({ totalVisits: 0 }), 'utf8');
 }
 
 // 获取排行榜数据
