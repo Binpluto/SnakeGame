@@ -169,9 +169,6 @@ function initGame() {
     // 更新UI
     updateUI();
     updateUIText();
-    
-    // 绘制初始画面
-    draw();
 }
 
 // 生成游戏路径
@@ -206,8 +203,7 @@ function generateBallChain() {
     
     for (let i = 0; i < ballCount; i++) {
         const ball = generateRandomBall();
-        // 确保球之间相连但不重叠，使用球的直径作为间距
-        ball.pathIndex = i * (BALL_RADIUS * 2);
+        ball.pathIndex = i * 2;
         ball.id = i;
         ballChain.push(ball);
     }
@@ -290,36 +286,6 @@ function updateBallChain() {
             }
         }
     }
-    
-    // 重新调整球链位置，确保球之间相连但不重叠
-    adjustBallChainSpacing();
-}
-
-// 调整球链间距，确保球之间相连但不重叠
-function adjustBallChainSpacing() {
-    for (let i = 1; i < ballChain.length; i++) {
-        const currentBall = ballChain[i];
-        const prevBall = ballChain[i - 1];
-        
-        const distance = Math.sqrt(
-            Math.pow(currentBall.x - prevBall.x, 2) + 
-            Math.pow(currentBall.y - prevBall.y, 2)
-        );
-        
-        const targetDistance = BALL_RADIUS * 2; // 球的直径
-        
-        if (distance > targetDistance + 2) {
-            // 如果距离太远，向前移动
-            const angle = Math.atan2(prevBall.y - currentBall.y, prevBall.x - currentBall.x);
-            currentBall.x = prevBall.x - Math.cos(angle) * targetDistance;
-            currentBall.y = prevBall.y - Math.sin(angle) * targetDistance;
-        } else if (distance < targetDistance - 2) {
-            // 如果距离太近，向后移动
-            const angle = Math.atan2(currentBall.y - prevBall.y, currentBall.x - prevBall.x);
-            currentBall.x = prevBall.x + Math.cos(angle) * targetDistance;
-            currentBall.y = prevBall.y + Math.sin(angle) * targetDistance;
-        }
-    }
 }
 
 // 更新发射的球
@@ -374,9 +340,9 @@ function insertBallIntoChain(ball, index) {
     
     ballChain.splice(index, 0, newBall);
     
-    // 重新计算路径索引，确保球之间保持正确间距
+    // 重新计算路径索引
     for (let i = index + 1; i < ballChain.length; i++) {
-        ballChain[i].pathIndex = ballChain[i - 1].pathIndex + (BALL_RADIUS * 2);
+        ballChain[i].pathIndex = ballChain[i - 1].pathIndex + 2;
     }
 }
 
@@ -794,38 +760,6 @@ document.addEventListener('DOMContentLoaded', () => {
         shootBall();
     });
     
-    // 触屏事件 - 瞄准和发射
-    canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        const touchX = touch.clientX - rect.left;
-        const touchY = touch.clientY - rect.top;
-        updateShooterAngle(touchX, touchY);
-        
-        if (gameState.isRunning && !gameState.isPaused) {
-            draw();
-        }
-    });
-    
-    canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        const touchX = touch.clientX - rect.left;
-        const touchY = touch.clientY - rect.top;
-        updateShooterAngle(touchX, touchY);
-        
-        if (gameState.isRunning && !gameState.isPaused) {
-            draw();
-        }
-    });
-    
-    canvas.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        shootBall();
-    });
-    
     // 键盘事件
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space') {
@@ -842,24 +776,16 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'game-selector.html';
     });
     
-    // 触屏控制按钮
+    // 触屏控制
     const touchShootButton = document.getElementById('touch-shoot');
     const touchSwitchButton = document.getElementById('touch-switch');
     
     if (touchShootButton) {
         touchShootButton.addEventListener('click', shootBall);
-        touchShootButton.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            shootBall();
-        });
     }
     
     if (touchSwitchButton) {
         touchSwitchButton.addEventListener('click', switchBall);
-        touchSwitchButton.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            switchBall();
-        });
     }
     
     // 语言切换
