@@ -124,6 +124,25 @@ body {
     gap: 20px;
 }
 
+.current-mode-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.current-mode-container #current-mode-name {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.username-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .username-section {
     background: rgba(46, 204, 113, 0.1);
     padding: 15px;

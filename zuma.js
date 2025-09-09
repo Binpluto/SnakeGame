@@ -95,6 +95,7 @@ const LANGUAGES = {
         backToMenu: "返回游戏选择",
         trackSelectorTitle: "选择模式",
         currentTrack: "当前模式: ",
+        currentMode: "当前模式: ",
         difficulty: "难度: ",
         close: "关闭"
     },
@@ -126,6 +127,7 @@ const LANGUAGES = {
         backToMenu: "Back to Menu",
         trackSelectorTitle: "Select Mode",
         currentTrack: "Current Mode: ",
+        currentMode: "Current Mode: ",
         difficulty: "Difficulty: ",
         close: "Close"
     }
@@ -173,6 +175,7 @@ let langZhButton, langEnButton;
 let instructionsTitle, instructionControls, instructionMouse, instructionClick, instructionSpace, instructionTouch;
 let startText, pauseText, restartText, backText, selectTrackText;
 let trackSelector, trackSelectorTitle, trackSelectorClose, currentTrackLabel, currentTrackName;
+let currentModeLabel, currentModeName;
 let trackOptions = {};
 let trackNames = {};
 let trackDescs = {};
@@ -234,6 +237,9 @@ function initGame() {
     trackSelectorClose = document.getElementById('track-selector-close');
     currentTrackLabel = document.getElementById('current-track-label');
     currentTrackName = document.getElementById('current-track-name');
+    
+    currentModeLabel = document.getElementById('current-mode-label');
+    currentModeName = document.getElementById('current-mode-name');
     
     // 轨迹选项元素
     Object.keys(TRACK_TYPES).forEach(key => {
@@ -1236,6 +1242,9 @@ function updateUIText() {
     if (currentTrackLabel) {
         currentTrackLabel.textContent = texts.currentTrack;
     }
+    if (currentModeLabel) {
+        currentModeLabel.textContent = texts.currentMode;
+    }
     if (trackSelectorClose) {
         trackSelectorClose.textContent = texts.close;
     }
@@ -1355,6 +1364,11 @@ function updateTrackSelectorUI() {
     // 更新当前轨迹显示
     if (currentTrackName) {
         currentTrackName.textContent = currentConfig.name[currentLang];
+    }
+    
+    // 更新主界面当前模式显示
+    if (currentModeName) {
+        currentModeName.textContent = currentConfig.name[currentLang];
     }
     
     // 更新轨迹选项UI
