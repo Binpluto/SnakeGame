@@ -877,23 +877,60 @@ body {
     overflow: hidden;
 }
 
+/* 经典模式 - 简洁的螺旋图案 */
 .spiral-preview {
-    background: radial-gradient(circle, #ff6b6b, #4ecdc4);
+    background: radial-gradient(circle, #4ecdc4, #45b7d1);
+    position: relative;
 }
 
+.spiral-preview::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    border-top-color: transparent;
+    transform: translate(-50%, -50%);
+    animation: spiral-rotate 2s linear infinite;
+}
+
+@keyframes spiral-rotate {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* 挑战模式 - 动态的锯齿图案 */
 .zigzag-preview {
-    background: linear-gradient(45deg, #ff9a9e 25%, transparent 25%), 
-                linear-gradient(-45deg, #fecfef 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #ff9a9e 75%), 
-                linear-gradient(-45deg, transparent 75%, #fecfef 75%);
+    background: linear-gradient(45deg, #ff6b6b 25%, #ff8e8e 25%, #ff8e8e 50%, #ff6b6b 50%, #ff6b6b 75%, #ff8e8e 75%);
     background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    animation: zigzag-move 1.5s linear infinite;
 }
 
+@keyframes zigzag-move {
+    0% { background-position: 0 0; }
+    100% { background-position: 20px 20px; }
+}
+
+/* 波浪模式 - 流动的波浪效果 */
 .wave-preview {
     background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
     background-size: 200% 100%;
     animation: wave-animation 3s ease-in-out infinite;
+    position: relative;
+}
+
+.wave-preview::after {
+    content: '〜';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    color: rgba(255, 255, 255, 0.9);
+    animation: wave-bounce 2s ease-in-out infinite;
 }
 
 @keyframes wave-animation {
@@ -901,10 +938,35 @@ body {
     50% { background-position: 100% 50%; }
 }
 
-.square-preview {
-    background: conic-gradient(from 0deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ff6b6b);
+@keyframes wave-bounce {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.2); }
 }
 
+/* 方形模式 - 几何图案 */
+.square-preview {
+    background: conic-gradient(from 0deg, #96ceb4, #ffeaa7, #fd79a8, #6c5ce7, #96ceb4);
+    position: relative;
+}
+
+.square-preview::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    transform: translate(-50%, -50%) rotate(45deg);
+    animation: square-pulse 2s ease-in-out infinite;
+}
+
+@keyframes square-pulse {
+    0%, 100% { transform: translate(-50%, -50%) rotate(45deg) scale(1); }
+    50% { transform: translate(-50%, -50%) rotate(45deg) scale(1.3); }
+}
+
+/* 浪漫模式 - 心形图案 */
 .heart-preview {
     background: radial-gradient(circle at 30% 30%, #ff6b6b, #ff8e8e, #ffa8a8);
     position: relative;
@@ -917,7 +979,13 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 40px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.9);
+    animation: heart-beat 1.5s ease-in-out infinite;
+}
+
+@keyframes heart-beat {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.2); }
 }
 
 .track-info h4 {

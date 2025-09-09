@@ -39,31 +39,31 @@ const TRACK_TYPES = {
 // 轨迹配置
 const TRACK_CONFIGS = {
     [TRACK_TYPES.SPIRAL]: {
-        name: { zh: '螺旋轨迹', en: 'Spiral Track' },
+        name: { zh: '经典模式', en: 'Classic Mode' },
         description: { zh: '经典螺旋形路径', en: 'Classic spiral path' },
         difficulty: 1
     },
     [TRACK_TYPES.ZIGZAG]: {
-        name: { zh: '之字轨迹', en: 'Zigzag Track' },
+        name: { zh: '挑战模式', en: 'Challenge Mode' },
         description: { zh: '锯齿状曲折路径', en: 'Zigzag winding path' },
         difficulty: 2
     },
     [TRACK_TYPES.WAVE]: {
-        name: { zh: '波浪轨迹', en: 'Wave Track' },
+        name: { zh: '波浪模式', en: 'Wave Mode' },
         description: { zh: '起伏的波浪路径', en: 'Undulating wave path' },
         difficulty: 2
     },
     [TRACK_TYPES.SQUARE]: {
-        name: { zh: '方形轨迹', en: 'Square Track' },
+        name: { zh: '方形模式', en: 'Square Mode' },
         description: { zh: '方形螺旋路径', en: 'Square spiral path' },
         difficulty: 3
     },
     [TRACK_TYPES.HEART]: {
-        name: { zh: '心形轨迹', en: 'Heart Track' },
+        name: { zh: '浪漫模式', en: 'Romantic Mode' },
         description: { zh: '浪漫的心形路径', en: 'Romantic heart-shaped path' },
         difficulty: 4
     }
-};
+}
 
 // 语言配置
 const LANGUAGES = {
@@ -76,7 +76,7 @@ const LANGUAGES = {
         pause: "暂停",
         resume: "继续",
         restart: "重新开始",
-        selectTrack: "选择轨迹",
+        selectTrack: "选择模式",
         gameOver: "游戏结束",
         levelComplete: "关卡完成",
         username: "用户名: ",
@@ -93,8 +93,8 @@ const LANGUAGES = {
         spaceGuide: "空格键: 切换彩球颜色",
         touchGuide: "在移动设备上可使用触屏操作",
         backToMenu: "返回游戏选择",
-        trackSelectorTitle: "选择轨迹",
-        currentTrack: "当前轨迹: ",
+        trackSelectorTitle: "选择模式",
+        currentTrack: "当前模式: ",
         difficulty: "难度: ",
         close: "关闭"
     },
@@ -107,7 +107,7 @@ const LANGUAGES = {
         pause: "Pause",
         resume: "Resume",
         restart: "Restart",
-        selectTrack: "Select Track",
+        selectTrack: "Select Mode",
         gameOver: "Game Over",
         levelComplete: "Level Complete",
         username: "Username: ",
@@ -124,8 +124,8 @@ const LANGUAGES = {
         spaceGuide: "Space Key: Switch Ball Color",
         touchGuide: "Use touch controls on mobile devices",
         backToMenu: "Back to Menu",
-        trackSelectorTitle: "Select Track",
-        currentTrack: "Current Track: ",
+        trackSelectorTitle: "Select Mode",
+        currentTrack: "Current Mode: ",
         difficulty: "Difficulty: ",
         close: "Close"
     }

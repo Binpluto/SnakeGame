@@ -46,7 +46,7 @@ const LANGUAGES = {
         rule1: "点击上层的图案卡片，将其移动到底部卡槽中",
         rule2: "当卡槽中有3个相同的图案时，它们会自动消除",
         rule3: "清除所有卡片即可过关，卡槽满了则游戏失败",
-        rule4: "合理规划消除顺序，避免卡槽被无用卡片占满",
+        rule4: "只要7个空格没有填满就能一直玩，没有步数限制",
         rule5: "左右两边是盲牌堆叠，只能看到顶部卡片",
         touchGuide: "在移动设备上可直接点击卡片进行操作",
         backToMenu: "返回游戏选择",
@@ -81,7 +81,7 @@ const LANGUAGES = {
         rule1: "Click on the top cards to move them to the bottom slots",
         rule2: "When 3 identical cards are in slots, they will be eliminated",
         rule3: "Clear all cards to pass the level, game over if slots are full",
-        rule4: "Plan your moves wisely to avoid filling slots with unusable cards",
+        rule4: "You can play as long as the 7 slots are not full, no move limit",
         rule5: "Left and right are blind card stacks, only top card is visible",
         touchGuide: "Tap cards directly on mobile devices",
         backToMenu: "Back to Menu",
@@ -540,11 +540,11 @@ function checkGameEnd() {
         return;
     }
     
-    // 检查是否没有步数了
-    if (gameState.moves <= 0) {
-        gameOver();
-        return;
-    }
+    // 取消步数限制 - 只要7个空格没有填满就能一直玩
+    // if (gameState.moves <= 0) {
+    //     gameOver();
+    //     return;
+    // }
     
     // 检查卡槽是否已满
     const filledSlots = slots.filter(slot => slot !== null);
