@@ -8,6 +8,25 @@ const SHOOTER_RADIUS = 20;
 const COLORS = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
 const API_URL = 'http://localhost:3000';
 
+// 功能球类型
+const POWER_BALL_TYPES = {
+    SLOW: 'slow',        // 减速球
+    EXPLODE: 'explode',  // 爆炸球
+    REVERSE: 'reverse',  // 倒退球
+    SPEED: 'speed'       // 增加发射速度球
+};
+
+// 功能球颜色映射
+const POWER_BALL_COLORS = {
+    [POWER_BALL_TYPES.SLOW]: '#3498db',     // 蓝色
+    [POWER_BALL_TYPES.EXPLODE]: '#e74c3c', // 红色
+    [POWER_BALL_TYPES.REVERSE]: '#9b59b6', // 紫色
+    [POWER_BALL_TYPES.SPEED]: '#f1c40f'    // 黄色
+};
+
+// 功能球生成概率 (每100个球中的数量)
+const POWER_BALL_CHANCE = 0.15; // 15%概率
+
 // 语言配置
 const LANGUAGES = {
     zh: {
@@ -71,7 +90,12 @@ let gameState = {
     isGameOver: false,
     score: 0,
     level: 1,
-    lives: 3
+    lives: 3,
+    // 功能球效果状态
+    slowEffect: 0,        // 减速效果剩余时间
+    speedBoost: 0,        // 射击速度提升剩余时间
+    chainSpeed: 1,        // 球链移动速度倍数
+    shootSpeed: 1         // 发射速度倍数
 };
 
 // 游戏对象
@@ -190,9 +214,28 @@ function generatePath() {
 
 // 生成随机彩球
 function generateRandomBall() {
+    // 判断是否生成功能球
+    if (Math.random() < POWER_BALL_CHANCE) {
+        return generatePowerBall();
+    }
+    
     return {
         color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        radius: BALL_RADIUS
+        radius: BALL_RADIUS,
+        isPowerBall: false
+    };
+}
+
+// 生成功能球
+function generatePowerBall() {
+    const powerTypes = Object.values(POWER_BALL_TYPES);
+    const powerType = powerTypes[Math.floor(Math.random() * powerTypes.length)];
+    
+    return {
+        color: POWER_BALL_COLORS[powerType],
+        radius: BALL_RADIUS,
+        isPowerBall: true,
+        powerType: powerType
     };
 }
 
@@ -220,13 +263,16 @@ function updateShooterAngle(mouseX, mouseY) {
 function shootBall() {
     if (!gameState.isRunning || gameState.isPaused) return;
     
+    const shootSpeed = 8 * gameState.shootSpeed;
     const ball = {
         x: shooter.x,
         y: shooter.y,
-        vx: Math.cos(shooter.angle) * 8,
-        vy: Math.sin(shooter.angle) * 8,
+        vx: Math.cos(shooter.angle) * shootSpeed,
+        vy: Math.sin(shooter.angle) * shootSpeed,
         color: shooter.currentBall.color,
-        radius: BALL_RADIUS
+        radius: BALL_RADIUS,
+        isPowerBall: shooter.currentBall.isPowerBall || false,
+        powerType: shooter.currentBall.powerType
     };
     
     shootingBalls.push(ball);
@@ -249,6 +295,9 @@ function switchBall() {
 function updateGame() {
     if (!gameState.isRunning || gameState.isPaused) return;
     
+    // 更新功能球效果
+    updatePowerEffects();
+    
     // 更新球链移动
     updateBallChain();
     
@@ -262,11 +311,30 @@ function updateGame() {
     checkGameEnd();
 }
 
+// 更新功能球效果
+function updatePowerEffects() {
+    // 减速效果倒计时
+    if (gameState.slowEffect > 0) {
+        gameState.slowEffect--;
+        gameState.chainSpeed = 0.3; // 减速到30%
+    } else {
+        gameState.chainSpeed = 1;
+    }
+    
+    // 射击速度提升效果倒计时
+    if (gameState.speedBoost > 0) {
+        gameState.speedBoost--;
+        gameState.shootSpeed = 2; // 射击速度提升到200%
+    } else {
+        gameState.shootSpeed = 1;
+    }
+}
+
 // 更新球链
 function updateBallChain() {
     for (let i = 0; i < ballChain.length; i++) {
         const ball = ballChain[i];
-        ball.pathIndex += 0.5;
+        ball.pathIndex += 0.5 * gameState.chainSpeed;
         
         if (ball.pathIndex >= path.length) {
             // 球到达终点，玩家失去生命
@@ -315,15 +383,80 @@ function checkCollisions() {
             );
             
             if (distance < BALL_RADIUS * 2) {
-                // 碰撞发生，插入球到链中
-                insertBallIntoChain(shootingBall, j);
-                shootingBalls.splice(i, 1);
+                // 检查是否为功能球
+                if (shootingBall.isPowerBall) {
+                    // 触发功能球效果
+                    activatePowerBall(shootingBall, j);
+                } else {
+                    // 普通球，插入球到链中
+                    insertBallIntoChain(shootingBall, j);
+                    // 检查消除
+                    checkMatches(j);
+                }
                 
-                // 检查消除
-                checkMatches(j);
+                shootingBalls.splice(i, 1);
                 break;
             }
         }
+    }
+}
+
+// 激活功能球效果
+function activatePowerBall(powerBall, hitIndex) {
+    switch (powerBall.powerType) {
+        case POWER_BALL_TYPES.SLOW:
+            // 减速球：减慢球链移动速度
+            gameState.slowEffect = 300; // 5秒效果 (60fps * 5)
+            gameState.score += 50;
+            break;
+            
+        case POWER_BALL_TYPES.EXPLODE:
+            // 爆炸球：消除周围的球
+            explodeBalls(hitIndex);
+            gameState.score += 100;
+            break;
+            
+        case POWER_BALL_TYPES.REVERSE:
+            // 倒退球：让球链倒退
+            reverseBallChain();
+            gameState.score += 75;
+            break;
+            
+        case POWER_BALL_TYPES.SPEED:
+            // 速度球：增加发射速度
+            gameState.speedBoost = 600; // 10秒效果
+            gameState.score += 50;
+            break;
+    }
+}
+
+// 爆炸效果：消除周围的球
+function explodeBalls(centerIndex) {
+    const explodeRange = 3; // 爆炸范围
+    const startIndex = Math.max(0, centerIndex - explodeRange);
+    const endIndex = Math.min(ballChain.length - 1, centerIndex + explodeRange);
+    
+    // 计算得分
+    const removedCount = endIndex - startIndex + 1;
+    gameState.score += removedCount * 10;
+    
+    // 移除球
+    ballChain.splice(startIndex, removedCount);
+    
+    // 重新计算路径索引
+    for (let i = startIndex; i < ballChain.length; i++) {
+        if (i === 0) {
+            ballChain[i].pathIndex = 0;
+        } else {
+            ballChain[i].pathIndex = ballChain[i - 1].pathIndex + 2;
+        }
+    }
+}
+
+// 倒退效果：让球链向后移动
+function reverseBallChain() {
+    for (let i = 0; i < ballChain.length; i++) {
+        ballChain[i].pathIndex = Math.max(0, ballChain[i].pathIndex - 20);
     }
 }
 
@@ -434,6 +567,9 @@ function draw() {
     // 绘制路径
     drawPath();
     
+    // 绘制终点笑脸
+    drawEndPoint();
+    
     // 绘制球链
     drawBallChain();
     
@@ -466,33 +602,140 @@ function drawPath() {
     ctx.stroke();
 }
 
+// 绘制终点笑脸
+function drawEndPoint() {
+    if (path.length === 0) return;
+    
+    const endPoint = path[path.length - 1];
+    const faceRadius = 30;
+    
+    // 计算球链距离终点的最近距离
+    let minDistance = Infinity;
+    if (ballChain.length > 0) {
+        const firstBall = ballChain[0];
+        if (firstBall.x !== undefined && firstBall.y !== undefined) {
+            const dx = firstBall.x - endPoint.x;
+            const dy = firstBall.y - endPoint.y;
+            minDistance = Math.sqrt(dx * dx + dy * dy);
+        }
+    }
+    
+    // 根据距离计算嘴巴张开程度 (距离越近，嘴巴张得越大)
+    const maxDistance = 200; // 最大影响距离
+    const mouthOpenness = Math.max(0, Math.min(1, 1 - minDistance / maxDistance));
+    
+    // 绘制脸部背景
+    ctx.fillStyle = '#f39c12';
+    ctx.beginPath();
+    ctx.arc(endPoint.x, endPoint.y, faceRadius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 绘制脸部边框
+    ctx.strokeStyle = '#e67e22';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    
+    // 绘制眼睛
+    ctx.fillStyle = '#2c3e50';
+    // 左眼
+    ctx.beginPath();
+    ctx.arc(endPoint.x - 10, endPoint.y - 8, 4, 0, Math.PI * 2);
+    ctx.fill();
+    // 右眼
+    ctx.beginPath();
+    ctx.arc(endPoint.x + 10, endPoint.y - 8, 4, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 绘制动态嘴巴
+    ctx.strokeStyle = '#2c3e50';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    
+    const mouthY = endPoint.y + 5;
+    const mouthWidth = 16;
+    const mouthHeight = 5 + mouthOpenness * 15; // 嘴巴高度随距离变化
+    
+    ctx.beginPath();
+    if (mouthOpenness > 0.1) {
+        // 张开的嘴巴 (椭圆形)
+        ctx.ellipse(endPoint.x, mouthY + mouthHeight/2, mouthWidth/2, mouthHeight/2, 0, 0, Math.PI * 2);
+        ctx.fillStyle = '#c0392b';
+        ctx.fill();
+        ctx.stroke();
+    } else {
+        // 闭合的嘴巴 (弧线)
+        ctx.arc(endPoint.x, mouthY - 5, mouthWidth/2, 0, Math.PI);
+        ctx.stroke();
+    }
+}
+
 // 绘制球链
 function drawBallChain() {
     for (const ball of ballChain) {
-        ctx.fillStyle = ball.color;
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // 绘制球的边框
-        ctx.strokeStyle = '#2c3e50';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        if (ball.isPowerBall) {
+            drawPowerBall(ball.x, ball.y, ball.radius, ball.powerType);
+        } else {
+            drawSphere(ball.x, ball.y, ball.radius, ball.color);
+        }
     }
 }
 
 // 绘制发射的球
 function drawShootingBalls() {
     for (const ball of shootingBalls) {
-        ctx.fillStyle = ball.color;
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.strokeStyle = '#2c3e50';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        if (ball.isPowerBall) {
+            drawPowerBall(ball.x, ball.y, ball.radius, ball.powerType);
+        } else {
+            drawSphere(ball.x, ball.y, ball.radius, ball.color);
+        }
     }
+}
+
+// 绘制功能球
+function drawPowerBall(x, y, radius, powerType) {
+    const color = POWER_BALL_COLORS[powerType];
+    
+    // 绘制基础球体
+    drawSphere(x, y, radius, color);
+    
+    // 添加特殊效果
+    ctx.save();
+    
+    // 绘制符号
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    let symbol = '';
+    switch (powerType) {
+        case POWER_BALL_TYPES.SLOW:
+            symbol = 'S';
+            break;
+        case POWER_BALL_TYPES.EXPLODE:
+            symbol = 'E';
+            break;
+        case POWER_BALL_TYPES.REVERSE:
+            symbol = 'R';
+            break;
+        case POWER_BALL_TYPES.SPEED:
+            symbol = 'F';
+            break;
+    }
+    
+    ctx.fillText(symbol, x, y);
+    
+    // 添加闪烁效果
+    const time = Date.now() * 0.01;
+    const alpha = 0.3 + 0.3 * Math.sin(time);
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, radius + 2, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    ctx.restore();
 }
 
 // 绘制射手
@@ -505,30 +748,88 @@ function drawShooter() {
     
     // 绘制当前球
     if (shooter.currentBall) {
-        ctx.fillStyle = shooter.currentBall.color;
-        ctx.beginPath();
-        ctx.arc(shooter.x, shooter.y, BALL_RADIUS, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.strokeStyle = '#2c3e50';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        if (shooter.currentBall.isPowerBall) {
+            drawPowerBall(shooter.x, shooter.y, BALL_RADIUS, shooter.currentBall.powerType);
+        } else {
+            drawSphere(shooter.x, shooter.y, BALL_RADIUS, shooter.currentBall.color);
+        }
     }
     
     // 绘制下一个球
     if (shooter.nextBall) {
         const nextX = shooter.x + 50;
         const nextY = shooter.y;
-        
-        ctx.fillStyle = shooter.nextBall.color;
-        ctx.beginPath();
-        ctx.arc(nextX, nextY, BALL_RADIUS - 3, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.strokeStyle = '#2c3e50';
-        ctx.lineWidth = 1;
-        ctx.stroke();
+        if (shooter.nextBall.isPowerBall) {
+            drawPowerBall(nextX, nextY, BALL_RADIUS - 3, shooter.nextBall.powerType);
+        } else {
+            drawSphere(nextX, nextY, BALL_RADIUS - 3, shooter.nextBall.color);
+        }
     }
+}
+
+// 绘制3D球体
+function drawSphere(x, y, radius, color) {
+    // 验证参数
+    if (!isFinite(x) || !isFinite(y) || !isFinite(radius) || radius <= 0) {
+        return;
+    }
+    
+    // 创建径向渐变
+    const gradient = ctx.createRadialGradient(
+        x - radius * 0.3, y - radius * 0.3, 0,
+        x, y, radius
+    );
+    
+    // 根据颜色设置渐变
+    const colorMap = {
+        'red': ['#ff6b6b', '#e74c3c', '#c0392b'],
+        'blue': ['#74b9ff', '#3498db', '#2980b9'],
+        'green': ['#55efc4', '#2ecc71', '#27ae60'],
+        'yellow': ['#fdcb6e', '#f1c40f', '#f39c12'],
+        'purple': ['#a29bfe', '#9b59b6', '#8e44ad'],
+        'orange': ['#fd79a8', '#e67e22', '#d35400']
+    };
+    
+    const colors = colorMap[color] || ['#bdc3c7', '#95a5a6', '#7f8c8d'];
+    
+    gradient.addColorStop(0, colors[0]);    // 高光
+    gradient.addColorStop(0.7, colors[1]);  // 主色
+    gradient.addColorStop(1, colors[2]);    // 阴影
+    
+    // 绘制球体阴影
+    ctx.save();
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = '#2c3e50';
+    ctx.beginPath();
+    ctx.ellipse(x + 2, y + radius * 0.8, radius * 0.8, radius * 0.3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    
+    // 绘制球体主体
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 绘制高光
+    const highlightGradient = ctx.createRadialGradient(
+        x - radius * 0.4, y - radius * 0.4, 0,
+        x - radius * 0.4, y - radius * 0.4, radius * 0.5
+    );
+    highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+    highlightGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    
+    ctx.fillStyle = highlightGradient;
+    ctx.beginPath();
+    ctx.arc(x - radius * 0.3, y - radius * 0.3, radius * 0.4, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 绘制边框
+    ctx.strokeStyle = 'rgba(44, 62, 80, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.stroke();
 }
 
 // 绘制准星
@@ -593,7 +894,11 @@ function restartGame() {
         isGameOver: false,
         score: 0,
         level: 1,
-        lives: 3
+        lives: 3,
+        slowEffect: 0,
+        speedBoost: 0,
+        chainSpeed: 1,
+        shootSpeed: 1
     };
     
     ballChain = [];
