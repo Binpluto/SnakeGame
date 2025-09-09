@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, '..')));
 
 // 设置根路径重定向到游戏选择界面
 app.get('/', (req, res) => {
-    res.redirect('/game-selector.html');
+    res.redirect('/hey-welcome/vielspass.html');
 });
 
 // 初始化排行榜文件（如果不存在）

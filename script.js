@@ -711,7 +711,7 @@ restartButton.addEventListener('click', restartGame);
 langZhButton.addEventListener('click', () => switchLanguage('zh'));
 langEnButton.addEventListener('click', () => switchLanguage('en'));
 saveUsernameButton.addEventListener('click', saveUsername);
-backButton.addEventListener('click', () => window.location.href = 'game-selector.html');
+backButton.addEventListener('click', () => window.location.href = 'hey-welcome/vielspass.html');
 
 // 触摸控制事件监听
 touchUpButton.addEventListener('click', () => handleTouchControl('up'));

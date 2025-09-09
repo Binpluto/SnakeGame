@@ -754,7 +754,7 @@ startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
 restartButton.addEventListener('click', restartGame);
 backButton.addEventListener('click', () => {
-    window.location.href = 'game-selector.html';
+    window.location.href = 'hey-welcome/vielspass.html';
 });
 
 // 触屏控制事件监听

@@ -125,7 +125,7 @@ restartButton.addEventListener('click', restartGame);
 langZhButton.addEventListener('click', () => switchLanguage('zh'));
 langEnButton.addEventListener('click', () => switchLanguage('en'));
 saveUsernameButton.addEventListener('click', saveUsername);
-backButton.addEventListener('click', () => window.location.href = 'game-selector.html');
+backButton.addEventListener('click', () => window.location.href = 'hey-welcome/vielspass.html');
 
 // 初始化
 // 加载保存的语言设置
