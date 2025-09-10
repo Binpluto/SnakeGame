@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五子棋游戏</title>
+    <link rel="stylesheet" href="gomoku.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>五子棋</h1>
+            <div class="game-info">
+                <div class="current-player">
+                    <span>当前玩家：</span>
+                    <span id="current-player-text">黑子</span>
+                </div>
+                <div class="game-mode">
+                    <button id="mode-btn" class="mode-btn">切换到AI模式</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="game-board-container">
+                <canvas id="game-board" width="600" height="600"></canvas>
+                <div class="board-overlay" id="board-overlay"></div>
+            </div>
+            
+            <div class="game-controls">
+                <button id="new-game-btn" class="control-btn">新游戏</button>
+                <button id="undo-btn" class="control-btn">悔棋</button>
+                <button id="hint-btn" class="control-btn">提示</button>
+            </div>
+        </main>
+
+        <div class="game-status">
+            <div id="game-message" class="game-message">黑子先行</div>
+            <div class="score-board">
+                <div class="score-item">
+                    <span class="score-label">黑子胜局：</span>
+                    <span id="black-wins">0</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">白子胜局：</span>
+                    <span id="white-wins">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>游戏规则</h3>
+            <ul>
+                <li>黑子先行，双方轮流落子</li>
+                <li>率先在横、竖、斜任一方向连成五子者获胜</li>
+                <li>支持人机对战和双人对战模式</li>
+                <li>点击棋盘或触摸屏幕进行落子</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="gomoku.js"></script>
+</body>
+</html>

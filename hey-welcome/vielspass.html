@@ -179,6 +179,13 @@
                 <p class="game-description" id="sheep-description">点击相同的卡片进行消除，挑战你的观察力和策略思维！</p>
                 <button class="play-btn" id="play-sheep">开始游戏</button>
             </div>
+            
+            <div class="game-option" id="gomoku-option">
+                <div class="game-icon">⚫</div>
+                <h2 class="game-title" id="gomoku-title">五子棋</h2>
+                <p class="game-description" id="gomoku-description">经典的五子棋游戏，支持双人对战和AI对手，率先连成五子者获胜！</p>
+                <button class="play-btn" id="play-gomoku">开始游戏</button>
+            </div>
         </div>
     </div>
     
@@ -196,6 +203,8 @@
                 zumaDescription: "发射彩球消除相同颜色的球链，阻止球链到达终点！",
                 sheepTitle: "羊了个羊",
                 sheepDescription: "点击相同的卡片进行消除，挑战你的观察力和策略思维！",
+                gomokuTitle: "五子棋",
+                gomokuDescription: "经典的五子棋游戏，支持双人对战和AI对手，率先连成五子者获胜！",
                 playButton: "开始游戏"
             },
             en: {
@@ -209,6 +218,8 @@
                 zumaDescription: "Shoot colored balls to eliminate matching chains and prevent them from reaching the end!",
                 sheepTitle: "Sheep a Sheep",
                 sheepDescription: "Click on matching cards to eliminate them, challenge your observation and strategic thinking!",
+                gomokuTitle: "Gomoku",
+                gomokuDescription: "Classic Gomoku game with support for two-player and AI modes. First to connect five stones wins!",
                 playButton: "Play Now"
             }
         };
@@ -227,10 +238,13 @@
         const zumaDescription = document.getElementById('zuma-description');
         const sheepTitle = document.getElementById('sheep-title');
         const sheepDescription = document.getElementById('sheep-description');
+        const gomokuTitle = document.getElementById('gomoku-title');
+        const gomokuDescription = document.getElementById('gomoku-description');
         const playSnakeButton = document.getElementById('play-snake');
         const playTetrisButton = document.getElementById('play-tetris');
         const playZumaButton = document.getElementById('play-zuma');
         const playSheepButton = document.getElementById('play-sheep');
+        const playGomokuButton = document.getElementById('play-gomoku');
         
         // 当前语言
         let currentLang = localStorage.getItem('snakeLanguage') || 'zh';
@@ -280,10 +294,13 @@
             zumaDescription.textContent = texts.zumaDescription;
             sheepTitle.textContent = texts.sheepTitle;
             sheepDescription.textContent = texts.sheepDescription;
+            gomokuTitle.textContent = texts.gomokuTitle;
+            gomokuDescription.textContent = texts.gomokuDescription;
             playSnakeButton.textContent = texts.playButton;
             playTetrisButton.textContent = texts.playButton;
             playZumaButton.textContent = texts.playButton;
             playSheepButton.textContent = texts.playButton;
+            playGomokuButton.textContent = texts.playButton;
             
             // 更新HTML lang属性
             document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
@@ -309,6 +326,7 @@
         playTetrisButton.addEventListener('click', () => window.location.href = '../tetris.html');
         playZumaButton.addEventListener('click', () => window.location.href = '../zuma.html');
         playSheepButton.addEventListener('click', () => window.location.href = '../sheep.html');
+        playGomokuButton.addEventListener('click', () => window.location.href = '../gomoku.html');
         
         // 初始化
         switchLanguage(currentLang);
