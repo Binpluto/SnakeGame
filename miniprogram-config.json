@@ -1,6 +1,6 @@
 {
-  "appId": "your_app_id_here",
-  "appSecret": "your_app_secret_here",
+  "appId": "wx84fe7f4c8d2bf650",
+  "appSecret": "4d435b07004b92dc017c8f3a898a83d9",
   "qrCodeConfigs": [
     {
       "name": "首页",

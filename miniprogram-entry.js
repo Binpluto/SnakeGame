@@ -10,7 +10,7 @@ function createMiniprogramEntry() {
                 <div class="qr-popup">
                     <div class="qr-title">小程序版</div>
                     <div class="qr-code">
-                        <img src="images/miniprogram-index-qrcode.svg" alt="小程序二维码" />
+                        <img src="images/miniprogram-index-qrcode.jpg" alt="小程序二维码" />
                     </div>
                     <div class="qr-desc">
                         使用微信扫一扫<br>
