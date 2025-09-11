@@ -1,0 +1,79 @@
+/**app.wxss**/
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+}
+
+/* 全局样式 */
+page {
+  background-color: #f8f8f8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.game-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.game-header {
+  width: 100%;
+  padding: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10rpx);
+}
+
+.back-btn {
+  padding: 10rpx 20rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  color: white;
+  font-size: 28rpx;
+}
+
+.game-title {
+  color: white;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.game-canvas {
+  margin: 40rpx 0;
+  border-radius: 20rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.3);
+}
+
+.game-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20rpx;
+  padding: 0 40rpx;
+}
+
+.control-btn {
+  padding: 20rpx 40rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 25rpx;
+  color: #333;
+  font-size: 28rpx;
+  font-weight: bold;
+  box-shadow: 0 5rpx 15rpx rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.control-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 3rpx 10rpx rgba(0, 0, 0, 0.2);
+}

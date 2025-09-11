@@ -1,0 +1,44 @@
+<!--tetris.wxml-->
+<view class="game-container">
+  <view class="game-header">
+    <button class="back-btn" bindtap="goBack">返回</button>
+    <text class="game-title">俄罗斯方块</text>
+    <text class="score">得分: {{score}}</text>
+  </view>
+  
+  <view class="game-info">
+    <text class="status">{{gameStatus}}</text>
+  </view>
+  
+  <canvas 
+    canvas-id="tetrisCanvas" 
+    class="game-canvas"
+    bindtouchstart="handleTouchStart"
+    bindtouchmove="handleTouchMove"
+    bindtouchend="handleTouchEnd">
+  </canvas>
+  
+  <view class="game-controls">
+    <button class="control-btn" bindtap="moveLeft">←</button>
+    <button class="control-btn" bindtap="rotate">旋转</button>
+    <button class="control-btn" bindtap="moveRight">→</button>
+  </view>
+  
+  <view class="game-controls">
+    <button class="control-btn" bindtap="moveDown">↓</button>
+    <button class="control-btn" bindtap="{{gameRunning ? 'pauseGame' : 'startGame'}}">{{gameRunning ? '暂停' : '开始'}}</button>
+    <button class="control-btn" bindtap="resetGame">重置</button>
+  </view>
+  
+  <view class="game-settings">
+    <text>速度: {{speed}}</text>
+    <slider 
+      min="1" 
+      max="10" 
+      value="{{speed}}" 
+      bindchange="changeSpeed"
+      activeColor="#fff"
+      backgroundColor="rgba(255,255,255,0.3)"
+    />
+  </view>
+</view>

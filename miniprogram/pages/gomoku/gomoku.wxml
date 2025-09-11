@@ -1,0 +1,24 @@
+<!--gomoku.wxml-->
+<view class="game-container">
+  <view class="game-header">
+    <view class="back-btn" bindtap="goBack">← 返回</view>
+    <text class="game-title">五子棋</text>
+    <view class="score">{{currentPlayer === 'black' ? '黑棋' : '白棋'}}回合</view>
+  </view>
+  
+  <view class="game-info">
+    <text class="status">{{gameStatus}}</text>
+  </view>
+  
+  <canvas 
+    class="game-canvas" 
+    canvas-id="gomokuCanvas" 
+    bindtap="handleCanvasTap">
+  </canvas>
+  
+  <view class="game-controls">
+    <view class="control-btn" bindtap="startNewGame">新游戏</view>
+    <view class="control-btn" bindtap="undoMove" wx:if="{{canUndo}}">悔棋</view>
+    <view class="control-btn" bindtap="toggleAI">{{aiEnabled ? 'AI: 开' : 'AI: 关'}}</view>
+  </view>
+</view>

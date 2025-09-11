@@ -1,0 +1,117 @@
+/* tetris.wxss */
+.game-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.game-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15rpx;
+  margin-bottom: 20rpx;
+  backdrop-filter: blur(10rpx);
+}
+
+.back-btn {
+  padding: 10rpx 20rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  color: white;
+  font-size: 28rpx;
+}
+
+.game-title {
+  color: white;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.score {
+  color: white;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.game-info {
+  margin-bottom: 20rpx;
+}
+
+.status {
+  color: white;
+  font-size: 32rpx;
+  font-weight: bold;
+  text-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.3);
+}
+
+.game-canvas {
+  width: 400rpx;
+  height: 600rpx;
+  background: #000;
+  border-radius: 10rpx;
+  margin: 20rpx 0;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.3);
+  border: 4rpx solid #333;
+}
+
+.game-controls {
+  display: flex;
+  gap: 20rpx;
+  margin: 15rpx 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.control-btn {
+  padding: 20rpx 30rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 25rpx;
+  color: #333;
+  font-size: 28rpx;
+  font-weight: bold;
+  box-shadow: 0 5rpx 15rpx rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  min-width: 100rpx;
+  text-align: center;
+}
+
+.control-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 3rpx 10rpx rgba(0, 0, 0, 0.2);
+}
+
+.game-settings {
+  width: 80%;
+  margin: 20rpx 0;
+  color: white;
+  text-align: center;
+}
+
+.game-settings text {
+  font-size: 28rpx;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+/* 响应式设计 */
+@media (max-width: 400px) {
+  .game-canvas {
+    width: 350rpx;
+    height: 525rpx;
+  }
+  
+  .control-btn {
+    padding: 15rpx 25rpx;
+    font-size: 26rpx;
+    min-width: 80rpx;
+  }
+}

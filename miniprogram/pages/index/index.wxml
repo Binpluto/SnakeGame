@@ -1,0 +1,43 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">游戏合集</text>
+    <text class="subtitle">选择你喜欢的游戏开始吧！</text>
+  </view>
+  
+  <view class="games-grid">
+    <view class="game-card" bindtap="navigateToSnake">
+      <view class="game-icon">🐍</view>
+      <text class="game-name">贪吃蛇</text>
+      <text class="game-desc">经典贪吃蛇游戏</text>
+    </view>
+    
+    <view class="game-card" bindtap="navigateToTetris">
+      <view class="game-icon">🧩</view>
+      <text class="game-name">俄罗斯方块</text>
+      <text class="game-desc">益智消除游戏</text>
+    </view>
+    
+    <view class="game-card" bindtap="navigateToZuma">
+      <view class="game-icon">⚪</view>
+      <text class="game-name">祖玛</text>
+      <text class="game-desc">射击消除游戏</text>
+    </view>
+    
+    <view class="game-card" bindtap="navigateToSheep">
+      <view class="game-icon">🐑</view>
+      <text class="game-name">羊了个羊</text>
+      <text class="game-desc">卡片消除游戏</text>
+    </view>
+    
+    <view class="game-card" bindtap="navigateToGomoku">
+      <view class="game-icon">⚫</view>
+      <text class="game-name">五子棋</text>
+      <text class="game-desc">策略对战游戏</text>
+    </view>
+  </view>
+  
+  <view class="footer">
+    <text class="footer-text">享受游戏时光 🎮</text>
+  </view>
+</view>

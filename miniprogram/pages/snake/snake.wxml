@@ -1,0 +1,49 @@
+<!--snake.wxml-->
+<view class="game-container">
+  <view class="game-header">
+    <view class="back-btn" bindtap="goBack">← 返回</view>
+    <text class="game-title">贪吃蛇</text>
+    <view class="score">得分: {{score}}</view>
+  </view>
+  
+  <view class="game-info">
+    <text class="status">{{gameStatus}}</text>
+  </view>
+  
+  <canvas 
+    class="game-canvas" 
+    canvas-id="snakeCanvas" 
+    bindtouchstart="handleTouchStart"
+    bindtouchmove="handleTouchMove"
+    bindtouchend="handleTouchEnd">
+  </canvas>
+  
+  <view class="game-controls">
+    <view class="control-row">
+      <view class="control-btn" bindtap="moveUp">↑</view>
+    </view>
+    <view class="control-row">
+      <view class="control-btn" bindtap="moveLeft">←</view>
+      <view class="control-btn" bindtap="startGame" wx:if="{{!gameRunning}}">开始</view>
+      <view class="control-btn" bindtap="pauseGame" wx:else>暂停</view>
+      <view class="control-btn" bindtap="moveRight">→</view>
+    </view>
+    <view class="control-row">
+      <view class="control-btn" bindtap="moveDown">↓</view>
+    </view>
+  </view>
+  
+  <view class="game-settings">
+    <view class="setting-item">
+      <text>速度:</text>
+      <slider 
+        min="1" 
+        max="10" 
+        value="{{speed}}" 
+        bindchange="changeSpeed"
+        activeColor="#fff"
+        backgroundColor="rgba(255,255,255,0.3)"
+      />
+    </view>
+  </view>
+</view>

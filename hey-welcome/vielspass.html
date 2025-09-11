@@ -28,6 +28,99 @@
             z-index: 10;
         }
         
+        .miniprogram-entry {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .miniprogram-btn {
+            background: linear-gradient(135deg, #1aad19, #2dc653);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(26, 173, 25, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .miniprogram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(26, 173, 25, 0.4);
+        }
+        
+        .miniprogram-qr {
+            position: relative;
+            display: none;
+        }
+        
+        .miniprogram-qr.show {
+            display: block;
+        }
+        
+        .qr-popup {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            min-width: 200px;
+        }
+        
+        .qr-popup::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .qr-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .qr-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
         .visit-counter #visit-count {
             color: #ffeb3b;
             margin-left: 5px;
@@ -138,6 +231,27 @@
 </head>
 <body>
     <div class="game-selector-container">
+        <!-- 小程序入口 -->
+        <div class="miniprogram-entry">
+            <button class="miniprogram-btn" onclick="toggleMiniprogram()">
+                <span>📱</span>
+                <span>小程序版</span>
+            </button>
+            <div class="miniprogram-qr" id="miniprogram-qr">
+                <div class="qr-popup">
+                    <div class="qr-title">扫码体验小程序</div>
+                    <div class="qr-code">
+                        小程序二维码<br>
+                        (开发中)
+                    </div>
+                    <div class="qr-desc">
+                        使用微信扫一扫<br>
+                        体验小程序版游戏
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- 访问量显示 -->
         <div class="visit-counter">
             <span id="visit-label">访问量: </span>
@@ -327,6 +441,22 @@
         playZumaButton.addEventListener('click', () => window.location.href = '../zuma.html');
         playSheepButton.addEventListener('click', () => window.location.href = '../sheep.html');
         playGomokuButton.addEventListener('click', () => window.location.href = '../gomoku.html');
+        
+        // 小程序二维码切换
+        function toggleMiniprogram() {
+            const qrDiv = document.getElementById('miniprogram-qr');
+            qrDiv.classList.toggle('show');
+        }
+        
+        // 点击其他地方关闭二维码
+        document.addEventListener('click', function(e) {
+            const miniprogramEntry = document.querySelector('.miniprogram-entry');
+            const qrDiv = document.getElementById('miniprogram-qr');
+            
+            if (!miniprogramEntry.contains(e.target)) {
+                qrDiv.classList.remove('show');
+            }
+        });
         
         // 初始化
         switchLanguage(currentLang);

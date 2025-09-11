@@ -1,0 +1,110 @@
+/**index.wxss**/
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 20rpx;
+  text-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.games-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  flex: 1;
+}
+
+.game-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 25rpx;
+  padding: 40rpx 30rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10rpx);
+  transition: all 0.3s ease;
+}
+
+.game-card:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.25);
+}
+
+.game-icon {
+  font-size: 60rpx;
+  margin-right: 30rpx;
+  width: 80rpx;
+  text-align: center;
+}
+
+.game-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+  flex: 1;
+}
+
+.game-desc {
+  font-size: 24rpx;
+  color: #666;
+  position: absolute;
+  margin-top: 40rpx;
+  margin-left: 110rpx;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 60rpx;
+}
+
+.footer-text {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* 响应式设计 */
+@media (max-width: 400px) {
+  .games-grid {
+    gap: 20rpx;
+  }
+  
+  .game-card {
+    padding: 30rpx 20rpx;
+  }
+  
+  .game-icon {
+    font-size: 50rpx;
+    width: 70rpx;
+    margin-right: 20rpx;
+  }
+  
+  .game-name {
+    font-size: 28rpx;
+  }
+  
+  .game-desc {
+    font-size: 22rpx;
+    margin-left: 90rpx;
+  }
+}
