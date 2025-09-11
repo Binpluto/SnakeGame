@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数独</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="sudoku.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="title-container">
+                <h1 id="game-title">数独</h1>
+                <div class="language-switch">
+                    <button id="lang-zh" class="lang-btn active">中文</button>
+                    <button id="lang-en" class="lang-btn">English</button>
+                </div>
+            </div>
+            <div class="score-container">
+                <span id="time-label">时间: </span>
+                <span id="time">00:00</span>
+                <span id="difficulty-label">难度: </span>
+                <span id="difficulty">简单</span>
+            </div>
+            <div class="username-container">
+                <label id="username-label" for="username-input">用户名: </label>
+                <input type="text" id="username-input" maxlength="10" placeholder="请输入用户名">
+                <button id="save-username-btn">保存</button>
+            </div>
+        </div>
+        
+        <div class="sudoku-game-area">
+            <div class="sudoku-grid" id="sudoku-grid">
+                <!-- 9x9 数独网格将通过JavaScript生成 -->
+            </div>
+            
+            <div class="sudoku-sidebar">
+                <div class="number-pad">
+                    <h3 id="number-pad-label">数字键盘</h3>
+                    <div class="number-buttons">
+                        <button class="number-btn" data-number="1">1</button>
+                        <button class="number-btn" data-number="2">2</button>
+                        <button class="number-btn" data-number="3">3</button>
+                        <button class="number-btn" data-number="4">4</button>
+                        <button class="number-btn" data-number="5">5</button>
+                        <button class="number-btn" data-number="6">6</button>
+                        <button class="number-btn" data-number="7">7</button>
+                        <button class="number-btn" data-number="8">8</button>
+                        <button class="number-btn" data-number="9">9</button>
+                        <button class="number-btn erase-btn" data-number="0">✗</button>
+                    </div>
+                </div>
+                
+                <div class="game-info">
+                    <div class="mistakes-counter">
+                        <span id="mistakes-label">错误: </span>
+                        <span id="mistakes">0/3</span>
+                    </div>
+                    <div class="hints-counter">
+                        <span id="hints-label">提示: </span>
+                        <span id="hints">3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <button id="new-game-btn"><span id="new-game-text">新游戏</span></button>
+            <button id="pause-btn"><span id="pause-text">暂停</span></button>
+            <button id="hint-btn"><span id="hint-text">提示</span></button>
+            <button id="check-btn"><span id="check-text">检查</span></button>
+        </div>
+        
+        <div class="difficulty-selector">
+            <h3 id="difficulty-selector-label">选择难度</h3>
+            <div class="difficulty-buttons">
+                <button class="difficulty-btn active" data-difficulty="easy"><span id="easy-text">简单</span></button>
+                <button class="difficulty-btn" data-difficulty="medium"><span id="medium-text">中等</span></button>
+                <button class="difficulty-btn" data-difficulty="hard"><span id="hard-text">困难</span></button>
+                <button class="difficulty-btn" data-difficulty="expert"><span id="expert-text">专家</span></button>
+            </div>
+        </div>
+        
+        <!-- 游戏完成弹窗 -->
+        <div id="game-complete-modal" class="modal">
+            <div class="modal-content">
+                <h2 id="congratulations-text">恭喜！</h2>
+                <p id="completion-message">您成功完成了数独！</p>
+                <div class="completion-stats">
+                    <p><span id="final-time-label">完成时间: </span><span id="final-time"></span></p>
+                    <p><span id="final-mistakes-label">错误次数: </span><span id="final-mistakes"></span></p>
+                </div>
+                <div class="modal-buttons">
+                    <button id="play-again-btn">再玩一次</button>
+                    <button id="close-modal-btn">关闭</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 暂停弹窗 -->
+        <div id="pause-modal" class="modal">
+            <div class="modal-content">
+                <h2 id="game-paused-text">游戏暂停</h2>
+                <div class="modal-buttons">
+                    <button id="resume-btn">继续游戏</button>
+                    <button id="new-game-from-pause-btn">新游戏</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="sudoku.js"></script>
+</body>
+</html>
