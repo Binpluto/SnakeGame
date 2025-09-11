@@ -1,0 +1,46 @@
+{
+  "appId": "your_app_id_here",
+  "appSecret": "your_app_secret_here",
+  "qrCodeConfigs": [
+    {
+      "name": "首页",
+      "scene": "from=web&page=index",
+      "page": "pages/index/index",
+      "filename": "miniprogram-index-qrcode.jpg",
+      "description": "小程序首页二维码"
+    },
+    {
+      "name": "俄罗斯方块",
+      "scene": "from=web&game=tetris",
+      "page": "pages/tetris/tetris",
+      "filename": "miniprogram-tetris-qrcode.jpg",
+      "description": "俄罗斯方块游戏页面二维码"
+    },
+    {
+      "name": "贪吃蛇",
+      "scene": "from=web&game=snake",
+      "page": "pages/snake/snake",
+      "filename": "miniprogram-snake-qrcode.jpg",
+      "description": "贪吃蛇游戏页面二维码"
+    },
+    {
+      "name": "五子棋",
+      "scene": "from=web&game=gomoku",
+      "page": "pages/gomoku/gomoku",
+      "filename": "miniprogram-gomoku-qrcode.jpg",
+      "description": "五子棋游戏页面二维码"
+    }
+  ],
+  "qrCodeOptions": {
+    "width": 280,
+    "auto_color": false,
+    "line_color": {
+      "r": 0,
+      "g": 0,
+      "b": 0
+    },
+    "is_hyaline": false,
+    "env_version": "release"
+  },
+  "outputDir": "./images"
+}

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="280" height="280" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="280" height="280" fill="white" stroke="#ddd" stroke-width="1"/>
+  
+  <!-- 模拟二维码图案 -->
+  <g fill="black">
+    <!-- 左上角定位点 -->
+    <rect x="20" y="20" width="60" height="60" fill="black"/>
+    <rect x="30" y="30" width="40" height="40" fill="white"/>
+    <rect x="40" y="40" width="20" height="20" fill="black"/>
+    
+    <!-- 右上角定位点 -->
+    <rect x="200" y="20" width="60" height="60" fill="black"/>
+    <rect x="210" y="30" width="40" height="40" fill="white"/>
+    <rect x="220" y="40" width="20" height="20" fill="black"/>
+    
+    <!-- 左下角定位点 -->
+    <rect x="20" y="200" width="60" height="60" fill="black"/>
+    <rect x="30" y="210" width="40" height="40" fill="white"/>
+    <rect x="40" y="220" width="20" height="20" fill="black"/>
+    
+    <!-- 模拟数据点 -->
+    <rect x="100" y="30" width="10" height="10"/>
+    <rect x="120" y="30" width="10" height="10"/>
+    <rect x="140" y="40" width="10" height="10"/>
+    <rect x="160" y="50" width="10" height="10"/>
+    <rect x="100" y="60" width="10" height="10"/>
+    <rect x="130" y="70" width="10" height="10"/>
+    <rect x="150" y="80" width="10" height="10"/>
+    <rect x="170" y="90" width="10" height="10"/>
+    <rect x="110" y="100" width="10" height="10"/>
+    <rect x="140" y="110" width="10" height="10"/>
+    <rect x="160" y="120" width="10" height="10"/>
+    <rect x="180" y="130" width="10" height="10"/>
+    <rect x="120" y="140" width="10" height="10"/>
+    <rect x="100" y="150" width="10" height="10"/>
+    <rect x="130" y="160" width="10" height="10"/>
+    <rect x="150" y="170" width="10" height="10"/>
+    <rect x="170" y="180" width="10" height="10"/>
+    <rect x="190" y="190" width="10" height="10"/>
+    <rect x="110" y="200" width="10" height="10"/>
+    <rect x="140" y="210" width="10" height="10"/>
+    <rect x="160" y="220" width="10" height="10"/>
+    <rect x="180" y="230" width="10" height="10"/>
+    <rect x="200" y="240" width="10" height="10"/>
+    <rect x="220" y="250" width="10" height="10"/>
+  </g>
+  
+  <!-- 游戏标识 -->
+  <circle cx="140" cy="140" r="25" fill="white" stroke="black" stroke-width="2"/>
+  <text x="140" y="135" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="black">小程序</text>
+  <text x="140" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="black">贪吃蛇演示</text>
+</svg>

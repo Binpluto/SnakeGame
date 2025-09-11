@@ -98,6 +98,11 @@
             color: #666;
             line-height: 1.3;
         }
+        
+        .qr-code img {
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -111,8 +116,7 @@
             <div class="qr-popup">
                 <div class="qr-title">小程序版</div>
                 <div class="qr-code">
-                    二维码<br>
-                    (开发中)
+                    <img src="images/miniprogram-index-qrcode.svg" alt="小程序二维码" style="width: 100%; height: 100%; object-fit: contain;" />
                 </div>
                 <div class="qr-desc">
                     微信扫码体验

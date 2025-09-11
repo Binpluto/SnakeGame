@@ -10,11 +10,14 @@ function createMiniprogramEntry() {
                 <div class="qr-popup">
                     <div class="qr-title">小程序版</div>
                     <div class="qr-code">
-                        二维码<br>
-                        (开发中)
+                        <img src="images/miniprogram-index-qrcode.svg" alt="小程序二维码" />
                     </div>
                     <div class="qr-desc">
-                        微信扫码体验
+                        使用微信扫一扫<br>
+                        体验小程序版游戏
+                    </div>
+                    <div style="margin-top: 10px; font-size: 11px; color: #999; text-align: center;">
+                        小程序正在开发中，敬请期待！
                     </div>
                 </div>
             </div>
@@ -100,6 +103,14 @@ function createMiniprogramEntry() {
             color: #666;
             text-align: center;
             line-height: 1.3;
+            overflow: hidden;
+        }
+        
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
         }
         
         .qr-title {
