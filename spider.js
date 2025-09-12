@@ -139,8 +139,12 @@ function setupEventListeners() {
     
     // 弹窗按钮
     document.getElementById('play-again-btn').addEventListener('click', () => {
-        document.getElementById('complete-modal').style.display = 'none';
+        document.getElementById('game-complete-modal').style.display = 'none';
         newGame();
+    });
+    
+    document.getElementById('close-modal-btn').addEventListener('click', () => {
+        document.getElementById('game-complete-modal').style.display = 'none';
     });
     
     // 全局触摸事件
