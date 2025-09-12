@@ -3,7 +3,7 @@
     "pages/index/index",
     "pages/snake/snake",
     "pages/tetris/tetris",
-    "pages/zuma/zuma",
+
     "pages/sheep/sheep",
     "pages/gomoku/gomoku"
   ],

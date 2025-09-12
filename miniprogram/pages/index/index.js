@@ -31,12 +31,7 @@ Page({
     })
   },
 
-  // 导航到祖玛游戏
-  navigateToZuma() {
-    wx.navigateTo({
-      url: '/pages/zuma/zuma'
-    })
-  },
+  
 
   // 导航到羊了个羊游戏
   navigateToSheep() {

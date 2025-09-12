@@ -18,12 +18,7 @@
       <text class="game-desc">益智消除游戏</text>
     </view>
     
-    <view class="game-card" bindtap="navigateToZuma">
-      <view class="game-icon">⚪</view>
-      <text class="game-name">祖玛</text>
-      <text class="game-desc">射击消除游戏</text>
-    </view>
-    
+
     <view class="game-card" bindtap="navigateToSheep">
       <view class="game-icon">🐑</view>
       <text class="game-name">羊了个羊</text>

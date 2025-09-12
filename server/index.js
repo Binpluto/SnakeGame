@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 // 排行榜数据文件路径
 const SNAKE_LEADERBOARD_FILE = path.join(__dirname, 'snake-leaderboard.json');
 const TETRIS_LEADERBOARD_FILE = path.join(__dirname, 'tetris-leaderboard.json');
-const ZUMA_LEADERBOARD_FILE = path.join(__dirname, 'zuma-leaderboard.json');
+
 const VISIT_COUNT_FILE = path.join(__dirname, 'visit-count.json');
 
 // 中间件
@@ -75,9 +75,7 @@ if (!fs.existsSync(TETRIS_LEADERBOARD_FILE)) {
     fs.writeFileSync(TETRIS_LEADERBOARD_FILE, JSON.stringify([]), 'utf8');
 }
 
-if (!fs.existsSync(ZUMA_LEADERBOARD_FILE)) {
-    fs.writeFileSync(ZUMA_LEADERBOARD_FILE, JSON.stringify([]), 'utf8');
-}
+
 
 // 初始化访问量文件
 if (!fs.existsSync(VISIT_COUNT_FILE)) {
@@ -120,11 +118,7 @@ app.get('/api/tetris-leaderboard', (req, res) => {
     res.json(leaderboard);
 });
 
-// 获取祖玛排行榜
-app.get('/api/zuma-leaderboard', (req, res) => {
-    const leaderboard = getLeaderboard(ZUMA_LEADERBOARD_FILE);
-    res.json(leaderboard);
-});
+
 
 // 添加新贪吃蛇记录
 app.post('/api/leaderboard', (req, res) => {
@@ -190,37 +184,7 @@ app.post('/api/tetris-leaderboard', (req, res) => {
     }
 });
 
-// 添加新祖玛记录
-app.post('/api/zuma-leaderboard', (req, res) => {
-    const { username, score } = req.body;
-    
-    if (!username || typeof score !== 'number') {
-        return res.status(400).json({ error: '无效的用户名或分数' });
-    }
-    
-    const leaderboard = getLeaderboard(ZUMA_LEADERBOARD_FILE);
-    
-    // 添加新记录
-    leaderboard.push({
-        username,
-        score,
-        date: new Date().toISOString()
-    });
-    
-    // 按分数排序（从高到低）
-    leaderboard.sort((a, b) => b.score - a.score);
-    
-    // 只保留前10条记录
-    const MAX_ENTRIES = 10;
-    const trimmedLeaderboard = leaderboard.slice(0, MAX_ENTRIES);
-    
-    // 保存更新后的排行榜
-    if (saveLeaderboard(trimmedLeaderboard, ZUMA_LEADERBOARD_FILE)) {
-        res.json(trimmedLeaderboard);
-    } else {
-        res.status(500).json({ error: '保存排行榜失败' });
-    }
-});
+
 
 // 启动服务器
 app.listen(PORT, () => {
