@@ -667,26 +667,46 @@ function clearSelection() {
 
 // 检查自动翻牌
 function checkForAutoFlip() {
+    let hasFlipped = false;
+    
     for (let col = 0; col < 10; col++) {
         const column = gameState.tableau[col];
         if (column.length > 0) {
             const topCard = column[column.length - 1];
             if (!topCard.faceUp) {
                 topCard.faceUp = true;
+                hasFlipped = true;
                 
-                // 添加翻牌动画
+                // 添加翻牌动画和音效
                 setTimeout(() => {
                     const cardElement = document.querySelector(`[data-card-id="${topCard.id}"]`);
                     if (cardElement) {
+                        // 播放翻牌音效
+                        playFlipSound();
+                        
+                        // 添加翻牌动画
                         cardElement.classList.add('flipping');
+                        
+                        // 添加发光效果
+                        cardElement.classList.add('card-glow');
+                        
                         setTimeout(() => {
                             cardElement.classList.remove('flipping');
+                            setTimeout(() => {
+                                cardElement.classList.remove('card-glow');
+                            }, 500);
                             updateDisplay();
-                        }, 300);
+                        }, 400);
                     }
-                }, 100);
+                }, col * 100); // 错开动画时间
             }
         }
+    }
+    
+    // 如果有翻牌，增加得分
+    if (hasFlipped) {
+        gameState.score += 5;
+        updateGameStatus();
     }
 }
 
@@ -747,9 +767,145 @@ function checkGameComplete() {
     }
 }
 
+// 播放翻牌音效
+function playFlipSound() {
+    // 创建音频上下文播放翻牌音效
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+    } catch (e) {
+        // 静默处理音频错误
+    }
+}
+
+// 播放完成音效
+function playCompleteSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+        oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+        oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+        
+        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (e) {
+        // 静默处理音频错误
+    }
+}
+
+// 创建烟花特效
+function createFireworks() {
+    const container = document.querySelector('.spider-container');
+    const fireworksContainer = document.createElement('div');
+    fireworksContainer.className = 'fireworks-container';
+    fireworksContainer.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1000;
+    `;
+    
+    container.appendChild(fireworksContainer);
+    
+    // 创建多个烟花
+    for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+            createSingleFirework(fireworksContainer);
+        }, i * 300);
+    }
+    
+    // 5秒后移除烟花容器
+    setTimeout(() => {
+        if (fireworksContainer.parentNode) {
+            fireworksContainer.parentNode.removeChild(fireworksContainer);
+        }
+    }, 5000);
+}
+
+// 创建单个烟花
+function createSingleFirework(container) {
+    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f'];
+    const x = Math.random() * container.offsetWidth;
+    const y = Math.random() * container.offsetHeight * 0.6 + container.offsetHeight * 0.2;
+    
+    // 创建烟花爆炸效果
+    for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: 50%;
+            left: ${x}px;
+            top: ${y}px;
+            box-shadow: 0 0 6px currentColor;
+        `;
+        
+        container.appendChild(particle);
+        
+        // 粒子动画
+        const angle = (i / 12) * Math.PI * 2;
+        const velocity = 50 + Math.random() * 50;
+        const vx = Math.cos(angle) * velocity;
+        const vy = Math.sin(angle) * velocity;
+        
+        let posX = x;
+        let posY = y;
+        let opacity = 1;
+        
+        const animate = () => {
+            posX += vx * 0.02;
+            posY += vy * 0.02;
+            opacity -= 0.02;
+            
+            particle.style.left = posX + 'px';
+            particle.style.top = posY + 'px';
+            particle.style.opacity = opacity;
+            
+            if (opacity > 0) {
+                requestAnimationFrame(animate);
+            } else {
+                particle.remove();
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    }
+}
+
 // 显示完成弹窗
 function showCompleteModal() {
-    const modal = document.getElementById('complete-modal');
+    // 播放完成音效和烟花特效
+    playCompleteSound();
+    createFireworks();
+    
+    const modal = document.getElementById('game-complete-modal');
     const finalScore = document.getElementById('final-score');
     const totalMoves = document.getElementById('total-moves');
     const totalTime = document.getElementById('total-time');
@@ -759,7 +915,10 @@ function showCompleteModal() {
     if (totalMoves) totalMoves.textContent = gameState.moves;
     if (totalTime) totalTime.textContent = formatTime(gameState.gameTime);
     
-    modal.style.display = 'flex';
+    // 延迟显示弹窗，让烟花先播放
+    setTimeout(() => {
+        modal.style.display = 'flex';
+    }, 1000);
 }
 
 // 查找纸牌
