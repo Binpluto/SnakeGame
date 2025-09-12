@@ -39,7 +39,14 @@ const TEXTS = {
         stockEmpty: '发牌堆已空',
         noMoves: '没有可用的移动',
         sequenceComplete: '完成序列！',
-        cardsRemaining: '剩余牌数'
+        cardsRemaining: '剩余牌数',
+        saveRecord: '保存记录',
+        saveRecordQuestion: '是否保存游戏记录？',
+        enterUsername: '请输入用户名',
+        yes: '是',
+        no: '否',
+        cancel: '取消',
+        confirm: '确认'
     },
     en: {
         title: 'Spider Solitaire',
@@ -73,7 +80,14 @@ const TEXTS = {
         stockEmpty: 'Stock is empty',
         noMoves: 'No available moves',
         sequenceComplete: 'Sequence complete!',
-        cardsRemaining: 'Cards remaining'
+        cardsRemaining: 'Cards remaining',
+        saveRecord: 'Save Record',
+        saveRecordQuestion: 'Do you want to save your game record?',
+        enterUsername: 'Please enter your username',
+        yes: 'Yes',
+        no: 'No',
+        cancel: 'Cancel',
+        confirm: 'Confirm'
     }
 };
 
@@ -736,6 +750,7 @@ function checkForCompleteSequences() {
             
             setTimeout(() => {
                 updateDisplay();
+                checkForAutoFlip(); // 检查是否需要翻转新暴露的牌
                 alert(TEXTS[currentLanguage].sequenceComplete);
             }, 650);
             
@@ -905,6 +920,73 @@ function showCompleteModal() {
     playCompleteSound();
     createFireworks();
     
+    const texts = TEXTS[currentLanguage];
+    
+    // 延迟显示保存记录询问对话框，让烟花先播放
+    setTimeout(() => {
+        showSaveRecordDialog();
+    }, 1000);
+}
+
+// 显示保存记录询问对话框
+function showSaveRecordDialog() {
+    const texts = TEXTS[currentLanguage];
+    const result = confirm(texts.saveRecordQuestion);
+    
+    if (result) {
+        // 用户选择保存记录，显示用户名输入对话框
+        showUsernameDialog();
+    } else {
+        // 用户选择不保存，直接显示完成弹窗
+        showFinalModal();
+    }
+}
+
+// 显示用户名输入对话框
+function showUsernameDialog() {
+    const texts = TEXTS[currentLanguage];
+    const username = prompt(texts.enterUsername);
+    
+    if (username && username.trim()) {
+        // 保存游戏记录
+        saveGameRecord(username.trim());
+    }
+    
+    // 显示完成弹窗
+    showFinalModal();
+}
+
+// 保存游戏记录
+function saveGameRecord(username) {
+    const gameRecord = {
+        username: username,
+        score: gameState.score,
+        moves: gameState.moves,
+        time: gameState.gameTime,
+        difficulty: gameState.difficulty,
+        date: new Date().toISOString()
+    };
+    
+    // 获取现有记录
+    let records = JSON.parse(localStorage.getItem('spiderSolitaireRecords') || '[]');
+    
+    // 添加新记录
+    records.push(gameRecord);
+    
+    // 按得分排序（降序）
+    records.sort((a, b) => b.score - a.score);
+    
+    // 只保留前10名
+    records = records.slice(0, 10);
+    
+    // 保存到本地存储
+    localStorage.setItem('spiderSolitaireRecords', JSON.stringify(records));
+    
+    console.log('游戏记录已保存:', gameRecord);
+}
+
+// 显示最终完成弹窗
+function showFinalModal() {
     const modal = document.getElementById('game-complete-modal');
     const finalScore = document.getElementById('final-score');
     const totalMoves = document.getElementById('total-moves');
@@ -915,10 +997,7 @@ function showCompleteModal() {
     if (totalMoves) totalMoves.textContent = gameState.moves;
     if (totalTime) totalTime.textContent = formatTime(gameState.gameTime);
     
-    // 延迟显示弹窗，让烟花先播放
-    setTimeout(() => {
-        modal.style.display = 'flex';
-    }, 1000);
+    modal.style.display = 'flex';
 }
 
 // 查找纸牌
