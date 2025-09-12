@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蜘蛛纸牌</title>
+    <link rel="stylesheet" href="spider.css">
+</head>
+<body>
+    <div class="spider-container">
+        <div class="spider-header">
+            <h1 id="game-title">蜘蛛纸牌</h1>
+            
+            <!-- 语言选择 -->
+            <div class="language-selector">
+                <button id="lang-zh" class="lang-btn active">中文</button>
+                <button id="lang-en" class="lang-btn">English</button>
+            </div>
+            
+            <!-- 游戏状态 -->
+            <div class="game-status">
+                <div class="status-item">
+                    <span id="score-label">得分</span>: <span id="score-value">500</span>
+                </div>
+                <div class="status-item">
+                    <span id="moves-label">移动次数</span>: <span id="moves-value">0</span>
+                </div>
+                <div class="status-item">
+                    <span id="time-label">时间</span>: <span id="time-value">00:00</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 游戏区域 -->
+        <div class="game-area">
+            <!-- 完成区域 -->
+            <div class="foundation-area">
+                <div class="foundation" id="foundation-0"></div>
+                <div class="foundation" id="foundation-1"></div>
+                <div class="foundation" id="foundation-2"></div>
+                <div class="foundation" id="foundation-3"></div>
+                <div class="foundation" id="foundation-4"></div>
+                <div class="foundation" id="foundation-5"></div>
+                <div class="foundation" id="foundation-6"></div>
+                <div class="foundation" id="foundation-7"></div>
+            </div>
+            
+            <!-- 主游戏区域 -->
+            <div class="tableau-area">
+                <div class="tableau" id="tableau-0"></div>
+                <div class="tableau" id="tableau-1"></div>
+                <div class="tableau" id="tableau-2"></div>
+                <div class="tableau" id="tableau-3"></div>
+                <div class="tableau" id="tableau-4"></div>
+                <div class="tableau" id="tableau-5"></div>
+                <div class="tableau" id="tableau-6"></div>
+                <div class="tableau" id="tableau-7"></div>
+                <div class="tableau" id="tableau-8"></div>
+                <div class="tableau" id="tableau-9"></div>
+            </div>
+            
+            <!-- 发牌区域 -->
+            <div class="stock-area">
+                <div class="stock" id="stock">
+                    <div class="stock-count" id="stock-count">50</div>
+                </div>
+                <button id="deal-btn" class="deal-btn">发牌</button>
+            </div>
+        </div>
+        
+        <!-- 游戏控制按钮 -->
+        <div class="game-controls">
+            <button id="back-to-menu-btn" class="control-btn">返回游戏选择</button>
+            <button id="new-game-btn" class="control-btn">新游戏</button>
+            <button id="undo-btn" class="control-btn">撤销</button>
+            <button id="hint-btn" class="control-btn">提示</button>
+            <button id="auto-complete-btn" class="control-btn">自动完成</button>
+        </div>
+        
+        <!-- 难度选择 -->
+        <div class="difficulty-selector">
+            <label id="difficulty-label">难度: </label>
+            <select id="difficulty-select">
+                <option value="1">简单 (1花色)</option>
+                <option value="2" selected>中等 (2花色)</option>
+                <option value="4">困难 (4花色)</option>
+            </select>
+        </div>
+        
+        <!-- 游戏完成弹窗 -->
+        <div id="game-complete-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2 id="congratulations-text">恭喜！</h2>
+                <p id="completion-message">您成功完成了蜘蛛纸牌！</p>
+                <div class="final-stats">
+                    <p><span id="final-score-label">最终得分</span>: <span id="final-score">500</span></p>
+                    <p><span id="total-moves-label">总移动次数</span>: <span id="total-moves">0</span></p>
+                    <p><span id="total-time-label">总用时</span>: <span id="total-time">00:00</span></p>
+                </div>
+                <div class="modal-buttons">
+                    <button id="play-again-btn" class="modal-btn">再玩一次</button>
+                    <button id="close-modal-btn" class="modal-btn">关闭</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 游戏说明 -->
+        <div class="instructions">
+            <h3 id="instructions-title">游戏说明</h3>
+            <div class="rules">
+                <h4 id="rules-title">游戏规则:</h4>
+                <p id="rule-1">将所有牌按花色从K到A排列完成</p>
+                <p id="rule-2">只能将小一点的牌放在大一点的牌上</p>
+                <p id="rule-3">同花色的完整序列会自动移到完成区</p>
+                <p id="rule-4">点击发牌按钮获得新的牌</p>
+                <p id="rule-5">尽量减少移动次数获得更高分数</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="spider.js"></script>
+</body>
+</html>

@@ -302,6 +302,13 @@
                 <p class="game-description" id="gomoku-description">经典的五子棋游戏，支持双人对战和AI对手，率先连成五子者获胜！</p>
                 <button class="play-btn" id="play-gomoku">开始游戏</button>
             </div>
+            
+            <div class="game-option" id="spider-option">
+                <div class="game-icon">🕷️</div>
+                <h2 class="game-title" id="spider-title">蜘蛛纸牌</h2>
+                <p class="game-description" id="spider-description">经典纸牌游戏，排列完整序列，挑战你的策略思维！</p>
+                <button class="play-btn" id="play-spider">开始游戏</button>
+            </div>
         </div>
     </div>
     
@@ -322,6 +329,8 @@
                 sudokuDescription: "经典的数字逻辑游戏，在9x9网格中填入数字，每行、每列、每个3x3宫格都包含1-9的数字！",
                 gomokuTitle: "五子棋",
                 gomokuDescription: "经典的五子棋游戏，支持双人对战和AI对手，率先连成五子者获胜！",
+                spiderTitle: "蜘蛛纸牌",
+                spiderDescription: "经典纸牌游戏，排列完整序列，挑战你的策略思维！",
                 playButton: "开始游戏"
             },
             en: {
@@ -338,6 +347,8 @@
                 sudokuDescription: "Classic number logic game. Fill the 9x9 grid so each row, column, and 3x3 box contains digits 1-9!",
                 gomokuTitle: "Gomoku",
                 gomokuDescription: "Classic Gomoku game with support for two-player and AI modes. First to connect five stones wins!",
+                spiderTitle: "Spider Solitaire",
+                spiderDescription: "Classic card game, arrange complete sequences and challenge your strategic thinking!",
                 playButton: "Play Now"
             }
         };
@@ -359,12 +370,15 @@
         const sudokuDescription = document.getElementById('sudoku-description');
         const gomokuTitle = document.getElementById('gomoku-title');
         const gomokuDescription = document.getElementById('gomoku-description');
+        const spiderTitle = document.getElementById('spider-title');
+        const spiderDescription = document.getElementById('spider-description');
         const playSnakeButton = document.getElementById('play-snake');
         const playTetrisButton = document.getElementById('play-tetris');
 
         const playSheepButton = document.getElementById('play-sheep');
         const playSudokuButton = document.getElementById('play-sudoku');
         const playGomokuButton = document.getElementById('play-gomoku');
+        const playSpiderButton = document.getElementById('play-spider');
         
         // 当前语言
         let currentLang = localStorage.getItem('snakeLanguage') || 'zh';
@@ -417,12 +431,15 @@
             sudokuDescription.textContent = texts.sudokuDescription;
             gomokuTitle.textContent = texts.gomokuTitle;
             gomokuDescription.textContent = texts.gomokuDescription;
+            spiderTitle.textContent = texts.spiderTitle;
+            spiderDescription.textContent = texts.spiderDescription;
             playSnakeButton.textContent = texts.playButton;
             playTetrisButton.textContent = texts.playButton;
 
             playSheepButton.textContent = texts.playButton;
             playSudokuButton.textContent = texts.playButton;
             playGomokuButton.textContent = texts.playButton;
+            playSpiderButton.textContent = texts.playButton;
             
             // 更新HTML lang属性
             document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
@@ -450,6 +467,7 @@
         playSheepButton.addEventListener('click', () => window.location.href = '../sheep.html');
         playSudokuButton.addEventListener('click', () => window.location.href = '../sudoku.html');
         playGomokuButton.addEventListener('click', () => window.location.href = '../gomoku.html');
+        playSpiderButton.addEventListener('click', () => window.location.href = '../spider.html');
         
         // 小程序二维码切换
         function toggleMiniprogram() {
