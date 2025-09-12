@@ -7,7 +7,7 @@ class SudokuGame {
         this.selectedCell = null;
         this.selectedNumber = null;
         this.mistakes = 0;
-        this.maxMistakes = 3;
+        this.maxMistakes = Infinity;
         this.hints = 3;
         this.timer = 0;
         this.timerInterval = null;
@@ -58,6 +58,9 @@ class SudokuGame {
         });
         
         // 游戏控制按钮
+        document.getElementById('back-to-menu-btn').addEventListener('click', () => {
+            window.location.href = 'hey-welcome/vielspass.html';
+        });
         document.getElementById('new-game-btn').addEventListener('click', () => this.generateNewGame());
         document.getElementById('pause-btn').addEventListener('click', () => this.togglePause());
         document.getElementById('hint-btn').addEventListener('click', () => this.giveHint());
@@ -179,11 +182,6 @@ class SudokuGame {
                 cell.classList.add('error');
                 this.mistakes++;
                 this.updateMistakes();
-                
-                if (this.mistakes >= this.maxMistakes) {
-                    this.gameOver();
-                    return;
-                }
             }
         }
         
@@ -566,7 +564,7 @@ class SudokuGame {
     }
     
     updateMistakes() {
-        this.mistakesElement.textContent = `${this.mistakes}/${this.maxMistakes}`;
+        this.mistakesElement.textContent = this.mistakes;
     }
     
     updateHints() {
@@ -673,6 +671,7 @@ class SudokuGame {
                 'number-pad-label': '数字键盘',
                 'mistakes-label': '错误: ',
                 'hints-label': '提示: ',
+                'back-to-menu-text': '返回游戏选择',
                 'new-game-text': '新游戏',
                 'pause-text': '暂停',
                 'hint-text': '提示',
@@ -701,6 +700,7 @@ class SudokuGame {
                 'number-pad-label': 'Number Pad',
                 'mistakes-label': 'Mistakes: ',
                 'hints-label': 'Hints: ',
+                'back-to-menu-text': 'Back to Games',
                 'new-game-text': 'New Game',
                 'pause-text': 'Pause',
                 'hint-text': 'Hint',

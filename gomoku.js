@@ -87,6 +87,9 @@ class GomokuGame {
         });
         
         // 按钮事件
+        document.getElementById('back-to-menu-btn').addEventListener('click', () => {
+            window.location.href = 'hey-welcome/vielspass.html';
+        });
         document.getElementById('new-game-btn').addEventListener('click', () => this.newGame());
         document.getElementById('undo-btn').addEventListener('click', () => this.undoMove());
         document.getElementById('hint-btn').addEventListener('click', () => this.showHint());
