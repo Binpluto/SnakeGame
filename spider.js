@@ -134,13 +134,13 @@ function setupEventListeners() {
     
     // 防止页面滚动干扰游戏
     document.addEventListener('touchstart', (e) => {
-        if (e.target.closest('.spider-container')) {
+        if (e.target.closest('.card') || e.target.closest('.tableau')) {
             e.preventDefault();
         }
     }, { passive: false });
     
     document.addEventListener('touchmove', (e) => {
-        if (e.target.closest('.spider-container')) {
+        if (e.target.closest('.card') || e.target.closest('.tableau')) {
             e.preventDefault();
         }
     }, { passive: false });
@@ -513,8 +513,7 @@ function handleTouchStart(e, cardElement, cardId) {
         touchState.draggedColumn = columnIndex;
         
         // 添加触摸反馈
-        cardElement.style.transform = 'scale(1.05)';
-        cardElement.style.transition = 'transform 0.1s';
+        cardElement.classList.add('touch-active');
     }
 }
 
@@ -555,8 +554,7 @@ function handleTouchEnd(e, cardElement, cardId) {
     
     // 恢复卡片样式
     if (cardElement) {
-        cardElement.style.transform = '';
-        cardElement.style.transition = '';
+        cardElement.classList.remove('touch-active');
     }
     
     if (touchState.isDragging) {
