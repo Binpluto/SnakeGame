@@ -272,6 +272,7 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
     animation: fadeIn 0.3s ease;
 }
 
@@ -282,54 +283,209 @@
 }
 
 .modal-content {
-    background-color: white;
-    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 30px;
+    border-radius: 15px;
     text-align: center;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     max-width: 400px;
     width: 90%;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     animation: slideIn 0.3s ease;
 }
 
 .modal-content h2 {
-    color: #4caf50;
-    margin-bottom: 15px;
-    font-size: 24px;
+    margin-bottom: 20px;
+    font-size: 2em;
 }
 
 .completion-stats {
     margin: 20px 0;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
+    text-align: left;
 }
 
 .completion-stats p {
-    margin: 8px 0;
-    font-size: 16px;
+    margin: 10px 0;
+    font-size: 1.1em;
 }
 
 .modal-buttons {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     justify-content: center;
     margin-top: 20px;
 }
 
 .modal-buttons button {
-    background-color: #4caf50;
-    color: white;
+    padding: 12px 24px;
     border: none;
-    border-radius: 6px;
-    padding: 10px 20px;
-    font-size: 14px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
     cursor: pointer;
-    transition: all 0.2s ease;
+    font-size: 1em;
+    transition: all 0.3s;
 }
 
 .modal-buttons button:hover {
-    background-color: #45a049;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+/* 排行榜弹窗样式 */
+.leaderboard-content {
+    max-width: 800px;
+    width: 95%;
+    max-height: 80vh;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 15px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 50%;
+    transition: background 0.3s;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.leaderboard-filters {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.leaderboard-filters select {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 14px;
+}
+
+.leaderboard-table {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.leaderboard-header {
+    display: grid;
+    grid-template-columns: 60px 120px 80px 80px 80px 60px 100px;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.leaderboard-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.leaderboard-item {
+    display: grid;
+    grid-template-columns: 60px 120px 80px 80px 80px 60px 100px;
+    gap: 10px;
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.3s;
+    font-size: 13px;
+}
+
+.leaderboard-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-item:nth-child(1) {
+    background: rgba(255, 215, 0, 0.2); /* 金色 */
+}
+
+.leaderboard-item:nth-child(2) {
+    background: rgba(192, 192, 192, 0.2); /* 银色 */
+}
+
+.leaderboard-item:nth-child(3) {
+    background: rgba(205, 127, 50, 0.2); /* 铜色 */
+}
+
+.leaderboard-actions {
+    text-align: center;
+}
+
+.leaderboard-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.leaderboard-actions button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.rank-medal {
+    font-weight: bold;
+}
+
+.rank-medal.gold::before {
+    content: '🥇 ';
+}
+
+.rank-medal.silver::before {
+    content: '🥈 ';
+}
+
+.rank-medal.bronze::before {
+    content: '🥉 ';
+}
+
+.difficulty-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.difficulty-easy {
+    background: rgba(76, 175, 80, 0.8);
+}
+
+.difficulty-medium {
+    background: rgba(255, 193, 7, 0.8);
+}
+
+.difficulty-hard {
+    background: rgba(255, 87, 34, 0.8);
+}
+
+.difficulty-expert {
+    background: rgba(156, 39, 176, 0.8);
 }
 
 #close-modal-btn {

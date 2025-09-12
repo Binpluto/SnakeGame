@@ -90,6 +90,20 @@ class SudokuGame {
             this.generateNewGame();
         });
         
+        // 排行榜按钮
+        document.getElementById('leaderboard-btn').addEventListener('click', () => {
+            this.showLeaderboard();
+        });
+        document.getElementById('close-leaderboard-btn').addEventListener('click', () => {
+            this.closeModal('leaderboard-modal');
+        });
+        document.getElementById('difficulty-filter').addEventListener('change', () => {
+            this.updateLeaderboardDisplay();
+        });
+        document.getElementById('clear-scores-btn').addEventListener('click', () => {
+            this.clearScores();
+        });
+        
         // 键盘事件
         document.addEventListener('keydown', (e) => this.handleKeyPress(e));
         
@@ -504,9 +518,19 @@ class SudokuGame {
         this.isGameComplete = true;
         this.stopTimer();
         
+        // 计算分数
+        const finalScore = this.calculateScore();
+        
         // 显示完成弹窗
         document.getElementById('final-time').textContent = this.formatTime(this.timer);
         document.getElementById('final-mistakes').textContent = this.mistakes;
+        
+        // 显示分数（如果元素存在）
+        const finalScoreElement = document.getElementById('final-score');
+        if (finalScoreElement) {
+            finalScoreElement.textContent = finalScore;
+        }
+        
         this.showModal('game-complete-modal');
         
         // 保存成绩
@@ -612,6 +636,29 @@ class SudokuGame {
         }
     }
     
+    calculateScore() {
+        // 基础分数计算：难度系数 × 时间系数 × 错误惩罚
+        const difficultyMultiplier = {
+            'easy': 1000,
+            'medium': 2000,
+            'hard': 3000,
+            'expert': 5000
+        };
+        
+        const baseScore = difficultyMultiplier[this.difficulty] || 1000;
+        
+        // 时间系数：时间越短分数越高
+        const timeBonus = Math.max(0, 1800 - this.timer); // 30分钟内完成有时间奖励
+        
+        // 错误惩罚：每个错误扣除基础分数的10%
+        const mistakePenalty = this.mistakes * (baseScore * 0.1);
+        
+        // 最终分数
+        const finalScore = Math.max(100, baseScore + timeBonus - mistakePenalty);
+        
+        return Math.round(finalScore);
+    }
+    
     saveScore() {
         const scores = JSON.parse(localStorage.getItem('sudoku-scores') || '[]');
         const score = {
@@ -619,11 +666,85 @@ class SudokuGame {
             difficulty: this.difficulty,
             time: this.timer,
             mistakes: this.mistakes,
+            score: this.calculateScore(),
             date: new Date().toISOString()
         };
         scores.push(score);
-        scores.sort((a, b) => a.time - b.time); // 按时间排序
-        localStorage.setItem('sudoku-scores', JSON.stringify(scores.slice(0, 10))); // 只保存前10名
+        
+        // 按分数排序（分数高的在前）
+        scores.sort((a, b) => b.score - a.score);
+        
+        // 保存前50名记录
+        localStorage.setItem('sudoku-scores', JSON.stringify(scores.slice(0, 50)));
+    }
+    
+    showLeaderboard() {
+        this.updateLeaderboardDisplay();
+        this.showModal('leaderboard-modal');
+    }
+    
+    updateLeaderboardDisplay() {
+        const scores = JSON.parse(localStorage.getItem('sudoku-scores') || '[]');
+        const filter = document.getElementById('difficulty-filter').value;
+        
+        // 筛选分数
+        let filteredScores = scores;
+        if (filter !== 'all') {
+            filteredScores = scores.filter(score => score.difficulty === filter);
+        }
+        
+        const leaderboardList = document.getElementById('leaderboard-list');
+        leaderboardList.innerHTML = '';
+        
+        if (filteredScores.length === 0) {
+            leaderboardList.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.7);">暂无记录</div>';
+            return;
+        }
+        
+        filteredScores.forEach((score, index) => {
+            const item = document.createElement('div');
+            item.className = 'leaderboard-item';
+            
+            const rank = index + 1;
+            let rankDisplay = rank.toString();
+            let rankClass = '';
+            
+            if (rank === 1) {
+                rankClass = 'rank-medal gold';
+            } else if (rank === 2) {
+                rankClass = 'rank-medal silver';
+            } else if (rank === 3) {
+                rankClass = 'rank-medal bronze';
+            }
+            
+            const difficultyNames = {
+                'easy': this.currentLanguage === 'zh' ? '简单' : 'Easy',
+                'medium': this.currentLanguage === 'zh' ? '中等' : 'Medium',
+                'hard': this.currentLanguage === 'zh' ? '困难' : 'Hard',
+                'expert': this.currentLanguage === 'zh' ? '专家' : 'Expert'
+            };
+            
+            const date = new Date(score.date).toLocaleDateString();
+            
+            item.innerHTML = `
+                <span class="${rankClass}">${rankDisplay}</span>
+                <span>${score.username}</span>
+                <span class="difficulty-badge difficulty-${score.difficulty}">${difficultyNames[score.difficulty]}</span>
+                <span>${this.formatTime(score.time)}</span>
+                <span style="font-weight: bold; color: #FFD700;">${score.score}</span>
+                <span>${score.mistakes}</span>
+                <span>${date}</span>
+            `;
+            
+            leaderboardList.appendChild(item);
+        });
+    }
+    
+    clearScores() {
+        if (confirm(this.currentLanguage === 'zh' ? '确定要清空所有记录吗？' : 'Are you sure you want to clear all records?')) {
+            localStorage.removeItem('sudoku-scores');
+            this.updateLeaderboardDisplay();
+        }
     }
     
     saveUsername() {
@@ -676,6 +797,7 @@ class SudokuGame {
                 'pause-text': '暂停',
                 'hint-text': '提示',
                 'check-text': '检查',
+                'leaderboard-text': '排行榜',
                 'difficulty-selector-label': '选择难度',
                 'easy-text': '简单',
                 'medium-text': '中等',
@@ -685,11 +807,27 @@ class SudokuGame {
                 'completion-message': '您成功完成了数独！',
                 'final-time-label': '完成时间: ',
                 'final-mistakes-label': '错误次数: ',
+                'final-score-label': '获得分数: ',
                 'play-again-btn': '再玩一次',
                 'close-modal-btn': '关闭',
                 'game-paused-text': '游戏暂停',
                 'resume-btn': '继续游戏',
-                'new-game-from-pause-btn': '新游戏'
+                'new-game-from-pause-btn': '新游戏',
+                'leaderboard-title': '排行榜',
+                'filter-label': '筛选难度: ',
+                'all-difficulties': '全部',
+                'easy-filter': '简单',
+                'medium-filter': '中等',
+                'hard-filter': '困难',
+                'expert-filter': '专家',
+                'rank-header': '排名',
+                'name-header': '用户名',
+                'difficulty-header': '难度',
+                'time-header': '时间',
+                'score-header': '分数',
+                'mistakes-header': '错误',
+                'date-header': '日期',
+                'clear-scores-btn': '清空记录'
             },
             en: {
                 'game-title': 'Sudoku',
@@ -700,11 +838,12 @@ class SudokuGame {
                 'number-pad-label': 'Number Pad',
                 'mistakes-label': 'Mistakes: ',
                 'hints-label': 'Hints: ',
-                'back-to-menu-text': 'Back to Games',
+                'back-to-menu-text': 'Back to Menu',
                 'new-game-text': 'New Game',
                 'pause-text': 'Pause',
                 'hint-text': 'Hint',
                 'check-text': 'Check',
+                'leaderboard-text': 'Leaderboard',
                 'difficulty-selector-label': 'Select Difficulty',
                 'easy-text': 'Easy',
                 'medium-text': 'Medium',
@@ -714,11 +853,27 @@ class SudokuGame {
                 'completion-message': 'You have successfully completed the Sudoku!',
                 'final-time-label': 'Completion Time: ',
                 'final-mistakes-label': 'Mistakes: ',
+                'final-score-label': 'Score: ',
                 'play-again-btn': 'Play Again',
                 'close-modal-btn': 'Close',
                 'game-paused-text': 'Game Paused',
                 'resume-btn': 'Resume',
-                'new-game-from-pause-btn': 'New Game'
+                'new-game-from-pause-btn': 'New Game',
+                'leaderboard-title': 'Leaderboard',
+                'filter-label': 'Filter Difficulty: ',
+                'all-difficulties': 'All',
+                'easy-filter': 'Easy',
+                'medium-filter': 'Medium',
+                'hard-filter': 'Hard',
+                'expert-filter': 'Expert',
+                'rank-header': 'Rank',
+                'name-header': 'Name',
+                'difficulty-header': 'Difficulty',
+                'time-header': 'Time',
+                'score-header': 'Score',
+                'mistakes-header': 'Mistakes',
+                'date-header': 'Date',
+                'clear-scores-btn': 'Clear Records'
             }
         };
         

@@ -71,6 +71,7 @@
             <button id="pause-btn"><span id="pause-text">暂停</span></button>
             <button id="hint-btn"><span id="hint-text">提示</span></button>
             <button id="check-btn"><span id="check-text">检查</span></button>
+            <button id="leaderboard-btn"><span id="leaderboard-text">排行榜</span></button>
         </div>
         
         <div class="difficulty-selector">
@@ -91,6 +92,7 @@
                 <div class="completion-stats">
                     <p><span id="final-time-label">完成时间: </span><span id="final-time"></span></p>
                     <p><span id="final-mistakes-label">错误次数: </span><span id="final-mistakes"></span></p>
+                    <p><span id="final-score-label">获得分数: </span><span id="final-score" style="color: #FFD700; font-weight: bold;"></span></p>
                 </div>
                 <div class="modal-buttons">
                     <button id="play-again-btn">再玩一次</button>
@@ -106,6 +108,43 @@
                 <div class="modal-buttons">
                     <button id="resume-btn">继续游戏</button>
                     <button id="new-game-from-pause-btn">新游戏</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 排行榜弹窗 -->
+        <div id="leaderboard-modal" class="modal">
+            <div class="modal-content leaderboard-content">
+                <div class="modal-header">
+                    <h2 id="leaderboard-title">排行榜</h2>
+                    <button id="close-leaderboard-btn" class="close-btn">×</button>
+                </div>
+                <div class="leaderboard-filters">
+                    <label id="filter-label">筛选难度: </label>
+                    <select id="difficulty-filter">
+                        <option value="all" id="all-difficulties">全部</option>
+                        <option value="easy" id="easy-filter">简单</option>
+                        <option value="medium" id="medium-filter">中等</option>
+                        <option value="hard" id="hard-filter">困难</option>
+                        <option value="expert" id="expert-filter">专家</option>
+                    </select>
+                </div>
+                <div class="leaderboard-table">
+                    <div class="leaderboard-header">
+                        <span id="rank-header">排名</span>
+                        <span id="name-header">用户名</span>
+                        <span id="difficulty-header">难度</span>
+                        <span id="time-header">时间</span>
+                        <span id="score-header">分数</span>
+                        <span id="mistakes-header">错误</span>
+                        <span id="date-header">日期</span>
+                    </div>
+                    <div id="leaderboard-list" class="leaderboard-list">
+                        <!-- 排行榜数据将通过JavaScript生成 -->
+                    </div>
+                </div>
+                <div class="leaderboard-actions">
+                    <button id="clear-scores-btn">清空记录</button>
                 </div>
             </div>
         </div>

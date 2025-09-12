@@ -128,6 +128,22 @@ function setupEventListeners() {
         document.getElementById('complete-modal').style.display = 'none';
         newGame();
     });
+    
+    // 全局触摸事件
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    
+    // 防止页面滚动干扰游戏
+    document.addEventListener('touchstart', (e) => {
+        if (e.target.closest('.spider-container')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    document.addEventListener('touchmove', (e) => {
+        if (e.target.closest('.spider-container')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 }
 
 // 语言切换
@@ -426,6 +442,16 @@ function canPlaceSequence(sequence, columnIndex) {
     return topCard.faceUp && firstCard.value === topCard.value - 1;
 }
 
+// 触摸和拖拽状态
+let touchState = {
+    isDragging: false,
+    startX: 0,
+    startY: 0,
+    draggedCards: [],
+    draggedColumn: -1,
+    touchStartTime: 0
+};
+
 // 处理纸牌点击
 function handleCardClick(cardElement, cardId) {
     const card = findCardById(cardId);
@@ -463,6 +489,134 @@ function handleCardClick(cardElement, cardId) {
             }
         });
     }
+}
+
+// 处理触摸开始
+function handleTouchStart(e, cardElement, cardId) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    
+    touchState.startX = touch.clientX;
+    touchState.startY = touch.clientY;
+    touchState.touchStartTime = Date.now();
+    touchState.isDragging = false;
+    
+    const card = findCardById(cardId);
+    if (!card || !card.faceUp) return;
+    
+    const columnIndex = findCardColumn(cardId);
+    const cardIndex = gameState.tableau[columnIndex].indexOf(card);
+    const sequence = getMovableSequence(columnIndex, cardIndex);
+    
+    if (sequence.length > 0) {
+        touchState.draggedCards = sequence;
+        touchState.draggedColumn = columnIndex;
+        
+        // 添加触摸反馈
+        cardElement.style.transform = 'scale(1.05)';
+        cardElement.style.transition = 'transform 0.1s';
+    }
+}
+
+// 处理触摸移动
+function handleTouchMove(e) {
+    if (touchState.draggedCards.length === 0) return;
+    
+    e.preventDefault();
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchState.startX);
+    const deltaY = Math.abs(touch.clientY - touchState.startY);
+    
+    // 如果移动距离超过阈值，开始拖拽
+    if (!touchState.isDragging && (deltaX > 10 || deltaY > 10)) {
+        touchState.isDragging = true;
+        
+        // 选中拖拽的牌
+        gameState.selectedCards = touchState.draggedCards;
+        gameState.selectedColumn = touchState.draggedColumn;
+        
+        touchState.draggedCards.forEach(card => {
+            const element = document.querySelector(`[data-card-id="${card.id}"]`);
+            if (element) {
+                element.classList.add('selected', 'dragging');
+            }
+        });
+    }
+    
+    if (touchState.isDragging) {
+        // 高亮可放置的列
+        highlightDropTargets(touch.clientX, touch.clientY);
+    }
+}
+
+// 处理触摸结束
+function handleTouchEnd(e, cardElement, cardId) {
+    const touchDuration = Date.now() - touchState.touchStartTime;
+    
+    // 恢复卡片样式
+    if (cardElement) {
+        cardElement.style.transform = '';
+        cardElement.style.transition = '';
+    }
+    
+    if (touchState.isDragging) {
+        // 拖拽结束，尝试放置
+        const touch = e.changedTouches[0];
+        const targetColumn = getColumnAtPosition(touch.clientX, touch.clientY);
+        
+        if (targetColumn !== -1 && canPlaceSequence(touchState.draggedCards, targetColumn)) {
+            moveCards(touchState.draggedColumn, targetColumn, touchState.draggedCards);
+        }
+        
+        clearSelection();
+        clearDropTargets();
+    } else if (touchDuration < 300) {
+        // 短触摸，当作点击处理
+        handleCardClick(cardElement, cardId);
+    }
+    
+    // 重置触摸状态
+    touchState = {
+        isDragging: false,
+        startX: 0,
+        startY: 0,
+        draggedCards: [],
+        draggedColumn: -1,
+        touchStartTime: 0
+    };
+}
+
+// 高亮可放置的目标列
+function highlightDropTargets(x, y) {
+    clearDropTargets();
+    
+    for (let col = 0; col < 10; col++) {
+        if (col !== touchState.draggedColumn && canPlaceSequence(touchState.draggedCards, col)) {
+            const column = document.querySelector(`[data-column="${col}"]`);
+            if (column) {
+                column.classList.add('highlight');
+            }
+        }
+    }
+}
+
+// 清除放置目标高亮
+function clearDropTargets() {
+    document.querySelectorAll('.tableau.highlight').forEach(column => {
+        column.classList.remove('highlight');
+    });
+}
+
+// 根据位置获取列索引
+function getColumnAtPosition(x, y) {
+    const columns = document.querySelectorAll('.tableau');
+    for (let i = 0; i < columns.length; i++) {
+        const rect = columns[i].getBoundingClientRect();
+        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 // 处理列点击
@@ -713,6 +867,15 @@ function createCardElement(card, topOffset) {
             e.stopPropagation();
             handleCardClick(cardElement, card.id);
         });
+        
+        // 添加触摸事件
+        cardElement.addEventListener('touchstart', (e) => {
+            handleTouchStart(e, cardElement, card.id);
+        }, { passive: false });
+        
+        cardElement.addEventListener('touchend', (e) => {
+            handleTouchEnd(e, cardElement, card.id);
+        }, { passive: false });
     } else {
         cardElement.classList.add('face-down');
     }
