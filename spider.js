@@ -532,8 +532,14 @@ function handleTouchStart(e, cardElement, cardId) {
         touchState.draggedCards = sequence;
         touchState.draggedColumn = columnIndex;
         
-        // 添加触摸反馈
+        // 添加触摸反馈和样式
         cardElement.classList.add('touch-active');
+        cardElement.style.transform = 'scale(1.05)';
+        
+        // 触觉反馈（如果支持）
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
     }
 }
 
@@ -566,6 +572,9 @@ function handleTouchMove(e) {
                 element.classList.add('selected', 'dragging');
                 // 添加拖拽开始的动画效果
                 element.style.transition = 'none';
+                element.style.opacity = '0.9';
+                element.style.boxShadow = '0 8px 16px rgba(0,0,0,0.3)';
+                element.style.transform = 'scale(1.05) rotate(2deg)';
             }
         });
     }
@@ -586,6 +595,7 @@ function handleTouchEnd(e, cardElement, cardId) {
     // 恢复卡片样式
     if (cardElement) {
         cardElement.classList.remove('touch-active');
+        cardElement.style.transform = '';
     }
     
     if (touchState.isDragging) {
@@ -599,13 +609,13 @@ function handleTouchEnd(e, cardElement, cardId) {
             placed = true;
             // 成功放置的震动反馈
             if (navigator.vibrate) {
-                navigator.vibrate([20, 10, 20]);
+                navigator.vibrate([30, 50, 30]);
             }
         }
         
         // 如果没有成功放置，添加失败反馈
         if (!placed && navigator.vibrate) {
-            navigator.vibrate(50);
+            navigator.vibrate(100);
         }
         
         // 清理拖拽状态和样式
@@ -617,7 +627,10 @@ function handleTouchEnd(e, cardElement, cardId) {
                 element.style.top = '';
                 element.style.pointerEvents = '';
                 element.style.zIndex = '';
-                element.style.transition = '';
+                element.style.transition = 'all 0.2s ease';
+                element.style.transform = '';
+                element.style.boxShadow = '';
+                element.style.opacity = '';
                 element.classList.remove('dragging');
             }
         });
@@ -666,12 +679,14 @@ function updateDragPosition(x, y) {
     touchState.draggedCards.forEach((card, index) => {
         const element = document.querySelector(`[data-card-id="${card.id}"]`);
         if (element) {
-            const offsetY = index * 20; // 卡片间距
+            const offsetY = index * 18; // 稍微减少卡片间距
+            const offsetX = index * 2; // 添加轻微的水平偏移
             element.style.position = 'fixed';
-            element.style.left = (x - 38) + 'px'; // 卡片宽度的一半
-            element.style.top = (y - 48 + offsetY) + 'px'; // 卡片高度的一半 + 偏移
+            element.style.left = (x - 38 + offsetX) + 'px'; // 卡片宽度的一半 + 偏移
+            element.style.top = (y - 60 + offsetY) + 'px'; // 调整垂直偏移
             element.style.pointerEvents = 'none';
             element.style.zIndex = 1000 + index;
+            element.style.transition = 'none';
         }
     });
 }
