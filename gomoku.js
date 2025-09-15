@@ -1,3 +1,103 @@
+// 多语言配置
+const LANGUAGES = {
+    zh: {
+        gameTitle: '五子棋',
+        currentPlayerLabel: '当前玩家：',
+        blackPlayer: '黑子',
+        whitePlayer: '白子',
+        modeButtonAI: '切换到AI模式',
+        modeButtonHuman: '切换到双人模式',
+        backToMenu: '返回游戏选择',
+        newGame: '新游戏',
+        undo: '悔棋',
+        hint: '提示',
+        blackWinsLabel: '黑子胜局：',
+        whiteWinsLabel: '白子胜局：',
+        rulesTitle: '游戏规则',
+        rule1: '黑子先行，双方轮流落子',
+        rule2: '率先在横、竖、斜任一方向连成五子者获胜',
+        rule3: '支持人机对战和双人对战模式',
+        rule4: '点击棋盘或触摸屏幕进行落子',
+        blackFirst: '黑子先行',
+        blackTurn: '黑子回合',
+        whiteTurn: '白子回合',
+        blackWins: '黑子获胜！',
+        whiteWins: '白子获胜！',
+        draw: '平局！',
+        thinking: 'AI思考中...'
+    },
+    en: {
+        gameTitle: 'Gomoku',
+        currentPlayerLabel: 'Current Player: ',
+        blackPlayer: 'Black',
+        whitePlayer: 'White',
+        modeButtonAI: 'Switch to AI Mode',
+        modeButtonHuman: 'Switch to Human Mode',
+        backToMenu: 'Back to Menu',
+        newGame: 'New Game',
+        undo: 'Undo',
+        hint: 'Hint',
+        blackWinsLabel: 'Black Wins: ',
+        whiteWinsLabel: 'White Wins: ',
+        rulesTitle: 'Game Rules',
+        rule1: 'Black moves first, players take turns',
+        rule2: 'First to get 5 in a row (horizontal, vertical, or diagonal) wins',
+        rule3: 'Supports both AI and human vs human modes',
+        rule4: 'Click on the board or touch screen to place stones',
+        blackFirst: 'Black goes first',
+        blackTurn: 'Black\'s turn',
+        whiteTurn: 'White\'s turn',
+        blackWins: 'Black wins!',
+        whiteWins: 'White wins!',
+        draw: 'Draw!',
+        thinking: 'AI thinking...'
+    }
+};
+
+// 当前语言
+let currentLanguage = 'zh';
+
+// 语言切换功能
+function switchLanguage(lang) {
+    currentLanguage = lang;
+    updateLanguageUI();
+    
+    // 更新按钮状态
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById(`lang-${lang}`).classList.add('active');
+}
+
+// 更新界面语言
+function updateLanguageUI() {
+    const texts = LANGUAGES[currentLanguage];
+    
+    // 更新标题和标签
+    document.getElementById('game-title').textContent = texts.gameTitle;
+    document.getElementById('current-player-label').textContent = texts.currentPlayerLabel;
+    document.getElementById('black-wins-label').textContent = texts.blackWinsLabel;
+    document.getElementById('white-wins-label').textContent = texts.whiteWinsLabel;
+    document.getElementById('rules-title').textContent = texts.rulesTitle;
+    
+    // 更新按钮文本
+    document.getElementById('back-to-menu-btn').textContent = texts.backToMenu;
+    document.getElementById('new-game-btn').textContent = texts.newGame;
+    document.getElementById('undo-btn').textContent = texts.undo;
+    document.getElementById('hint-btn').textContent = texts.hint;
+    
+    // 更新规则文本
+    document.getElementById('rule-1').textContent = texts.rule1;
+    document.getElementById('rule-2').textContent = texts.rule2;
+    document.getElementById('rule-3').textContent = texts.rule3;
+    document.getElementById('rule-4').textContent = texts.rule4;
+    
+    // 如果游戏已初始化，更新游戏相关UI
+    if (window.game) {
+        window.game.updateUI();
+    }
+}
+
 // 五子棋游戏类
 class GomokuGame {
     constructor() {
@@ -358,15 +458,16 @@ class GomokuGame {
     // 结束游戏
     endGame(winner) {
         this.gameOver = true;
+        const texts = LANGUAGES[currentLanguage];
         
         if (winner === 1) {
             this.scores.black++;
-            document.getElementById('game-message').textContent = '黑子获胜！';
+            document.getElementById('game-message').textContent = texts.blackWins;
         } else if (winner === -1) {
             this.scores.white++;
-            document.getElementById('game-message').textContent = '白子获胜！';
+            document.getElementById('game-message').textContent = texts.whiteWins;
         } else {
-            document.getElementById('game-message').textContent = '平局！';
+            document.getElementById('game-message').textContent = texts.draw;
         }
         
         this.updateScoreBoard();
@@ -527,14 +628,19 @@ class GomokuGame {
     
     // 更新UI
     updateUI() {
+        const texts = LANGUAGES[currentLanguage];
         const currentPlayerText = document.getElementById('current-player-text');
         const gameMessage = document.getElementById('game-message');
         const undoBtn = document.getElementById('undo-btn');
+        const modeBtn = document.getElementById('mode-btn');
         
         if (!this.gameOver) {
-            currentPlayerText.textContent = this.currentPlayer === 1 ? '黑子' : '白子';
-            gameMessage.textContent = this.currentPlayer === 1 ? '黑子回合' : '白子回合';
+            currentPlayerText.textContent = this.currentPlayer === 1 ? texts.blackPlayer : texts.whitePlayer;
+            gameMessage.textContent = this.currentPlayer === 1 ? texts.blackTurn : texts.whiteTurn;
         }
+        
+        // 更新模式按钮文本
+        modeBtn.textContent = this.isAIMode ? texts.modeButtonHuman : texts.modeButtonAI;
         
         undoBtn.disabled = this.moveHistory.length === 0 || this.gameOver;
     }
@@ -550,5 +656,14 @@ class GomokuGame {
 let game;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 绑定语言切换按钮事件
+    document.getElementById('lang-zh').addEventListener('click', () => switchLanguage('zh'));
+    document.getElementById('lang-en').addEventListener('click', () => switchLanguage('en'));
+    
+    // 初始化游戏
     game = new GomokuGame();
+    window.game = game; // 将游戏实例设为全局变量，供语言切换使用
+    
+    // 初始化界面语言
+    updateLanguageUI();
 });

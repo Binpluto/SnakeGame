@@ -467,7 +467,9 @@ let touchState = {
     startY: 0,
     draggedCards: [],
     draggedColumn: -1,
-    touchStartTime: 0
+    touchStartTime: 0,
+    dragThreshold: 8, // 降低拖拽阈值，提高灵敏度
+    longPressThreshold: 150 // 长按阈值
 };
 
 // 处理纸牌点击
@@ -543,10 +545,16 @@ function handleTouchMove(e) {
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchState.startX);
     const deltaY = Math.abs(touch.clientY - touchState.startY);
+    const totalDelta = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     
     // 如果移动距离超过阈值，开始拖拽
-    if (!touchState.isDragging && (deltaX > 10 || deltaY > 10)) {
+    if (!touchState.isDragging && totalDelta > touchState.dragThreshold) {
         touchState.isDragging = true;
+        
+        // 添加震动反馈（如果支持）
+        if (navigator.vibrate) {
+            navigator.vibrate(10);
+        }
         
         // 选中拖拽的牌
         gameState.selectedCards = touchState.draggedCards;
@@ -556,6 +564,8 @@ function handleTouchMove(e) {
             const element = document.querySelector(`[data-card-id="${card.id}"]`);
             if (element) {
                 element.classList.add('selected', 'dragging');
+                // 添加拖拽开始的动画效果
+                element.style.transition = 'none';
             }
         });
     }
@@ -563,6 +573,9 @@ function handleTouchMove(e) {
     if (touchState.isDragging) {
         // 高亮可放置的列
         highlightDropTargets(touch.clientX, touch.clientY);
+        
+        // 更新拖拽卡片的位置跟随
+        updateDragPosition(touch.clientX, touch.clientY);
     }
 }
 
@@ -580,9 +593,34 @@ function handleTouchEnd(e, cardElement, cardId) {
         const touch = e.changedTouches[0];
         const targetColumn = getColumnAtPosition(touch.clientX, touch.clientY);
         
+        let placed = false;
         if (targetColumn !== -1 && canPlaceSequence(touchState.draggedCards, targetColumn)) {
             moveCards(touchState.draggedColumn, targetColumn, touchState.draggedCards);
+            placed = true;
+            // 成功放置的震动反馈
+            if (navigator.vibrate) {
+                navigator.vibrate([20, 10, 20]);
+            }
         }
+        
+        // 如果没有成功放置，添加失败反馈
+        if (!placed && navigator.vibrate) {
+            navigator.vibrate(50);
+        }
+        
+        // 清理拖拽状态和样式
+        touchState.draggedCards.forEach(card => {
+            const element = document.querySelector(`[data-card-id="${card.id}"]`);
+            if (element) {
+                element.style.position = '';
+                element.style.left = '';
+                element.style.top = '';
+                element.style.pointerEvents = '';
+                element.style.zIndex = '';
+                element.style.transition = '';
+                element.classList.remove('dragging');
+            }
+        });
         
         clearSelection();
         clearDropTargets();
@@ -598,7 +636,9 @@ function handleTouchEnd(e, cardElement, cardId) {
         startY: 0,
         draggedCards: [],
         draggedColumn: -1,
-        touchStartTime: 0
+        touchStartTime: 0,
+        dragThreshold: 8,
+        longPressThreshold: 150
     };
 }
 
@@ -611,15 +651,37 @@ function highlightDropTargets(x, y) {
             const column = document.querySelector(`[data-column="${col}"]`);
             if (column) {
                 column.classList.add('highlight');
+                // 添加更强的视觉反馈
+                column.style.transform = 'scale(1.02)';
+                column.style.boxShadow = '0 0 20px rgba(76, 175, 80, 0.6)';
             }
         }
     }
+}
+
+// 更新拖拽卡片位置跟随
+function updateDragPosition(x, y) {
+    if (touchState.draggedCards.length === 0) return;
+    
+    touchState.draggedCards.forEach((card, index) => {
+        const element = document.querySelector(`[data-card-id="${card.id}"]`);
+        if (element) {
+            const offsetY = index * 20; // 卡片间距
+            element.style.position = 'fixed';
+            element.style.left = (x - 38) + 'px'; // 卡片宽度的一半
+            element.style.top = (y - 48 + offsetY) + 'px'; // 卡片高度的一半 + 偏移
+            element.style.pointerEvents = 'none';
+            element.style.zIndex = 1000 + index;
+        }
+    });
 }
 
 // 清除放置目标高亮
 function clearDropTargets() {
     document.querySelectorAll('.tableau.highlight').forEach(column => {
         column.classList.remove('highlight');
+        column.style.transform = '';
+        column.style.boxShadow = '';
     });
 }
 

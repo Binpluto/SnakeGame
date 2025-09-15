@@ -10,10 +10,16 @@
 <body>
     <div class="game-container">
         <header class="game-header">
-            <h1>五子棋</h1>
+            <div class="title-container">
+                <h1 id="game-title">五子棋</h1>
+                <div class="language-switch">
+                    <button id="lang-zh" class="lang-btn active">中文</button>
+                    <button id="lang-en" class="lang-btn">English</button>
+                </div>
+            </div>
             <div class="game-info">
                 <div class="current-player">
-                    <span>当前玩家：</span>
+                    <span id="current-player-label">当前玩家：</span>
                     <span id="current-player-text">黑子</span>
                 </div>
                 <div class="game-mode">
@@ -40,23 +46,23 @@
             <div id="game-message" class="game-message">黑子先行</div>
             <div class="score-board">
                 <div class="score-item">
-                    <span class="score-label">黑子胜局：</span>
+                    <span id="black-wins-label" class="score-label">黑子胜局：</span>
                     <span id="black-wins">0</span>
                 </div>
                 <div class="score-item">
-                    <span class="score-label">白子胜局：</span>
+                    <span id="white-wins-label" class="score-label">白子胜局：</span>
                     <span id="white-wins">0</span>
                 </div>
             </div>
         </div>
 
         <div class="instructions">
-            <h3>游戏规则</h3>
+            <h3 id="rules-title">游戏规则</h3>
             <ul>
-                <li>黑子先行，双方轮流落子</li>
-                <li>率先在横、竖、斜任一方向连成五子者获胜</li>
-                <li>支持人机对战和双人对战模式</li>
-                <li>点击棋盘或触摸屏幕进行落子</li>
+                <li id="rule-1">黑子先行，双方轮流落子</li>
+                <li id="rule-2">率先在横、竖、斜任一方向连成五子者获胜</li>
+                <li id="rule-3">支持人机对战和双人对战模式</li>
+                <li id="rule-4">点击棋盘或触摸屏幕进行落子</li>
             </ul>
         </div>
     </div>

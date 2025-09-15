@@ -348,12 +348,109 @@
             font-weight: bold;
             color: #4CAF50;
         }
+        
+        /* 侧边栏切换按钮样式 */
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-size: 20px;
+        }
+        
+        .sidebar-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 侧边栏样式 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .sidebar.open {
+            right: 0;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .sidebar-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 5px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+        
+        /* 调整原有认证面板样式以适配侧边栏 */
+        .sidebar .auth-container,
+        .sidebar .user-info {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
-    <!-- 用户认证面板 -->
-    <div class="auth-panel" id="auth-panel">
-        <h3>用户中心</h3>
+    <!-- 侧边栏切换按钮 -->
+    <div class="sidebar-toggle" id="sidebar-toggle">
+        <span>👤</span>
+    </div>
+    
+    <!-- 侧边栏用户认证面板 -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>用户中心</h3>
+            <button class="sidebar-close" id="sidebar-close">×</button>
+        </div>
         
         <!-- 未登录状态 -->
         <div class="auth-container" id="auth-container">
@@ -733,10 +830,35 @@
             }
         }
         
+        // 侧边栏控制功能
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.remove('open');
+        }
+        
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             checkLoginStatus();
             loadVisitCount(); // 独立加载访问量统计
+            
+            // 绑定侧边栏事件
+            document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
+            document.getElementById('sidebar-close').addEventListener('click', closeSidebar);
+            
+            // 点击侧边栏外部区域关闭侧边栏
+            document.addEventListener('click', function(e) {
+                const sidebar = document.getElementById('sidebar');
+                const toggle = document.getElementById('sidebar-toggle');
+                
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target) && sidebar.classList.contains('open')) {
+                    closeSidebar();
+                }
+            });
         });
     </script>
     
