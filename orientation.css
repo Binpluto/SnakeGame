@@ -1,0 +1,411 @@
+/**
+ * 移动设备屏幕方向适配CSS样式
+ * 支持所有游戏的横竖屏切换布局优化
+ */
+
+/* 基础方向类 */
+.orientation-portrait {
+    --orientation: portrait;
+}
+
+.orientation-landscape {
+    --orientation: landscape;
+}
+
+/* 通用屏幕方向适配 */
+@media screen and (orientation: portrait) {
+    /* 竖屏模式 */
+    .game-container,
+    .spider-container,
+    .sheep-container {
+        flex-direction: column;
+        max-width: 100vw;
+        max-height: 100vh;
+        padding: 10px;
+    }
+    
+    .game-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    
+    .game-main,
+    .spider-main,
+    .sheep-main {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    /* 游戏区域在竖屏时占用更多垂直空间 */
+    .game-area,
+    .spider-tableau,
+    .sheep-game-area {
+        width: 100%;
+        max-width: 100vw;
+        height: auto;
+        max-height: 60vh;
+    }
+    
+    /* 控制按钮在竖屏时水平排列 */
+    .game-controls,
+    .spider-controls,
+    .sheep-controls {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    
+    /* 触摸控制在竖屏时显示 */
+    .touch-controls {
+        display: flex;
+        order: 1;
+        margin: 10px 0;
+    }
+}
+
+@media screen and (orientation: landscape) {
+    /* 横屏模式 */
+    .game-container,
+    .spider-container,
+    .sheep-container {
+        flex-direction: row;
+        max-width: 100vw;
+        max-height: 100vh;
+        padding: 5px;
+    }
+    
+    .game-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .game-main,
+    .spider-main,
+    .sheep-main {
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    /* 游戏区域在横屏时占用更多水平空间 */
+    .game-area,
+    .spider-tableau,
+    .sheep-game-area {
+        flex: 1;
+        max-width: 70vw;
+        max-height: 85vh;
+    }
+    
+    /* 侧边栏在横屏时垂直排列 */
+    .game-sidebar,
+    .spider-sidebar,
+    .sheep-sidebar {
+        flex-direction: column;
+        width: 25vw;
+        max-width: 200px;
+        min-width: 150px;
+    }
+    
+    /* 控制按钮在横屏时垂直排列 */
+    .game-controls,
+    .spider-controls,
+    .sheep-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    /* 触摸控制在横屏时可能隐藏或调整位置 */
+    .touch-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* 特定游戏的横屏优化 */
+
+/* 俄罗斯方块横屏优化 */
+@media screen and (orientation: landscape) {
+    .tetris-game-area {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    #tetris-canvas {
+        width: auto;
+        height: 80vh;
+        max-height: 400px;
+    }
+    
+    .tetris-sidebar {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    
+    .next-piece {
+        margin-bottom: 20px;
+    }
+}
+
+/* 五子棋横屏优化 */
+@media screen and (orientation: landscape) {
+    .gomoku-container {
+        flex-direction: row;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    #game-board {
+        width: auto;
+        height: 80vh;
+        max-width: 80vh;
+        max-height: 80vh;
+    }
+    
+    .board-overlay {
+        width: 80vh !important;
+        height: 80vh !important;
+    }
+}
+
+/* 数独横屏优化 */
+@media screen and (orientation: landscape) {
+    .sudoku-game-area {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .sudoku-board {
+        width: auto;
+        height: 80vh;
+        max-width: 80vh;
+    }
+}
+
+/* 蜘蛛纸牌横屏优化 */
+@media screen and (orientation: landscape) {
+    .spider-tableau {
+        height: 75vh;
+        overflow-y: auto;
+    }
+    
+    .spider-column {
+        min-height: 70vh;
+    }
+}
+
+/* 羊了个羊横屏优化 */
+@media screen and (orientation: landscape) {
+    .sheep-game-board {
+        width: 70vw;
+        height: 70vh;
+    }
+    
+    .sheep-slot-area {
+        width: 25vw;
+        height: 70vh;
+    }
+}
+
+/* 移动设备通用优化 */
+@media (hover: none) and (pointer: coarse) {
+    /* 触摸设备特定样式 */
+    
+    /* 增大可点击区域 */
+    button,
+    .card,
+    .cell,
+    .sheep-card {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* 优化触摸反馈 */
+    button:active,
+    .card:active,
+    .cell:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+    }
+    
+    /* 移除hover效果 */
+    *:hover {
+        transform: none !important;
+    }
+    
+    /* 优化滚动 */
+    .scrollable {
+        -webkit-overflow-scrolling: touch;
+        overflow-scrolling: touch;
+    }
+}
+
+/* 小屏幕设备优化 */
+@media screen and (max-width: 480px) {
+    .game-container,
+    .spider-container,
+    .sheep-container {
+        padding: 5px;
+    }
+    
+    .game-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    button {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    .touch-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+    }
+}
+
+/* 超小屏幕设备优化 */
+@media screen and (max-width: 320px) {
+    .game-container,
+    .spider-container,
+    .sheep-container {
+        padding: 3px;
+    }
+    
+    .game-header h1 {
+        font-size: 1.2rem;
+    }
+    
+    button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    .touch-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+}
+
+/* 高分辨率屏幕优化 */
+@media screen and (min-resolution: 2dppx) {
+    /* 高DPI屏幕优化 */
+    .card,
+    .cell,
+    button {
+        border-width: 0.5px;
+    }
+}
+
+/* 方向变化动画 */
+.orientation-transition {
+    transition: all 0.3s ease-in-out;
+}
+
+/* 方向提示样式 */
+.orientation-hint {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.orientation-hint-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 300px;
+    margin: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.orientation-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    animation: rotate 2s infinite linear;
+}
+
+.orientation-hint-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 强制横屏提示 */
+.force-landscape-hint {
+    display: none;
+}
+
+@media screen and (orientation: portrait) and (max-height: 500px) {
+    .force-landscape-hint {
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        z-index: 9999;
+    }
+}
+
+/* 游戏特定的方向锁定 */
+.lock-landscape {
+    /* 某些游戏可能需要锁定横屏 */
+}
+
+.lock-portrait {
+    /* 某些游戏可能需要锁定竖屏 */
+}
+
+/* 自适应字体大小 */
+@media screen and (orientation: landscape) {
+    .adaptive-text {
+        font-size: calc(1rem + 0.5vw);
+    }
+}
+
+@media screen and (orientation: portrait) {
+    .adaptive-text {
+        font-size: calc(1rem + 1vw);
+    }
+}
