@@ -104,9 +104,294 @@
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+        
+        /* 用户认证区域样式 */
+        .auth-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            min-width: 280px;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-panel h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+        
+        .auth-tab.active {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .auth-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .auth-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .auth-btn:hover {
+            background: #45a049;
+        }
+        
+        .auth-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .user-info {
+            display: none;
+            text-align: center;
+        }
+        
+        .user-info.active {
+            display: block;
+        }
+        
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 15px;
+        }
+        
+        .user-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+        
+        .points-section {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+
+        .points-display {
+            font-size: 16px;
+            font-weight: bold;
+            color: #28a745;
+            margin: 0 0 10px 0;
+        }
+
+        #dailyLoginBtn {
+            background-color: #ffc107;
+            color: #212529;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+
+        #dailyLoginBtn:hover {
+            background-color: #e0a800;
+        }
+
+        .points-history {
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 11px;
+        }
+
+        .points-history h5 {
+            margin: 0 0 8px 0;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .points-record {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .points-record:last-child {
+            border-bottom: none;
+        }
+
+        .points-record .description {
+            flex: 1;
+            color: #495057;
+        }
+
+        .points-record .points {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .points-record .date {
+            font-size: 10px;
+            color: #6c757d;
+            margin-left: 8px;
+        }
+        
+        .visit-counter {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 网站访问量统计样式 */
+        .site-visit-counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .visit-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .visit-label {
+            opacity: 0.8;
+        }
+        
+        .visit-number {
+            font-weight: bold;
+            color: #4CAF50;
+        }
     </style>
 </head>
 <body>
+    <!-- 用户认证面板 -->
+    <div class="auth-panel" id="auth-panel">
+        <h3>用户中心</h3>
+        
+        <!-- 未登录状态 -->
+        <div class="auth-container" id="auth-container">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">登录</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">注册</button>
+            </div>
+            
+            <!-- 登录表单 -->
+            <form class="auth-form active" id="login-form">
+                <input type="text" class="auth-input" id="login-username" placeholder="用户名" required>
+                <input type="password" class="auth-input" id="login-password" placeholder="密码" required>
+                <button type="submit" class="auth-btn">登录</button>
+            </form>
+            
+            <!-- 注册表单 -->
+            <form class="auth-form" id="register-form">
+                <input type="text" class="auth-input" id="register-username" placeholder="用户名" required>
+                <input type="email" class="auth-input" id="register-email" placeholder="邮箱" required>
+                <input type="password" class="auth-input" id="register-password" placeholder="密码" required>
+                <input type="password" class="auth-input" id="register-confirm" placeholder="确认密码" required>
+                <button type="submit" class="auth-btn">注册</button>
+            </form>
+        </div>
+        
+        <!-- 已登录状态 -->
+        <div class="user-info" id="user-info">
+            <div class="user-avatar" id="user-avatar">U</div>
+            <div class="user-name" id="user-name">用户名</div>
+            <div class="points-section">
+                <p class="points-display">积分: <span id="userPoints">0</span></p>
+                <button id="dailyLoginBtn" onclick="dailyLogin()" style="display: none;">每日签到 (+10积分)</button>
+                <div class="points-history" id="pointsHistory"></div>
+            </div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+    
     <!-- 小程序入口 -->
     <div class="miniprogram-entry">
         <button class="miniprogram-btn" onclick="toggleMiniprogram()">
@@ -209,7 +494,260 @@
                 qrDiv.classList.remove('show');
             }
         });
+        
+        // 用户认证相关功能
+        let currentUser = null;
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            initAuthForms();
+        });
+        
+        // 切换认证标签
+        function switchAuthTab(tab) {
+            const tabs = document.querySelectorAll('.auth-tab');
+            const forms = document.querySelectorAll('.auth-form');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchAuthTab('${tab}')"]`).classList.add('active');
+            document.getElementById(`${tab}-form`).classList.add('active');
+        }
+        
+        // 初始化认证表单
+        function initAuthForms() {
+            // 登录表单
+            document.getElementById('login-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        currentUser = result.user;
+                        localStorage.setItem('authToken', result.token);
+                        showUserInfo();
+                        alert('登录成功！');
+                    } else {
+                        alert(result.message || '登录失败');
+                    }
+                } catch (error) {
+                    console.error('登录错误:', error);
+                    alert('登录失败，请稍后重试');
+                }
+            });
+            
+            // 注册表单
+            document.getElementById('register-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const username = document.getElementById('register-username').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const confirmPassword = document.getElementById('register-confirm').value;
+                
+                if (password !== confirmPassword) {
+                    alert('两次输入的密码不一致');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, email, password })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('注册成功！请登录');
+                        switchAuthTab('login');
+                        document.getElementById('register-form').reset();
+                    } else {
+                        alert(result.message || '注册失败');
+                    }
+                } catch (error) {
+                    console.error('注册错误:', error);
+                    alert('注册失败，请稍后重试');
+                }
+            });
+        }
+        
+        // 检查登录状态
+        async function checkLoginStatus() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+            
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    showUserInfo();
+                } else {
+                    localStorage.removeItem('authToken');
+                }
+            } catch (error) {
+                console.error('验证登录状态失败:', error);
+                localStorage.removeItem('authToken');
+            }
+        }
+        
+        // 显示用户信息
+        function showUserInfo() {
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('user-info').classList.add('active');
+            document.getElementById('user-name').textContent = currentUser.username;
+            document.getElementById('user-avatar').textContent = currentUser.username.charAt(0).toUpperCase();
+            document.getElementById('userPoints').textContent = currentUser.points || 0;
+            
+            // 加载积分信息
+            loadPointsInfo();
+        }
+        
+        // 加载积分信息
+        async function loadPointsInfo() {
+            if (!currentUser) return;
+            
+            try {
+                const response = await fetch('/api/points/info', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('userPoints').textContent = result.points;
+                    
+                    // 检查是否可以每日签到
+                    if (result.canDailyLogin) {
+                        document.getElementById('dailyLoginBtn').style.display = 'block';
+                    } else {
+                        document.getElementById('dailyLoginBtn').style.display = 'none';
+                    }
+                    
+                    // 显示积分历史
+                    displayPointsHistory(result.history || []);
+                }
+            } catch (error) {
+                console.error('加载积分信息失败:', error);
+            }
+        }
+        
+        // 每日签到
+        async function dailyLogin() {
+            if (!currentUser) return;
+            
+            try {
+                const response = await fetch('/api/points/daily-login', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                     alert(`签到成功！获得 ${result.pointsEarned} 积分`);
+                     loadPointsInfo(); // 重新加载积分信息
+                 } else {
+                    alert(result.message || '签到失败');
+                }
+            } catch (error) {
+                console.error('签到失败:', error);
+                alert('签到失败，请稍后重试');
+            }
+        }
+        
+        // 显示积分历史
+        function displayPointsHistory(history) {
+            const historyContainer = document.getElementById('pointsHistory');
+            
+            if (!history || history.length === 0) {
+                historyContainer.innerHTML = '<p style="text-align: center; color: #999; font-size: 11px;">暂无积分记录</p>';
+                return;
+            }
+            
+            let html = '<h5>积分记录</h5>';
+             history.slice(0, 5).forEach(record => {
+                 const date = new Date(record.timestamp).toLocaleDateString();
+                 html += `
+                     <div class="points-record">
+                         <span class="description">${record.description}</span>
+                         <span class="points">+${record.points}</span>
+                         <span class="date">${date}</span>
+                     </div>
+                 `;
+             });
+            
+            historyContainer.innerHTML = html;
+        }
+        
+        // 退出登录
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            document.getElementById('auth-container').style.display = 'block';
+            document.getElementById('user-info').classList.remove('active');
+            document.getElementById('login-form').reset();
+            alert('已退出登录');
+        }
+        
+        // 加载访问量
+        async function loadVisitCount() {
+            try {
+                const response = await fetch('/api/visit');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('visit-count').textContent = result.totalVisits;
+                } else {
+                    document.getElementById('visit-count').textContent = '获取失败';
+                }
+            } catch (error) {
+                console.error('获取访问量失败:', error);
+                document.getElementById('visit-count').textContent = '获取失败';
+            }
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            loadVisitCount(); // 独立加载访问量统计
+        });
     </script>
+    
+    <!-- 网站访问量统计 -->
+    <div class="site-visit-counter">
+        <div class="visit-info">
+            <span class="visit-label">网站总访问量:</span>
+            <span id="visit-count" class="visit-number">加载中...</span>
+        </div>
+    </div>
+    
     <script src="orientation.js"></script>
 </body>
 </html>

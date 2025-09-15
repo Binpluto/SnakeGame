@@ -8,6 +8,7 @@ const CARD_HEIGHT = 100;
 const SLOT_COUNT = 7;
 const MAX_LAYERS = 3;
 const BLIND_STACK_SIZE = 8; // 盲牌堆叠数量
+const MAX_SHUFFLES = 3; // 重排次数上限
 const API_URL = 'http://localhost:3000';
 
 // 卡片类型（使用emoji表示不同的图案）
@@ -29,6 +30,8 @@ const LANGUAGES = {
         selectLevel: "选择关卡",
         hint: "提示",
         shuffle: "重排",
+        shuffleLimit: "重排次数已用完！",
+        shuffleRemaining: "剩余重排次数: ",
         gameOver: "游戏结束",
         levelComplete: "关卡完成",
         nextLevel: "下一关",
@@ -66,6 +69,8 @@ const LANGUAGES = {
         selectLevel: "Select Level",
         hint: "Hint",
         shuffle: "Shuffle",
+        shuffleLimit: "No shuffles remaining!",
+        shuffleRemaining: "Shuffles remaining: ",
         gameOver: "Game Over",
         levelComplete: "Level Complete",
         nextLevel: "Next Level",
@@ -118,7 +123,9 @@ let gameState = {
     cards: [],
     slots: [],
     selectedCard: null,
-    hintCard: null
+    hintCard: null,
+    shufflesUsed: 0,
+    maxShuffles: MAX_SHUFFLES
 };
 
 // 游戏数据
@@ -132,7 +139,7 @@ let animationId = null;
 let canvas, ctx;
 let scoreElement, levelElement;
 let startButton, pauseButton, restartButton, hintButton, shuffleButton, backButton, selectLevelButton;
-let gameTitle, scoreLabel, levelLabel;
+let gameTitle, scoreLabel, levelLabel, shuffleRemainingLabel, shuffleRemainingElement;
 let usernameInput, saveUsernameButton, usernameLabel;
 let leaderboardTitle, leaderboardList, noRecordsElement;
 let langZhButton, langEnButton;
@@ -165,6 +172,8 @@ function initGame() {
     gameTitle = document.getElementById('game-title');
     scoreLabel = document.getElementById('score-label');
     levelLabel = document.getElementById('level-label');
+    shuffleRemainingLabel = document.getElementById('shuffle-remaining-label');
+    shuffleRemainingElement = document.getElementById('shuffle-remaining');
     
     usernameInput = document.getElementById('username-input');
     saveUsernameButton = document.getElementById('save-username');
@@ -572,6 +581,12 @@ function useHint() {
 function shuffleCards() {
     if (!gameState.isRunning || gameState.isPaused) return;
     
+    // 检查重排次数是否已达上限
+    if (gameState.shufflesUsed >= gameState.maxShuffles) {
+        alert(LANGUAGES[currentLang].shuffleLimit || '重排次数已用完！');
+        return;
+    }
+    
     const visibleCards = cards.filter(card => card.visible);
     const cardTypes = visibleCards.map(card => card.type);
     
@@ -585,6 +600,7 @@ function shuffleCards() {
     }
     
     gameState.shufflesUsed++;
+    updateUI(); // 更新UI显示剩余次数
 }
 
 // 重置游戏
@@ -598,6 +614,7 @@ function resetGame() {
         moves: 30,
         hintsUsed: 0,
         shufflesUsed: 0,
+        maxShuffles: MAX_SHUFFLES,
         leftBlindStack: [],
         rightBlindStack: [],
         selectedCard: null,
@@ -767,6 +784,10 @@ function updateUI() {
     scoreElement.textContent = gameState.score;
     levelElement.textContent = gameState.level;
     
+    // 更新重排次数显示
+    const remaining = gameState.maxShuffles - gameState.shufflesUsed;
+    shuffleRemainingElement.textContent = remaining;
+    
     // 更新按钮状态
     if (gameState.isRunning && !gameState.isGameOver) {
         startButton.textContent = LANGUAGES[currentLang].start;
@@ -788,6 +809,7 @@ function updateUIText() {
     gameTitle.textContent = lang.title;
     scoreLabel.textContent = lang.score;
     levelLabel.textContent = lang.level;
+    shuffleRemainingLabel.textContent = lang.shuffleRemaining;
     
     startButton.textContent = lang.start;
     pauseButton.textContent = lang.pause;
