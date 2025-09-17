@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泡泡龙游戏</title>
+    <link rel="stylesheet" href="bubble.css">
+    <link rel="stylesheet" href="orientation.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- 游戏标题 -->
+        <header class="game-header">
+            <h1 class="game-title">泡泡龙</h1>
+            <div class="language-switch">
+                <button onclick="switchLanguage('zh')" class="lang-btn active" id="lang-zh">中文</button>
+                <button onclick="switchLanguage('en')" class="lang-btn" id="lang-en">English</button>
+            </div>
+        </header>
+
+        <!-- 游戏信息面板 -->
+        <div class="game-info">
+            <div class="info-item">
+                <span class="info-label" data-text="score">得分</span>
+                <span class="info-value" id="score">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label" data-text="level">关卡</span>
+                <span class="info-value" id="level">1</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label" data-text="shots">剩余发射</span>
+                <span class="info-value" id="shots">∞</span>
+            </div>
+        </div>
+
+        <!-- 游戏画布区域 -->
+        <div class="game-area">
+            <canvas id="gameCanvas" width="400" height="600"></canvas>
+            
+            <!-- 瞄准线 -->
+            <div class="aim-line" id="aimLine"></div>
+            
+            <!-- 下一个泡泡预览 -->
+            <div class="next-bubble-container">
+                <div class="next-bubble-label" data-text="next">下一个</div>
+                <div class="next-bubble" id="nextBubble"></div>
+            </div>
+        </div>
+
+        <!-- 游戏控制按钮 -->
+        <div class="game-controls">
+            <button class="control-btn" id="newGameBtn" data-text="newGame">新游戏</button>
+            <button class="control-btn" id="pauseBtn" data-text="pause">暂停</button>
+            <button class="control-btn" id="helpBtn" data-text="help">帮助</button>
+            <button class="control-btn" id="backBtn" data-text="backToGames">返回游戏选择</button>
+        </div>
+
+        <!-- 触摸控制区域 -->
+        <div class="touch-controls" id="touchControls">
+            <div class="touch-instruction" data-text="touchInstruction">点击屏幕瞄准并发射泡泡</div>
+        </div>
+    </div>
+
+    <!-- 游戏结束弹窗 -->
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2 data-text="gameOver">游戏结束</h2>
+            <div class="final-stats">
+                <p><span data-text="finalScore">最终得分</span>: <span id="finalScore">0</span></p>
+                <p><span data-text="finalLevel">到达关卡</span>: <span id="finalLevel">1</span></p>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn" id="playAgainBtn" data-text="playAgain">再玩一次</button>
+                <button class="modal-btn" id="backToMenuBtn" data-text="backToMenu">返回菜单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 暂停弹窗 -->
+    <div class="modal" id="pauseModal">
+        <div class="modal-content">
+            <h2 data-text="gamePaused">游戏暂停</h2>
+            <div class="modal-buttons">
+                <button class="modal-btn" id="resumeBtn" data-text="resume">继续游戏</button>
+                <button class="modal-btn" id="restartBtn" data-text="restart">重新开始</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 帮助弹窗 -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <h2 data-text="gameHelp">游戏帮助</h2>
+            <div class="help-content">
+                <h3 data-text="objective">游戏目标</h3>
+                <p data-text="objectiveText">发射泡泡，消除相同颜色的泡泡群（3个或以上），清除所有泡泡过关。</p>
+                
+                <h3 data-text="controls">操作方法</h3>
+                <ul>
+                    <li data-text="control1">点击屏幕瞄准发射方向</li>
+                    <li data-text="control2">泡泡会沿直线飞行直到碰撞</li>
+                    <li data-text="control3">消除3个或以上相同颜色的泡泡</li>
+                    <li data-text="control4">悬空的泡泡会自动掉落</li>
+                </ul>
+                
+                <h3 data-text="tips">游戏技巧</h3>
+                <ul>
+                    <li data-text="tip1">利用墙壁反弹到达难以直达的位置</li>
+                    <li data-text="tip2">优先消除上方的泡泡群</li>
+                    <li data-text="tip3">注意下一个泡泡的颜色，提前规划</li>
+                </ul>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn" id="closeHelpBtn" data-text="close">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关卡完成弹窗 -->
+    <div class="modal" id="levelCompleteModal">
+        <div class="modal-content">
+            <h2 data-text="levelComplete">关卡完成！</h2>
+            <div class="level-stats">
+                <p><span data-text="levelScore">本关得分</span>: <span id="levelScore">0</span></p>
+                <p><span data-text="bonus">奖励分数</span>: <span id="bonusScore">0</span></p>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn" id="nextLevelBtn" data-text="nextLevel">下一关</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="bubble.js"></script>
+</body>
+</html>
